@@ -2,9 +2,9 @@
 
 set -euo pipefail
 
-pkg="$(find artifacts/csharp -maxdepth 1 -name '*.nupkg' -print | sort | head -n 1)"
+pkg="$(find packages/csharp/artifacts/csharp -maxdepth 1 -name '*.nupkg' -print | sort | head -n 1)"
 if [ -z "$pkg" ]; then
-	echo "No .nupkg found under artifacts/csharp" >&2
+	echo "No .nupkg found under packages/csharp/artifacts/csharp" >&2
 	exit 1
 fi
 

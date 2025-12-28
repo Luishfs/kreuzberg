@@ -65,7 +65,7 @@ bottle_block+=$'\n'"  end"
 
 new_formula=$(echo "$formula_content" | sed \
 	-e "s|url \"https://github.com/kreuzberg-dev/kreuzberg/archive/.*\.tar\.gz\"|url \"https://github.com/kreuzberg-dev/kreuzberg/archive/$tag.tar.gz\"|" \
-	-e "s/version \"[^\"]*\"/version \"$version\"/")
+	-e "s|version \"[^\"]*\"|version \"$version\"|")
 
 new_formula=$(echo "$new_formula" | sed '/# bottle do/,/# end/d')
 
