@@ -260,11 +260,12 @@ async fn main() -> Result<()> {
             eprintln!("[adapter] ✓ kreuzberg-native (registered)");
 
             use benchmark_harness::adapters::{
-                create_csharp_sync_adapter, create_go_batch_adapter, create_go_sync_adapter, create_java_sync_adapter,
-                create_node_async_adapter, create_node_batch_adapter, create_php_batch_adapter,
-                create_php_sync_adapter, create_python_async_adapter, create_python_batch_adapter,
-                create_python_sync_adapter, create_ruby_batch_adapter, create_ruby_sync_adapter,
-                create_wasm_async_adapter, create_wasm_batch_adapter,
+                create_csharp_sync_adapter, create_elixir_batch_adapter, create_elixir_sync_adapter,
+                create_go_batch_adapter, create_go_sync_adapter, create_java_sync_adapter, create_node_async_adapter,
+                create_node_batch_adapter, create_php_batch_adapter, create_php_sync_adapter,
+                create_python_async_adapter, create_python_batch_adapter, create_python_sync_adapter,
+                create_ruby_batch_adapter, create_ruby_sync_adapter, create_wasm_async_adapter,
+                create_wasm_batch_adapter,
             };
 
             let mut kreuzberg_count = 1;
@@ -446,7 +447,31 @@ async fn main() -> Result<()> {
                 Err(err) => eprintln!("[adapter] ✗ kreuzberg-php-batch (initialization failed: {err})"),
             }
 
-            eprintln!("[adapter] Kreuzberg bindings: {}/17 available", kreuzberg_count);
+            match create_elixir_sync_adapter() {
+                Ok(adapter) => {
+                    if let Err(err) = registry.register(Arc::new(adapter)) {
+                        eprintln!("[adapter] ✗ kreuzberg-elixir-sync (registration failed: {err})");
+                    } else {
+                        eprintln!("[adapter] ✓ kreuzberg-elixir-sync (registered)");
+                        kreuzberg_count += 1;
+                    }
+                }
+                Err(err) => eprintln!("[adapter] ✗ kreuzberg-elixir-sync (initialization failed: {err})"),
+            }
+
+            match create_elixir_batch_adapter() {
+                Ok(adapter) => {
+                    if let Err(err) = registry.register(Arc::new(adapter)) {
+                        eprintln!("[adapter] ✗ kreuzberg-elixir-batch (registration failed: {err})");
+                    } else {
+                        eprintln!("[adapter] ✓ kreuzberg-elixir-batch (registered)");
+                        kreuzberg_count += 1;
+                    }
+                }
+                Err(err) => eprintln!("[adapter] ✗ kreuzberg-elixir-batch (initialization failed: {err})"),
+            }
+
+            eprintln!("[adapter] Kreuzberg bindings: {}/19 available", kreuzberg_count);
 
             use benchmark_harness::adapters::external::{
                 create_docling_adapter, create_docling_batch_adapter, create_markitdown_adapter, create_mineru_adapter,

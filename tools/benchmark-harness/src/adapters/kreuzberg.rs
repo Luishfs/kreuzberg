@@ -4,6 +4,7 @@
 //! - Python: sync, async, batch
 //! - TypeScript/Node: async, batch
 //! - Ruby: sync, batch
+//! - Elixir: sync, batch
 
 use crate::Result;
 use crate::adapters::subprocess::SubprocessAdapter;
@@ -64,6 +65,11 @@ fn find_ruby() -> Result<(PathBuf, Vec<String>)> {
     } else {
         Err(crate::Error::Config("Ruby not found".to_string()))
     }
+}
+
+/// Helper to find Elixir interpreter
+fn find_elixir() -> Result<PathBuf> {
+    which::which("elixir").map_err(|_| crate::Error::Config("Elixir not found".to_string()))
 }
 
 /// Helper to find PHP interpreter
@@ -513,6 +519,33 @@ pub fn create_php_batch_adapter() -> Result<SubprocessAdapter> {
     let env = build_library_env()?;
     Ok(SubprocessAdapter::with_batch_support(
         "kreuzberg-php-batch",
+        command,
+        args,
+        env,
+    ))
+}
+
+/// Create Elixir sync adapter (extract_file)
+pub fn create_elixir_sync_adapter() -> Result<SubprocessAdapter> {
+    let script_path = get_script_path("kreuzberg_extract.exs")?;
+    let command = find_elixir()?;
+
+    let args = vec![script_path.to_string_lossy().to_string(), "sync".to_string()];
+
+    let env = build_library_env()?;
+    Ok(SubprocessAdapter::new("kreuzberg-elixir-sync", command, args, env))
+}
+
+/// Create Elixir batch adapter (batch_extract_files)
+pub fn create_elixir_batch_adapter() -> Result<SubprocessAdapter> {
+    let script_path = get_script_path("kreuzberg_extract.exs")?;
+    let command = find_elixir()?;
+
+    let args = vec![script_path.to_string_lossy().to_string(), "batch".to_string()];
+
+    let env = build_library_env()?;
+    Ok(SubprocessAdapter::with_batch_support(
+        "kreuzberg-elixir-batch",
         command,
         args,
         env,

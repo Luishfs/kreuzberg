@@ -90,6 +90,11 @@ tasks:
     cmds:
       - mix format --check-formatted
 
+  build:bindings:
+    desc: Build Elixir bindings for benchmarking
+    cmds:
+      - bash scripts/benchmarks/build-elixir-bindings.sh
+
   clean:
     desc: Clean Elixir build artifacts
     dir: packages/elixir

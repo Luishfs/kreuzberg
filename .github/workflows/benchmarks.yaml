@@ -1196,6 +1196,326 @@ jobs:
           path: benchmark-results/
           retention-days: 30
 
+  bench-elixir-async:
+    name: kreuzberg-elixir-async (${{ matrix.mode }})
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [single-file, batch]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+
+      - name: Free disk space
+        run: scripts/ci/benchmarks/free-disk-space.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.setup.outputs.artifact-name }}
+          path: target/release
+
+      - name: Restore benchmark binary permissions
+        run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: ./.github/actions/setup-openssl
+
+      - name: Setup Rust toolchain
+        uses: ./.github/actions/setup-rust
+        with:
+          cache-key-prefix: benchmarks-elixir-async
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.17.0"
+          otp-version: "27.0"
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
+      - name: Build Elixir bindings
+        run: task elixir:build:bindings
+
+      - name: Run benchmark
+        env:
+          FRAMEWORK: kreuzberg-elixir-async
+          MODE: ${{ matrix.mode }}
+          ITERATIONS: ${{ env.ITERATIONS }}
+          TIMEOUT: ${{ github.event.inputs.timeout }}
+        run: scripts/benchmarks/run-benchmark.sh
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmarks-kreuzberg-elixir-async-${{ matrix.mode }}-${{ github.run_id }}
+          path: benchmark-results/
+          retention-days: 30
+
+  bench-elixir-batch:
+    name: kreuzberg-elixir-batch (${{ matrix.mode }})
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [single-file, batch]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+
+      - name: Free disk space
+        run: scripts/ci/benchmarks/free-disk-space.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.setup.outputs.artifact-name }}
+          path: target/release
+
+      - name: Restore benchmark binary permissions
+        run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: ./.github/actions/setup-openssl
+
+      - name: Setup Rust toolchain
+        uses: ./.github/actions/setup-rust
+        with:
+          cache-key-prefix: benchmarks-elixir-batch
+
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.17.0"
+          otp-version: "27.0"
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
+      - name: Build Elixir bindings
+        run: task elixir:build:bindings
+
+      - name: Run benchmark
+        env:
+          FRAMEWORK: kreuzberg-elixir-batch
+          MODE: ${{ matrix.mode }}
+          ITERATIONS: ${{ env.ITERATIONS }}
+          TIMEOUT: ${{ github.event.inputs.timeout }}
+        run: scripts/benchmarks/run-benchmark.sh
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmarks-kreuzberg-elixir-batch-${{ matrix.mode }}-${{ github.run_id }}
+          path: benchmark-results/
+          retention-days: 30
+
+  bench-php-sync:
+    name: kreuzberg-php-sync (${{ matrix.mode }})
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [single-file, batch]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+
+      - name: Free disk space
+        run: scripts/ci/benchmarks/free-disk-space.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.setup.outputs.artifact-name }}
+          path: target/release
+
+      - name: Restore benchmark binary permissions
+        run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: ./.github/actions/setup-openssl
+
+      - name: Setup Rust toolchain
+        uses: ./.github/actions/setup-rust
+        with:
+          cache-key-prefix: benchmarks-php-sync
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: ffi
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
+      - name: Build or restore FFI from cache
+        id: ffi
+        uses: ./.github/actions/build-and-cache-ffi
+        with:
+          platform: linux-x64
+          ffi-crate: kreuzberg-ffi
+          cache-version: v1
+          pdfium-version: ${{ env.PDFIUM_VERSION }}
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Set library paths for FFI
+        shell: bash
+        run: |
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+
+      - name: Build PHP bindings
+        run: task php:build:bindings
+
+      - name: Run benchmark
+        env:
+          FRAMEWORK: kreuzberg-php-sync
+          MODE: ${{ matrix.mode }}
+          ITERATIONS: ${{ env.ITERATIONS }}
+          TIMEOUT: ${{ github.event.inputs.timeout }}
+        run: scripts/benchmarks/run-benchmark.sh
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmarks-kreuzberg-php-sync-${{ matrix.mode }}-${{ github.run_id }}
+          path: benchmark-results/
+          retention-days: 30
+
+  bench-php-batch:
+    name: kreuzberg-php-batch (${{ matrix.mode }})
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [single-file, batch]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch || github.ref_name }}
+
+      - name: Free disk space
+        run: scripts/ci/benchmarks/free-disk-space.sh
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.setup.outputs.artifact-name }}
+          path: target/release
+
+      - name: Restore benchmark binary permissions
+        run: scripts/benchmarks/restore-binary-permissions.sh
+
+      - name: Install system dependencies
+        uses: ./.github/actions/install-system-deps
+
+      - name: Setup OpenSSL
+        uses: ./.github/actions/setup-openssl
+
+      - name: Setup Rust toolchain
+        uses: ./.github/actions/setup-rust
+        with:
+          cache-key-prefix: benchmarks-php-batch
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: ffi
+
+      - name: Setup ONNX Runtime
+        uses: ./.github/actions/setup-onnx-runtime
+        with:
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Install Task
+        uses: ./.github/actions/install-task
+
+      - name: Build or restore FFI from cache
+        id: ffi
+        uses: ./.github/actions/build-and-cache-ffi
+        with:
+          platform: linux-x64
+          ffi-crate: kreuzberg-ffi
+          cache-version: v1
+          pdfium-version: ${{ env.PDFIUM_VERSION }}
+          ort-version: ${{ env.ORT_VERSION }}
+
+      - name: Set library paths for FFI
+        shell: bash
+        run: |
+          echo "PKG_CONFIG_PATH=${{ github.workspace }}/crates/kreuzberg-ffi:$PKG_CONFIG_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${{ github.workspace }}/target/release:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+
+      - name: Build PHP bindings
+        run: task php:build:bindings
+
+      - name: Run benchmark
+        env:
+          FRAMEWORK: kreuzberg-php-batch
+          MODE: ${{ matrix.mode }}
+          ITERATIONS: ${{ env.ITERATIONS }}
+          TIMEOUT: ${{ github.event.inputs.timeout }}
+        run: scripts/benchmarks/run-benchmark.sh
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v6
+        with:
+          name: benchmarks-kreuzberg-php-batch-${{ matrix.mode }}-${{ github.run_id }}
+          path: benchmark-results/
+          retention-days: 30
+
   bench-docling:
     name: docling (${{ matrix.mode }})
     needs: setup
@@ -1953,7 +2273,7 @@ jobs:
 
   aggregate-results:
     name: Aggregate Results & Generate Visualizations
-    needs: [setup, bench-native, bench-python-sync, bench-python-async, bench-python-batch, bench-node-async, bench-node-batch, bench-wasm-async, bench-wasm-batch, bench-ruby-sync, bench-ruby-batch, bench-go-sync, bench-go-batch, bench-java-sync, bench-csharp-sync, bench-docling, bench-docling-batch, bench-markitdown, bench-unstructured, bench-tika-sync, bench-tika-batch, bench-pymupdf4llm, bench-pdfplumber, bench-pdfplumber-batch, bench-mineru, bench-mineru-batch]
+    needs: [setup, bench-native, bench-python-sync, bench-python-async, bench-python-batch, bench-node-async, bench-node-batch, bench-wasm-async, bench-wasm-batch, bench-ruby-sync, bench-ruby-batch, bench-go-sync, bench-go-batch, bench-java-sync, bench-csharp-sync, bench-elixir-async, bench-elixir-batch, bench-php-sync, bench-php-batch, bench-docling, bench-docling-batch, bench-markitdown, bench-unstructured, bench-tika-sync, bench-tika-batch, bench-pymupdf4llm, bench-pdfplumber, bench-pdfplumber-batch, bench-mineru, bench-mineru-batch]
     runs-on: ubuntu-latest
     timeout-minutes: 30
     permissions:
