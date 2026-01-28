@@ -479,8 +479,8 @@ func TestBatchResultValidation(t *testing.T) {
 	}
 
 	if results[0] != nil {
-		if results[0].MimeType == "" && results[0].Success {
-			t.Fatalf("result should have MIME type if successful")
+		if results[0].MimeType == "" && len(results[0].Content) > 0 {
+			t.Fatalf("result should have MIME type if content extracted")
 		}
 	}
 }

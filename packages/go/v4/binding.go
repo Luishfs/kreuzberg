@@ -366,7 +366,6 @@ func convertCResult(cRes *C.CExtractionResult) (*ExtractionResult, error) {
 	result := &ExtractionResult{
 		Content:  C.GoString(cRes.content),
 		MimeType: C.GoString(cRes.mime_type),
-		Success:  bool(cRes.success),
 	}
 
 	if err := decodeJSONCString(cRes.tables_json, &result.Tables); err != nil {

@@ -336,12 +336,12 @@ func TestConcurrentResultReads(t *testing.T) {
 			// Read all fields concurrently
 			content := result.Content
 			mimeType := result.MimeType
-			success := result.Success
 
 			// Verify data consistency
 			if mimeType == "" {
 				t.Errorf("goroutine %d: empty mime type", index)
 			}
+			_ = content // Use content to avoid unused variable
 
 			// Attempt JSON marshaling concurrently
 			_, err := kreuzberg.ResultToJSON(result)

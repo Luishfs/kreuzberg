@@ -217,7 +217,7 @@ func TestErrorHandlingForCorruptedImages(t *testing.T) {
 	result, _ := ExtractFileSync(corruptedPath, config)
 
 	// Error or success is acceptable - we're testing graceful handling
-	if result != nil && result.Success {
+	if result != nil {
 		if len(result.Images) > 0 {
 			// Verification: at least image extraction should not crash
 			for _, img := range result.Images {

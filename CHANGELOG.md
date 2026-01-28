@@ -11,7 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [4.2.2] - 2026-01-27
+## [4.2.2] - 2026-01-28
+
+### Changed
+
+#### API Alignment - 1:1 Parity Across All Bindings
+- **Strict API parity enforcement**: All 9 language bindings now have exact 1:1 field parity with Rust core
+  - Verification script (`scripts/verify_api_parity.py`) now runs in STRICT mode, failing on ANY field differences
+  - Added to `ci-validate.yaml` workflow to prevent future API drift
+
+#### PHP Bindings
+- **ExtractionConfig alignment**: Removed 5 non-canonical fields and fixed defaults
+  - Removed: `embedding`, `extractImages`, `extractTables`, `preserveFormatting`, `outputEncoding`
+  - Fixed defaults: `useCache` → true, `enableQualityProcessing` → true, `maxConcurrentExtractions` → null
+  - Updated `ExtractionConfigBuilder` to match canonical API
+  - All 16 fields now match Rust canonical source exactly
+
+#### Go Bindings
+- **ExtractionResult alignment**: Removed `Success` field (not in Rust canonical)
+- **PageInfo alignment**: Removed `Visible` and `ContentType` fields (not in Rust canonical)
+- Updated 14 test files to remove references to removed fields
+
+#### Ruby Bindings
+- **Default value fix**: Changed `enable_quality_processing` default from `false` to `true` to match Rust
+
+#### Java Bindings
+- **Default value fix**: Changed `enableQualityProcessing` default from `false` to `true` to match Rust
+
+#### TypeScript Bindings
+- **Type exports cleanup**: Removed non-existent type exports (`EmbeddingConfig`, `EmbeddingModelType`, `HierarchyConfig`, `ImagePreprocessingConfig`) from index.ts
 
 ### Fixed
 

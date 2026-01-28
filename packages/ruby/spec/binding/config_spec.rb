@@ -309,7 +309,7 @@ RSpec.describe Kreuzberg::Config do
       config = described_class.new
 
       expect(config.use_cache).to be true
-      expect(config.enable_quality_processing).to be false
+      expect(config.enable_quality_processing).to be true
       expect(config.force_ocr).to be false
       expect(config.ocr).to be_nil
       expect(config.chunking).to be_nil

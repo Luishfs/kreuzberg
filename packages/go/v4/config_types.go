@@ -134,13 +134,12 @@ type ImagePreprocessingConfig struct {
 
 // ChunkingConfig configures text chunking for downstream RAG/Retrieval workloads.
 type ChunkingConfig struct {
-	MaxChars     *int             `json:"max_chars,omitempty"`
-	MaxOverlap   *int             `json:"max_overlap,omitempty"`
-	ChunkSize    *int             `json:"chunk_size,omitempty"`
-	ChunkOverlap *int             `json:"chunk_overlap,omitempty"`
-	Preset       *string          `json:"preset,omitempty"`
-	Embedding    *EmbeddingConfig `json:"embedding,omitempty"`
-	Enabled      *bool            `json:"enabled,omitempty"`
+	MaxChars     *int    `json:"max_chars,omitempty"`
+	MaxOverlap   *int    `json:"max_overlap,omitempty"`
+	ChunkSize    *int    `json:"chunk_size,omitempty"`
+	ChunkOverlap *int    `json:"chunk_overlap,omitempty"`
+	Preset       *string `json:"preset,omitempty"`
+	Enabled      *bool   `json:"enabled,omitempty"`
 }
 
 // ImageExtractionConfig controls inline image extraction from PDFs/Office docs.
@@ -161,11 +160,10 @@ type FontConfig struct {
 
 // PdfConfig exposes PDF-specific options.
 type PdfConfig struct {
-	ExtractImages   *bool            `json:"extract_images,omitempty"`
-	Passwords       []string         `json:"passwords,omitempty"`
-	ExtractMetadata *bool            `json:"extract_metadata,omitempty"`
-	FontConfig      *FontConfig      `json:"font_config,omitempty"`
-	Hierarchy       *HierarchyConfig `json:"hierarchy,omitempty"`
+	ExtractImages   *bool       `json:"extract_images,omitempty"`
+	Passwords       []string    `json:"passwords,omitempty"`
+	ExtractMetadata *bool       `json:"extract_metadata,omitempty"`
+	FontConfig      *FontConfig `json:"font_config,omitempty"`
 }
 
 // HierarchyConfig controls PDF hierarchy extraction based on font sizes.

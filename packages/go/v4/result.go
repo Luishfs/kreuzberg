@@ -133,6 +133,6 @@ func (r *ExtractionResult) String() string {
 		return "<nil ExtractionResult>"
 	}
 
-	return fmt.Sprintf("ExtractionResult{MimeType: %s, ContentLen: %d, Tables: %d, Chunks: %d, Success: %v}",
-		r.MimeType, len(r.Content), len(r.Tables), len(r.Chunks), r.Success)
+	return fmt.Sprintf("ExtractionResult{MimeType: %s, ContentLen: %d, Tables: %d, Chunks: %d}",
+		r.MimeType, len(r.Content), len(r.Tables), len(r.Chunks))
 }

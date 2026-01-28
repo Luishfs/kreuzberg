@@ -6,7 +6,7 @@ RSpec.describe Kreuzberg::Config::Extraction do
       config = described_class.new
 
       expect(config.use_cache).to be true
-      expect(config.enable_quality_processing).to be false
+      expect(config.enable_quality_processing).to be true
       expect(config.force_ocr).to be false
       expect(config.ocr).to be_nil
       expect(config.chunking).to be_nil
@@ -103,7 +103,7 @@ RSpec.describe Kreuzberg::Config::Extraction do
       hash = config.to_h
 
       expect(hash[:use_cache]).to be true
-      expect(hash[:enable_quality_processing]).to be false
+      expect(hash[:enable_quality_processing]).to be true
       expect(hash[:force_ocr]).to be false
     end
   end

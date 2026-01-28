@@ -684,13 +684,6 @@ module Kreuzberg
     #   image = Config::ImageExtraction.new(extract_images: true, target_dpi: 600)
     #   config = Extraction.new(image_extraction: image)
     #
-    # @example With preprocessing
-    #   preprocessing = Config::ImagePreprocessing.new(
-    #     binarization_method: "sauvola",
-    #     denoise: true
-    #   )
-    #   config = Extraction.new(image_preprocessing: preprocessing)
-    #
     # @example With post-processing
     #   postprocessor = Config::PostProcessor.new(
     #     enabled: true,
@@ -708,14 +701,13 @@ module Kreuzberg
     #     language_detection: Config::LanguageDetection.new(enabled: true),
     #     pdf_options: Config::PDF.new(extract_images: true, passwords: ["secret"]),
     #     image_extraction: Config::ImageExtraction.new(target_dpi: 600),
-    #     image_preprocessing: Config::ImagePreprocessing.new(denoise: true),
     #     postprocessor: Config::PostProcessor.new(enabled: true)
     #   )
     #
     class Extraction
       attr_reader :use_cache, :enable_quality_processing, :force_ocr,
                   :ocr, :chunking, :language_detection, :pdf_options,
-                  :images, :image_preprocessing, :postprocessor,
+                  :images, :postprocessor,
                   :token_reduction, :keywords, :html_options, :pages,
                   :max_concurrent_extractions, :output_format, :result_format
 
@@ -739,7 +731,7 @@ module Kreuzberg
       # Keys that are allowed in the Extraction config
       ALLOWED_KEYS = %i[
         use_cache enable_quality_processing force_ocr ocr chunking
-        language_detection pdf_options image_extraction image_preprocessing
+        language_detection pdf_options image_extraction
         postprocessor token_reduction keywords html_options pages
         max_concurrent_extractions output_format result_format
       ].freeze
@@ -800,14 +792,13 @@ module Kreuzberg
 
       def initialize(hash = nil,
                      use_cache: true,
-                     enable_quality_processing: false,
+                     enable_quality_processing: true,
                      force_ocr: false,
                      ocr: nil,
                      chunking: nil,
                      language_detection: nil,
                      pdf_options: nil,
                      image_extraction: nil,
-                     image_preprocessing: nil,
                      postprocessor: nil,
                      token_reduction: nil,
                      keywords: nil,
@@ -820,7 +811,7 @@ module Kreuzberg
           use_cache: use_cache, enable_quality_processing: enable_quality_processing,
           force_ocr: force_ocr, ocr: ocr, chunking: chunking, language_detection: language_detection,
           pdf_options: pdf_options, image_extraction: image_extraction,
-          image_preprocessing: image_preprocessing, postprocessor: postprocessor,
+          postprocessor: postprocessor,
           token_reduction: token_reduction, keywords: keywords, html_options: html_options,
           pages: pages, max_concurrent_extractions: max_concurrent_extractions,
           output_format: output_format, result_format: result_format
@@ -846,7 +837,6 @@ module Kreuzberg
         @language_detection = normalize_config(params[:language_detection], LanguageDetection)
         @pdf_options = normalize_config(params[:pdf_options], PDF)
         @images = normalize_config(params[:image_extraction], ImageExtraction)
-        @image_preprocessing = normalize_config(params[:image_preprocessing], ImagePreprocessing)
         @postprocessor = normalize_config(params[:postprocessor], PostProcessor)
         @token_reduction = normalize_config(params[:token_reduction], TokenReduction)
         @keywords = normalize_config(params[:keywords], Keywords)
@@ -878,7 +868,6 @@ module Kreuzberg
       end
 
       # rubocop:disable Metrics/CyclomaticComplexity
-      # rubocop:disable Metrics/MethodLength
       def to_h
         {
           use_cache: @use_cache,
@@ -889,7 +878,6 @@ module Kreuzberg
           language_detection: @language_detection&.to_h,
           pdf_options: @pdf_options&.to_h,
           images: @images&.to_h,
-          image_preprocessing: @image_preprocessing&.to_h,
           postprocessor: @postprocessor&.to_h,
           token_reduction: @token_reduction&.to_h,
           keywords: @keywords&.to_h,
@@ -900,7 +888,6 @@ module Kreuzberg
           result_format: @result_format
         }.compact
       end
-      # rubocop:enable Metrics/MethodLength
       # rubocop:enable Metrics/CyclomaticComplexity
 
       # Serialize configuration to JSON string
@@ -1025,8 +1012,6 @@ module Kreuzberg
           @pdf_options = normalize_config(value, PDF)
         when :image_extraction
           @images = normalize_config(value, ImageExtraction)
-        when :image_preprocessing
-          @image_preprocessing = normalize_config(value, ImagePreprocessing)
         when :postprocessor
           @postprocessor = normalize_config(value, PostProcessor)
         when :token_reduction
@@ -1101,7 +1086,6 @@ module Kreuzberg
         @language_detection = merged.language_detection
         @pdf_options = merged.pdf_options
         @images = merged.image_extraction
-        @image_preprocessing = merged.image_preprocessing
         @postprocessor = merged.postprocessor
         @token_reduction = merged.token_reduction
         @keywords = merged.keywords

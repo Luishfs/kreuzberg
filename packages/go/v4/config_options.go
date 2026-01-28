@@ -447,13 +447,6 @@ func WithChunkingPreset(preset string) ChunkingOption {
 	}
 }
 
-// WithEmbedding sets the embedding configuration with functional options.
-func WithEmbedding(opts ...EmbeddingOption) ChunkingOption {
-	return func(c *ChunkingConfig) {
-		c.Embedding = NewEmbeddingConfig(opts...)
-	}
-}
-
 // WithChunkingEnabled sets whether chunking is enabled.
 func WithChunkingEnabled(enabled bool) ChunkingOption {
 	return func(c *ChunkingConfig) {
@@ -584,15 +577,8 @@ func WithPdfFontConfig(opts ...FontConfigOption) PdfOption {
 	}
 }
 
-// WithPdfHierarchy sets the hierarchy configuration with functional options.
-func WithPdfHierarchy(opts ...HierarchyOption) PdfOption {
-	return func(c *PdfConfig) {
-		c.Hierarchy = NewHierarchyConfig(opts...)
-	}
-}
-
 // ============================================================================
-// HierarchyConfig Options
+// TokenReductionConfig Options
 // ============================================================================
 
 // NewHierarchyConfig creates a new HierarchyConfig with the given options.

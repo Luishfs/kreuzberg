@@ -686,8 +686,8 @@ func TestResultFromJSON(t *testing.T) {
 	if result.MimeType != "text/plain" {
 		t.Errorf("MimeType should be 'text/plain', got %q", result.MimeType)
 	}
-	if !result.Success {
-		t.Error("Success should be true")
+	if result.Content == "" {
+		t.Error("Content should not be empty")
 	}
 }
 

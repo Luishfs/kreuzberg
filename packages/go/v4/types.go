@@ -13,7 +13,6 @@ type ExtractionResult struct {
 	Images            []ExtractedImage `json:"images,omitempty"`
 	Pages             []PageContent    `json:"pages,omitempty"`
 	Elements          []Element        `json:"elements,omitempty"`
-	Success           bool             `json:"success"`
 }
 
 // Table represents a detected table in the source document.
@@ -338,12 +337,10 @@ type PageBoundary struct {
 
 // PageInfo provides metadata about an individual page/slide/sheet.
 type PageInfo struct {
-	Number      uint64      `json:"number"`
-	Title       *string     `json:"title,omitempty"`
-	Dimensions  *[2]float64 `json:"dimensions,omitempty"`
-	ImageCount  *uint64     `json:"image_count,omitempty"`
-	Visible     *bool       `json:"visible,omitempty"`
-	ContentType *string     `json:"content_type,omitempty"`
+	Number     uint64      `json:"number"`
+	Title      *string     `json:"title,omitempty"`
+	Dimensions *[2]float64 `json:"dimensions,omitempty"`
+	ImageCount *uint64     `json:"image_count,omitempty"`
 }
 
 // PageStructure describes the page/slide/sheet structure of a document.

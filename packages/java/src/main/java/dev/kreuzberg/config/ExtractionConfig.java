@@ -10,7 +10,6 @@ import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -39,15 +38,12 @@ public final class ExtractionConfig {
 	private final LanguageDetectionConfig languageDetection;
 	private final PdfConfig pdfOptions;
 	private final ImageExtractionConfig imageExtraction;
-	private final ImagePreprocessingConfig imagePreprocessing;
 	private final PostProcessorConfig postprocessor;
 	private final TokenReductionConfig tokenReduction;
 	private final HtmlOptions htmlOptions;
 	private final KeywordConfig keywords;
 	private final PageConfig pages;
-	private final EmbeddingConfig embedding;
 	private final Integer maxConcurrentExtractions;
-	private final Map<String, Object> rawConfigOverride;
 
 	private ExtractionConfig(Builder builder) {
 		this.useCache = builder.useCache;
@@ -63,17 +59,12 @@ public final class ExtractionConfig {
 		this.languageDetection = builder.languageDetection;
 		this.pdfOptions = builder.pdfOptions;
 		this.imageExtraction = builder.imageExtraction;
-		this.imagePreprocessing = builder.imagePreprocessing;
 		this.postprocessor = builder.postprocessor;
 		this.tokenReduction = builder.tokenReduction;
 		this.htmlOptions = builder.htmlOptions;
 		this.keywords = builder.keywords;
 		this.pages = builder.pages;
-		this.embedding = builder.embedding;
 		this.maxConcurrentExtractions = builder.maxConcurrentExtractions;
-		this.rawConfigOverride = builder.rawConfigOverride != null
-				? Collections.unmodifiableMap(new LinkedHashMap<>(builder.rawConfigOverride))
-				: null;
 	}
 
 	public static Builder builder() {
@@ -142,10 +133,6 @@ public final class ExtractionConfig {
 		return imageExtraction;
 	}
 
-	public ImagePreprocessingConfig getImagePreprocessing() {
-		return imagePreprocessing;
-	}
-
 	public PostProcessorConfig getPostprocessor() {
 		return postprocessor;
 	}
@@ -166,10 +153,6 @@ public final class ExtractionConfig {
 		return pages;
 	}
 
-	public EmbeddingConfig getEmbedding() {
-		return embedding;
-	}
-
 	public Integer getMaxConcurrentExtractions() {
 		return maxConcurrentExtractions;
 	}
@@ -188,7 +171,6 @@ public final class ExtractionConfig {
 			Map<String, Object> raw = CONFIG_MAPPER.readValue(json, CONFIG_MAP_TYPE);
 			Builder builder = builder();
 			applyTopLevelOverrides(builder, raw);
-			builder.rawConfigOverride(Collections.unmodifiableMap(new LinkedHashMap<>(raw)));
 			return builder.build();
 		} catch (IOException e) {
 			throw new KreuzbergException("Failed to parse extraction config", e);
@@ -412,9 +394,6 @@ public final class ExtractionConfig {
 	}
 
 	private Map<String, Object> toMap(boolean includeDefaults) {
-		if (rawConfigOverride != null) {
-			return rawConfigOverride;
-		}
 		Map<String, Object> map = new HashMap<>();
 		if (includeDefaults || useCacheSet) {
 			map.put("use_cache", useCache);
@@ -446,9 +425,6 @@ public final class ExtractionConfig {
 		if (imageExtraction != null) {
 			map.put("images", imageExtraction.toMap());
 		}
-		if (imagePreprocessing != null) {
-			map.put("image_preprocessing", imagePreprocessing.toMap());
-		}
 		if (postprocessor != null) {
 			map.put("postprocessor", postprocessor.toMap());
 		}
@@ -463,9 +439,6 @@ public final class ExtractionConfig {
 		}
 		if (pages != null) {
 			map.put("pages", pages.toMap());
-		}
-		if (embedding != null) {
-			map.put("embedding", embedding.toMap());
 		}
 		if (maxConcurrentExtractions != null) {
 			map.put("max_concurrent_extractions", maxConcurrentExtractions);
@@ -515,10 +488,6 @@ public final class ExtractionConfig {
 		if (imageMap != null) {
 			builder.imageExtraction(ImageExtractionConfig.fromMap(imageMap));
 		}
-		Map<String, Object> imagePreMap = asMap(raw.get("image_preprocessing"));
-		if (imagePreMap != null) {
-			builder.imagePreprocessing(ImagePreprocessingConfig.fromMap(imagePreMap));
-		}
 		Map<String, Object> postprocessorMap = asMap(raw.get("postprocessor"));
 		if (postprocessorMap != null) {
 			builder.postprocessor(PostProcessorConfig.fromMap(postprocessorMap));
@@ -538,10 +507,6 @@ public final class ExtractionConfig {
 		Map<String, Object> pageMap = asMap(raw.get("pages"));
 		if (pageMap != null) {
 			builder.pages(PageConfig.fromMap(pageMap));
-		}
-		Map<String, Object> embeddingMap = asMap(raw.get("embedding"));
-		if (embeddingMap != null) {
-			builder.embedding(EmbeddingConfig.fromMap(embeddingMap));
 		}
 		if (raw.containsKey("max_concurrent_extractions")) {
 			builder.maxConcurrentExtractions(asInteger(raw.get("max_concurrent_extractions")));
@@ -595,7 +560,7 @@ public final class ExtractionConfig {
 
 	public static final class Builder {
 		private boolean useCache = true;
-		private boolean enableQualityProcessing = false;
+		private boolean enableQualityProcessing = true;
 		private boolean forceOcr = false;
 		private boolean useCacheSet = false;
 		private boolean enableQualityProcessingSet = false;
@@ -607,15 +572,12 @@ public final class ExtractionConfig {
 		private LanguageDetectionConfig languageDetection;
 		private PdfConfig pdfOptions;
 		private ImageExtractionConfig imageExtraction;
-		private ImagePreprocessingConfig imagePreprocessing;
 		private PostProcessorConfig postprocessor;
 		private TokenReductionConfig tokenReduction;
 		private HtmlOptions htmlOptions;
 		private KeywordConfig keywords;
 		private PageConfig pages;
-		private EmbeddingConfig embedding;
 		private Integer maxConcurrentExtractions;
-		private Map<String, Object> rawConfigOverride;
 
 		private Builder() {
 		}
@@ -708,11 +670,6 @@ public final class ExtractionConfig {
 			return this;
 		}
 
-		public Builder imagePreprocessing(ImagePreprocessingConfig imagePreprocessing) {
-			this.imagePreprocessing = imagePreprocessing;
-			return this;
-		}
-
 		public Builder postprocessor(PostProcessorConfig postprocessor) {
 			this.postprocessor = postprocessor;
 			return this;
@@ -738,22 +695,8 @@ public final class ExtractionConfig {
 			return this;
 		}
 
-		public Builder embedding(EmbeddingConfig embedding) {
-			this.embedding = embedding;
-			return this;
-		}
-
 		public Builder maxConcurrentExtractions(Integer maxConcurrentExtractions) {
 			this.maxConcurrentExtractions = maxConcurrentExtractions;
-			return this;
-		}
-
-		Builder rawConfigOverride(Map<String, Object> rawConfigOverride) {
-			if (rawConfigOverride != null) {
-				this.rawConfigOverride = new LinkedHashMap<>(rawConfigOverride);
-			} else {
-				this.rawConfigOverride = null;
-			}
 			return this;
 		}
 

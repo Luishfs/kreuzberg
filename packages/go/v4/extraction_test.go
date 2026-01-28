@@ -110,16 +110,12 @@ func TestExtractResultStructure(t *testing.T) {
 	result := &ExtractionResult{
 		Content:  "test content",
 		MimeType: "text/plain",
-		Success:  true,
 	}
 	if result.Content != "test content" {
 		t.Fatalf("content mismatch: expected 'test content', got %s", result.Content)
 	}
 	if result.MimeType != "text/plain" {
 		t.Fatalf("MIME type mismatch: expected 'text/plain', got %s", result.MimeType)
-	}
-	if !result.Success {
-		t.Fatalf("success flag should be true")
 	}
 }
 
@@ -533,7 +529,6 @@ func TestResultJSONMarshaling(t *testing.T) {
 	result := &ExtractionResult{
 		Content:  "test content",
 		MimeType: "text/plain",
-		Success:  true,
 		Metadata: Metadata{
 			Language: StringPtr("en"),
 		},

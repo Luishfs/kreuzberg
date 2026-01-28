@@ -6,8 +6,8 @@ This script extracts the field list from each language binding and compares
 them against the Rust core ExtractionConfig struct to ensure all bindings
 expose the same parameters.
 
-This validator focuses on MISSING fields (critical failures) and is more lenient
-with extra fields that may be implementation-specific (like accessor methods).
+STRICT MODE: This validator fails on ANY difference - both missing AND extra fields.
+All bindings must have exact parity with the Rust core ExtractionConfig.
 """
 
 import re
@@ -135,23 +135,19 @@ class APIParityValidator:
         fields = set()
 
         # Extract class-level type annotations (e.g., "use_cache: bool")
-        # This is the primary pattern for .pyi stub files
+        # This is the primary and authoritative pattern for .pyi stub files
+        # Must match actual field declarations, not docstring content
         annotation_pattern = r'^\s{4}(\w+)\s*:\s*[^\n]+'
+        # Common docstring keywords to exclude
+        docstring_keywords = {'Attributes', 'Example', 'Examples', 'Args', 'Returns',
+                              'Raises', 'Note', 'Notes', 'Warning', 'See', 'Todo'}
         for line_match in re.finditer(annotation_pattern, class_body, re.MULTILINE):
             field_name = line_match.group(1)
-            # Exclude dunder methods and private attributes
-            if not field_name.startswith('_') and not field_name.startswith('def'):
+            # Exclude dunder methods, private attributes, and docstring keywords
+            if (not field_name.startswith('_')
+                and not field_name.startswith('def')
+                and field_name not in docstring_keywords):
                 fields.add(field_name)
-
-        # Also extract from docstring attributes section for additional coverage
-        attr_section_pattern = r'Attributes:(.+?)(?=\n\n\s*Example:|\n\n\s*\Z|\n\nclass )'
-        attr_match = re.search(attr_section_pattern, class_body, re.DOTALL)
-
-        if attr_match:
-            attr_text = attr_match.group(1)
-            # Match patterns like "use_cache (bool):"
-            attr_pattern = r'(\w+)\s*\([^)]+\):'
-            fields.update(re.findall(attr_pattern, attr_text))
 
         return fields, errors
 
@@ -437,9 +433,9 @@ class APIParityValidator:
                 missing = self.rust_fields - fields
                 extra = fields - self.rust_fields
 
-                # Only fail if there are MISSING fields
-                # Extra fields (getter methods, implementation details) are acceptable
-                has_parity = len(missing) == 0
+                # STRICT MODE: Fail on ANY difference (both missing AND extra fields)
+                # All bindings must have exact parity with the Rust core
+                has_parity = len(missing) == 0 and len(extra) == 0
 
                 result = ValidationResult(
                     language=language,
@@ -453,12 +449,9 @@ class APIParityValidator:
                 print(f"\n{language}:")
                 print(f"  Fields extracted: {len(fields)}")
                 if missing:
-                    print(f"  MISSING (critical): {sorted(missing)}")
-                if len(extra) <= 5:
-                    if extra:
-                        print(f"  Extra fields: {sorted(extra)}")
-                else:
-                    print(f"  Extra fields: {len(extra)} (likely implementation details)")
+                    print(f"  MISSING: {sorted(missing)}")
+                if extra:
+                    print(f"  EXTRA: {sorted(extra)}")
                 if errors:
                     for error in errors:
                         print(f"  ERROR: {error}")

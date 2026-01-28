@@ -464,8 +464,8 @@ func TestExtractHTMLWithMetadata(t *testing.T) {
 		t.Fatalf("ExtractBytesSync failed: %v", err)
 	}
 
-	if result == nil || !result.Success {
-		t.Fatalf("extraction failed")
+	if result == nil {
+		t.Fatalf("extraction returned nil result")
 	}
 
 	htmlMeta, ok := result.Metadata.HTMLMetadata()
@@ -659,8 +659,8 @@ func TestMetadataEmptyHTML(t *testing.T) {
 		t.Fatalf("extraction failed: %v", err)
 	}
 
-	if !result.Success {
-		t.Fatalf("extraction should succeed for empty HTML")
+	if result.Content == "" && len(result.Tables) == 0 {
+		t.Fatalf("extraction should produce at least content or tables")
 	}
 
 	htmlMeta, ok := result.Metadata.HTMLMetadata()
@@ -993,8 +993,8 @@ func TestSpecialCharactersInMetadata(t *testing.T) {
 		t.Fatalf("extraction failed: %v", err)
 	}
 
-	if !result.Success {
-		t.Fatalf("extraction should succeed with special characters")
+	if result == nil {
+		t.Fatalf("extraction returned nil result")
 	}
 
 	htmlMeta, ok := result.Metadata.HTMLMetadata()
@@ -1078,8 +1078,8 @@ func TestInvalidInputErrorHandling(t *testing.T) {
 				} else if !strings.Contains(err.Error(), tc.errorMsg) {
 					t.Errorf("expected error containing '%s' but got: %v", tc.errorMsg, err)
 				}
-				if result != nil && result.Success {
-					t.Errorf("result should not be successful for invalid input")
+				if result != nil && len(result.Content) > 0 {
+					t.Errorf("result should not have content for invalid input")
 				}
 			} else {
 				if err != nil {
@@ -1145,8 +1145,8 @@ func TestConcurrentExtraction(t *testing.T) {
 		}
 		if results[i] == nil {
 			t.Errorf("goroutine %d returned nil result", i)
-		} else if !results[i].Success {
-			t.Errorf("goroutine %d extraction not successful", i)
+		} else if len(results[i].Content) == 0 {
+			t.Errorf("goroutine %d extraction returned no content", i)
 		}
 
 		htmlMeta, ok := results[i].Metadata.HTMLMetadata()
@@ -1275,8 +1275,8 @@ func BenchmarkHTMLExtraction(b *testing.B) {
 		if err != nil {
 			b.Fatalf("extraction failed: %v", err)
 		}
-		if result == nil || !result.Success {
-			b.Fatalf("extraction was not successful")
+		if result == nil {
+			b.Fatalf("extraction returned nil result")
 		}
 	}
 }
@@ -1323,8 +1323,8 @@ func BenchmarkHTMLExtractionLargeDocument(b *testing.B) {
 		if err != nil {
 			b.Fatalf("extraction failed: %v", err)
 		}
-		if result == nil || !result.Success {
-			b.Fatalf("extraction was not successful")
+		if result == nil {
+			b.Fatalf("extraction returned nil result")
 		}
 	}
 }

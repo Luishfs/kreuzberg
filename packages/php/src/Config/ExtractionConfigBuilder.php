@@ -7,7 +7,7 @@ namespace Kreuzberg\Config;
 /**
  * Builder class for constructing ExtractionConfig instances with a fluent interface.
  *
- * This builder pattern addresses the 18-parameter constructor issue in ExtractionConfig,
+ * This builder pattern addresses the 16-parameter constructor issue in ExtractionConfig,
  * providing a clean, readable way to configure extraction behavior through method chaining.
  *
  * @example
@@ -19,8 +19,6 @@ namespace Kreuzberg\Config;
  * $config = ExtractionConfig::builder()
  *     ->withOcr(new OcrConfig(backend: 'tesseract', language: 'eng'))
  *     ->withChunking(new ChunkingConfig(maxChunkSize: 1000))
- *     ->withExtractImages(true)
- *     ->withExtractTables(true)
  *     ->withUseCache(true)
  *     ->withMaxConcurrentExtractions(8)
  *     ->build();
@@ -28,170 +26,23 @@ namespace Kreuzberg\Config;
  */
 class ExtractionConfigBuilder
 {
+    private bool $useCache = true;
+    private bool $enableQualityProcessing = true;
     private ?OcrConfig $ocr = null;
-    private ?PdfConfig $pdf = null;
-    private ?ChunkingConfig $chunking = null;
-    private ?EmbeddingConfig $embedding = null;
-    private ?ImageExtractionConfig $imageExtraction = null;
-    private ?PageConfig $page = null;
-    private ?LanguageDetectionConfig $languageDetection = null;
-    private ?KeywordConfig $keywords = null;
-    private bool $extractImages = false;
-    private bool $extractTables = true;
-    private bool $preserveFormatting = false;
-    private ?string $outputFormat = null;
-    private bool $useCache = false;
-    private bool $enableQualityProcessing = false;
     private bool $forceOcr = false;
-    private int $maxConcurrentExtractions = 4;
-    private string $resultFormat = 'unified';
-    private string $outputEncoding = 'plain';
+    private ?ChunkingConfig $chunking = null;
+    private ?ImageExtractionConfig $images = null;
+    private ?PdfConfig $pdfOptions = null;
+    private ?TokenReductionConfig $tokenReduction = null;
+    private ?LanguageDetectionConfig $languageDetection = null;
+    private ?PageConfig $pages = null;
+    private ?KeywordConfig $keywords = null;
+    private ?PostProcessorConfig $postprocessor = null;
     /** @var array<string, mixed>|null */
     private ?array $htmlOptions = null;
-
-    /**
-     * Set the OCR configuration.
-     *
-     * @param OcrConfig|null $ocr OCR backend configuration
-     * @return self For method chaining
-     */
-    public function withOcr(?OcrConfig $ocr): self
-    {
-        $this->ocr = $ocr;
-        return $this;
-    }
-
-    /**
-     * Set the PDF configuration.
-     *
-     * @param PdfConfig|null $pdf PDF extraction settings
-     * @return self For method chaining
-     */
-    public function withPdf(?PdfConfig $pdf): self
-    {
-        $this->pdf = $pdf;
-        return $this;
-    }
-
-    /**
-     * Set the chunking configuration.
-     *
-     * @param ChunkingConfig|null $chunking Text chunking settings
-     * @return self For method chaining
-     */
-    public function withChunking(?ChunkingConfig $chunking): self
-    {
-        $this->chunking = $chunking;
-        return $this;
-    }
-
-    /**
-     * Set the embedding configuration.
-     *
-     * @param EmbeddingConfig|null $embedding Vector embedding settings
-     * @return self For method chaining
-     */
-    public function withEmbedding(?EmbeddingConfig $embedding): self
-    {
-        $this->embedding = $embedding;
-        return $this;
-    }
-
-    /**
-     * Set the image extraction configuration.
-     *
-     * @param ImageExtractionConfig|null $imageExtraction Image extraction settings
-     * @return self For method chaining
-     */
-    public function withImageExtraction(?ImageExtractionConfig $imageExtraction): self
-    {
-        $this->imageExtraction = $imageExtraction;
-        return $this;
-    }
-
-    /**
-     * Set the page configuration.
-     *
-     * @param PageConfig|null $page Page-specific settings
-     * @return self For method chaining
-     */
-    public function withPage(?PageConfig $page): self
-    {
-        $this->page = $page;
-        return $this;
-    }
-
-    /**
-     * Set the language detection configuration.
-     *
-     * @param LanguageDetectionConfig|null $languageDetection Language detection settings
-     * @return self For method chaining
-     */
-    public function withLanguageDetection(?LanguageDetectionConfig $languageDetection): self
-    {
-        $this->languageDetection = $languageDetection;
-        return $this;
-    }
-
-    /**
-     * Set the keyword extraction configuration.
-     *
-     * @param KeywordConfig|null $keyword Keyword extraction settings
-     * @return self For method chaining
-     */
-    public function withKeyword(?KeywordConfig $keyword): self
-    {
-        $this->keywords = $keyword;
-        return $this;
-    }
-
-    /**
-     * Set whether to extract images from documents.
-     *
-     * @param bool $extractImages Whether to extract embedded images
-     * @return self For method chaining
-     */
-    public function withExtractImages(bool $extractImages): self
-    {
-        $this->extractImages = $extractImages;
-        return $this;
-    }
-
-    /**
-     * Set whether to extract tables from documents.
-     *
-     * @param bool $extractTables Whether to extract document tables
-     * @return self For method chaining
-     */
-    public function withExtractTables(bool $extractTables): self
-    {
-        $this->extractTables = $extractTables;
-        return $this;
-    }
-
-    /**
-     * Set whether to preserve document formatting.
-     *
-     * @param bool $preserveFormatting Whether to preserve text formatting
-     * @return self For method chaining
-     */
-    public function withPreserveFormatting(bool $preserveFormatting): self
-    {
-        $this->preserveFormatting = $preserveFormatting;
-        return $this;
-    }
-
-    /**
-     * Set the output format for extracted content.
-     *
-     * @param string|null $outputFormat Desired output format (e.g., 'markdown', 'html', 'plain')
-     * @return self For method chaining
-     */
-    public function withOutputFormat(?string $outputFormat): self
-    {
-        $this->outputFormat = $outputFormat;
-        return $this;
-    }
+    private ?int $maxConcurrentExtractions = null;
+    private string $resultFormat = 'unified';
+    private string $outputFormat = 'plain';
 
     /**
      * Set whether to enable caching of extraction results.
@@ -218,6 +69,18 @@ class ExtractionConfigBuilder
     }
 
     /**
+     * Set the OCR configuration.
+     *
+     * @param OcrConfig|null $ocr OCR backend configuration
+     * @return self For method chaining
+     */
+    public function withOcr(?OcrConfig $ocr): self
+    {
+        $this->ocr = $ocr;
+        return $this;
+    }
+
+    /**
      * Set whether to force OCR on all documents.
      *
      * @param bool $forceOcr Whether to force OCR processing
@@ -230,38 +93,98 @@ class ExtractionConfigBuilder
     }
 
     /**
-     * Set the maximum number of concurrent extraction operations.
+     * Set the chunking configuration.
      *
-     * @param int $maxConcurrentExtractions Maximum concurrent operations
+     * @param ChunkingConfig|null $chunking Text chunking settings
      * @return self For method chaining
      */
-    public function withMaxConcurrentExtractions(int $maxConcurrentExtractions): self
+    public function withChunking(?ChunkingConfig $chunking): self
     {
-        $this->maxConcurrentExtractions = $maxConcurrentExtractions;
+        $this->chunking = $chunking;
         return $this;
     }
 
     /**
-     * Set the result format for structured output.
+     * Set the image extraction configuration.
      *
-     * @param string $resultFormat Result format (e.g., 'unified', 'split', 'nested')
+     * @param ImageExtractionConfig|null $images Image extraction settings
      * @return self For method chaining
      */
-    public function withResultFormat(string $resultFormat): self
+    public function withImages(?ImageExtractionConfig $images): self
     {
-        $this->resultFormat = $resultFormat;
+        $this->images = $images;
         return $this;
     }
 
     /**
-     * Set the output encoding format.
+     * Set the PDF configuration.
      *
-     * @param string $outputEncoding Output encoding (e.g., 'plain', 'json', 'base64')
+     * @param PdfConfig|null $pdfOptions PDF extraction settings
      * @return self For method chaining
      */
-    public function withOutputEncoding(string $outputEncoding): self
+    public function withPdfOptions(?PdfConfig $pdfOptions): self
     {
-        $this->outputEncoding = $outputEncoding;
+        $this->pdfOptions = $pdfOptions;
+        return $this;
+    }
+
+    /**
+     * Set the token reduction configuration.
+     *
+     * @param TokenReductionConfig|null $tokenReduction Token reduction settings
+     * @return self For method chaining
+     */
+    public function withTokenReduction(?TokenReductionConfig $tokenReduction): self
+    {
+        $this->tokenReduction = $tokenReduction;
+        return $this;
+    }
+
+    /**
+     * Set the language detection configuration.
+     *
+     * @param LanguageDetectionConfig|null $languageDetection Language detection settings
+     * @return self For method chaining
+     */
+    public function withLanguageDetection(?LanguageDetectionConfig $languageDetection): self
+    {
+        $this->languageDetection = $languageDetection;
+        return $this;
+    }
+
+    /**
+     * Set the pages configuration.
+     *
+     * @param PageConfig|null $pages Page-specific settings
+     * @return self For method chaining
+     */
+    public function withPages(?PageConfig $pages): self
+    {
+        $this->pages = $pages;
+        return $this;
+    }
+
+    /**
+     * Set the keyword extraction configuration.
+     *
+     * @param KeywordConfig|null $keywords Keyword extraction settings
+     * @return self For method chaining
+     */
+    public function withKeywords(?KeywordConfig $keywords): self
+    {
+        $this->keywords = $keywords;
+        return $this;
+    }
+
+    /**
+     * Set the postprocessor configuration.
+     *
+     * @param PostProcessorConfig|null $postprocessor Postprocessor settings
+     * @return self For method chaining
+     */
+    public function withPostprocessor(?PostProcessorConfig $postprocessor): self
+    {
+        $this->postprocessor = $postprocessor;
         return $this;
     }
 
@@ -278,6 +201,42 @@ class ExtractionConfigBuilder
     }
 
     /**
+     * Set the maximum number of concurrent extraction operations.
+     *
+     * @param int|null $maxConcurrentExtractions Maximum concurrent operations
+     * @return self For method chaining
+     */
+    public function withMaxConcurrentExtractions(?int $maxConcurrentExtractions): self
+    {
+        $this->maxConcurrentExtractions = $maxConcurrentExtractions;
+        return $this;
+    }
+
+    /**
+     * Set the result format for structured output.
+     *
+     * @param string $resultFormat Result format (e.g., 'unified', 'element_based')
+     * @return self For method chaining
+     */
+    public function withResultFormat(string $resultFormat): self
+    {
+        $this->resultFormat = $resultFormat;
+        return $this;
+    }
+
+    /**
+     * Set the output format for extracted content.
+     *
+     * @param string $outputFormat Output format (e.g., 'plain', 'markdown', 'djot', 'html')
+     * @return self For method chaining
+     */
+    public function withOutputFormat(string $outputFormat): self
+    {
+        $this->outputFormat = $outputFormat;
+        return $this;
+    }
+
+    /**
      * Build and return the configured ExtractionConfig instance.
      *
      * @return ExtractionConfig The constructed configuration object
@@ -285,25 +244,22 @@ class ExtractionConfigBuilder
     public function build(): ExtractionConfig
     {
         return new ExtractionConfig(
-            ocr: $this->ocr,
-            pdf: $this->pdf,
-            chunking: $this->chunking,
-            embedding: $this->embedding,
-            imageExtraction: $this->imageExtraction,
-            page: $this->page,
-            languageDetection: $this->languageDetection,
-            keywords: $this->keywords,
-            extractImages: $this->extractImages,
-            extractTables: $this->extractTables,
-            preserveFormatting: $this->preserveFormatting,
-            outputFormat: $this->outputFormat,
             useCache: $this->useCache,
             enableQualityProcessing: $this->enableQualityProcessing,
+            ocr: $this->ocr,
             forceOcr: $this->forceOcr,
+            chunking: $this->chunking,
+            images: $this->images,
+            pdfOptions: $this->pdfOptions,
+            tokenReduction: $this->tokenReduction,
+            languageDetection: $this->languageDetection,
+            pages: $this->pages,
+            keywords: $this->keywords,
+            postprocessor: $this->postprocessor,
+            htmlOptions: $this->htmlOptions,
             maxConcurrentExtractions: $this->maxConcurrentExtractions,
             resultFormat: $this->resultFormat,
-            outputEncoding: $this->outputEncoding,
-            htmlOptions: $this->htmlOptions,
+            outputFormat: $this->outputFormat,
         );
     }
 }

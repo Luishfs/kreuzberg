@@ -25,6 +25,29 @@ readonly class ExtractionConfig
 {
     public function __construct(
         /**
+         * Enable caching of extraction results.
+         *
+         * When enabled, extraction results are cached to avoid redundant processing
+         * of the same documents. Cache key is based on document content hash.
+         *
+         * @var bool
+         * @default true
+         */
+        public bool $useCache = true,
+
+        /**
+         * Enable quality processing enhancements.
+         *
+         * When enabled, applies advanced quality improvement techniques including
+         * text smoothing, error correction, and content validation to improve
+         * extraction output quality.
+         *
+         * @var bool
+         * @default true
+         */
+        public bool $enableQualityProcessing = true,
+
+        /**
          * OCR configuration.
          *
          * Configures Optical Character Recognition settings for scanned documents
@@ -36,15 +59,16 @@ readonly class ExtractionConfig
         public ?OcrConfig $ocr = null,
 
         /**
-         * PDF extraction configuration.
+         * Force OCR on all documents regardless of document type.
          *
-         * Configures PDF-specific extraction options like image extraction,
-         * metadata extraction, OCR fallback, and page range selection.
+         * When enabled, OCR will be applied even to documents that typically
+         * have machine-readable text. Useful for ensuring consistent text extraction
+         * quality across heterogeneous document collections.
          *
-         * @var PdfConfig|null
-         * @default null
+         * @var bool
+         * @default false
          */
-        public ?PdfConfig $pdf = null,
+        public bool $forceOcr = false,
 
         /**
          * Text chunking configuration.
@@ -58,17 +82,6 @@ readonly class ExtractionConfig
         public ?ChunkingConfig $chunking = null,
 
         /**
-         * Embedding generation configuration.
-         *
-         * Configures how text chunks are converted into embeddings (vector representations)
-         * for semantic search and similarity matching.
-         *
-         * @var EmbeddingConfig|null
-         * @default null
-         */
-        public ?EmbeddingConfig $embedding = null,
-
-        /**
          * Image extraction configuration.
          *
          * Configures image extraction parameters such as minimum dimensions
@@ -77,17 +90,28 @@ readonly class ExtractionConfig
          * @var ImageExtractionConfig|null
          * @default null
          */
-        public ?ImageExtractionConfig $imageExtraction = null,
+        public ?ImageExtractionConfig $images = null,
 
         /**
-         * Page extraction configuration.
+         * PDF extraction configuration.
          *
-         * Configures page-level extraction options including page markers and format.
+         * Configures PDF-specific extraction options like image extraction,
+         * metadata extraction, OCR fallback, and page range selection.
          *
-         * @var PageConfig|null
+         * @var PdfConfig|null
          * @default null
          */
-        public ?PageConfig $page = null,
+        public ?PdfConfig $pdfOptions = null,
+
+        /**
+         * Token reduction configuration.
+         *
+         * Configures token reduction/optimization for extracted content.
+         *
+         * @var TokenReductionConfig|null
+         * @default null
+         */
+        public ?TokenReductionConfig $tokenReduction = null,
 
         /**
          * Language detection configuration.
@@ -99,6 +123,16 @@ readonly class ExtractionConfig
          * @default null
          */
         public ?LanguageDetectionConfig $languageDetection = null,
+
+        /**
+         * Page extraction configuration.
+         *
+         * Configures page-level extraction options including page markers and format.
+         *
+         * @var PageConfig|null
+         * @default null
+         */
+        public ?PageConfig $pages = null,
 
         /**
          * Keyword extraction configuration.
@@ -122,136 +156,6 @@ readonly class ExtractionConfig
         public ?PostProcessorConfig $postprocessor = null,
 
         /**
-         * Token reduction configuration.
-         *
-         * Configures token reduction/optimization for extracted content.
-         *
-         * @var TokenReductionConfig|null
-         * @default null
-         */
-        public ?TokenReductionConfig $tokenReduction = null,
-
-        /**
-         * Enable image extraction from documents.
-         *
-         * When enabled, images will be extracted from PDFs and other document formats
-         * and included in the extraction results.
-         *
-         * @var bool
-         * @default false
-         */
-        public bool $extractImages = false,
-
-        /**
-         * Enable table extraction from documents.
-         *
-         * When enabled, tables will be detected and extracted from documents
-         * with structured formatting preserved.
-         *
-         * @var bool
-         * @default true
-         */
-        public bool $extractTables = true,
-
-        /**
-         * Preserve document formatting in extracted text.
-         *
-         * When enabled, attempts to preserve original document formatting
-         * including indentation, spacing, and structure in the extracted text.
-         *
-         * @var bool
-         * @default false
-         */
-        public bool $preserveFormatting = false,
-
-        /**
-         * Output format for extracted content.
-         *
-         * Specifies the format for the extracted content. Common values:
-         * - 'text': Plain text format
-         * - 'markdown': Markdown format with basic formatting
-         * - 'html': HTML format with rich formatting
-         *
-         * @var string|null
-         * @default null
-         */
-        public ?string $outputFormat = null,
-
-        /**
-         * Enable caching of extraction results.
-         *
-         * When enabled, extraction results are cached to avoid redundant processing
-         * of the same documents. Cache key is based on document content hash.
-         *
-         * @var bool
-         * @default false
-         */
-        public bool $useCache = false,
-
-        /**
-         * Enable quality processing enhancements.
-         *
-         * When enabled, applies advanced quality improvement techniques including
-         * text smoothing, error correction, and content validation to improve
-         * extraction output quality.
-         *
-         * @var bool
-         * @default false
-         */
-        public bool $enableQualityProcessing = false,
-
-        /**
-         * Force OCR on all documents regardless of document type.
-         *
-         * When enabled, OCR will be applied even to documents that typically
-         * have machine-readable text. Useful for ensuring consistent text extraction
-         * quality across heterogeneous document collections.
-         *
-         * @var bool
-         * @default false
-         */
-        public bool $forceOcr = false,
-
-        /**
-         * Maximum number of concurrent extraction operations.
-         *
-         * Controls the degree of parallelism for batch extraction operations.
-         * Higher values allow more documents to be processed concurrently but consume more resources.
-         * Minimum recommended value: 1, typical range: 2-16.
-         *
-         * @var int
-         * @default 4
-         */
-        public int $maxConcurrentExtractions = 4,
-
-        /**
-         * Result format for structured output.
-         *
-         * Specifies how results are formatted when structured output is requested.
-         * Common values:
-         * - 'unified': Single unified format combining all extraction results
-         * - 'split': Separate results for text, tables, images, and metadata
-         * - 'nested': Hierarchical result structure preserving document structure
-         *
-         * @var string
-         * @default 'unified'
-         */
-        public string $resultFormat = 'unified',
-
-        /**
-         * Output encoding format.
-         *
-         * Specifies the encoding for text output. Common values:
-         * - 'plain': Plain text (UTF-8)
-         * - 'json': JSON-encoded text
-         * - 'base64': Base64-encoded content
-         *
-         * @var string
-         * @default 'plain'
-         */
-        public string $outputEncoding = 'plain',
-
-        /**
          * HTML to Markdown conversion options.
          *
          * Configures how HTML documents are converted to Markdown, including heading styles,
@@ -261,6 +165,45 @@ readonly class ExtractionConfig
          * @default null
          */
         public ?array $htmlOptions = null,
+
+        /**
+         * Maximum number of concurrent extraction operations.
+         *
+         * Controls the degree of parallelism for batch extraction operations.
+         * Higher values allow more documents to be processed concurrently but consume more resources.
+         * When null, uses the Rust default.
+         *
+         * @var int|null
+         * @default null
+         */
+        public ?int $maxConcurrentExtractions = null,
+
+        /**
+         * Result format for structured output.
+         *
+         * Specifies how results are formatted when structured output is requested.
+         * Common values:
+         * - 'unified': Single unified format combining all extraction results (default)
+         * - 'element_based': Semantic elements for Unstructured compatibility
+         *
+         * @var string
+         * @default 'unified'
+         */
+        public string $resultFormat = 'unified',
+
+        /**
+         * Output format for extracted content.
+         *
+         * Specifies the format for the extracted content. Common values:
+         * - 'plain': Plain text format (default)
+         * - 'markdown': Markdown format with basic formatting
+         * - 'djot': Djot markup format
+         * - 'html': HTML format with rich formatting
+         *
+         * @var string
+         * @default 'plain'
+         */
+        public string $outputFormat = 'plain',
     ) {
     }
 
@@ -271,43 +214,15 @@ readonly class ExtractionConfig
      */
     public static function fromArray(array $data): self
     {
-        /** @var bool $extractImages */
-        $extractImages = $data['extract_images'] ?? false;
-        if (!is_bool($extractImages)) {
-            /** @var bool $extractImages */
-            $extractImages = (bool) $extractImages;
-        }
-
-        /** @var bool $extractTables */
-        $extractTables = $data['extract_tables'] ?? true;
-        if (!is_bool($extractTables)) {
-            /** @var bool $extractTables */
-            $extractTables = (bool) $extractTables;
-        }
-
-        /** @var bool $preserveFormatting */
-        $preserveFormatting = $data['preserve_formatting'] ?? false;
-        if (!is_bool($preserveFormatting)) {
-            /** @var bool $preserveFormatting */
-            $preserveFormatting = (bool) $preserveFormatting;
-        }
-
-        /** @var string|null $outputFormat */
-        $outputFormat = $data['output_format'] ?? null;
-        if ($outputFormat !== null && !is_string($outputFormat)) {
-            /** @var string $outputFormat */
-            $outputFormat = (string) $outputFormat;
-        }
-
         /** @var bool $useCache */
-        $useCache = $data['use_cache'] ?? false;
+        $useCache = $data['use_cache'] ?? true;
         if (!is_bool($useCache)) {
             /** @var bool $useCache */
             $useCache = (bool) $useCache;
         }
 
         /** @var bool $enableQualityProcessing */
-        $enableQualityProcessing = $data['enable_quality_processing'] ?? false;
+        $enableQualityProcessing = $data['enable_quality_processing'] ?? true;
         if (!is_bool($enableQualityProcessing)) {
             /** @var bool $enableQualityProcessing */
             $enableQualityProcessing = (bool) $enableQualityProcessing;
@@ -320,9 +235,9 @@ readonly class ExtractionConfig
             $forceOcr = (bool) $forceOcr;
         }
 
-        /** @var int $maxConcurrentExtractions */
-        $maxConcurrentExtractions = $data['max_concurrent_extractions'] ?? 4;
-        if (!is_int($maxConcurrentExtractions)) {
+        /** @var int|null $maxConcurrentExtractions */
+        $maxConcurrentExtractions = $data['max_concurrent_extractions'] ?? null;
+        if ($maxConcurrentExtractions !== null && !is_int($maxConcurrentExtractions)) {
             /** @var int $maxConcurrentExtractions */
             $maxConcurrentExtractions = (int) $maxConcurrentExtractions;
         }
@@ -334,11 +249,11 @@ readonly class ExtractionConfig
             $resultFormat = (string) $resultFormat;
         }
 
-        /** @var string $outputEncoding */
-        $outputEncoding = $data['output_encoding'] ?? 'plain';
-        if (!is_string($outputEncoding)) {
-            /** @var string $outputEncoding */
-            $outputEncoding = (string) $outputEncoding;
+        /** @var string $outputFormat */
+        $outputFormat = $data['output_format'] ?? 'plain';
+        if (!is_string($outputFormat)) {
+            /** @var string $outputFormat */
+            $outputFormat = (string) $outputFormat;
         }
 
         $ocr = null;
@@ -364,13 +279,6 @@ readonly class ExtractionConfig
             /** @var array<string, mixed> $chunkingData */
             $chunkingData = $data['chunking'];
             $chunking = ChunkingConfig::fromArray($chunkingData);
-        }
-
-        $embedding = null;
-        if (isset($data['embedding']) && is_array($data['embedding'])) {
-            /** @var array<string, mixed> $embeddingData */
-            $embeddingData = $data['embedding'];
-            $embedding = EmbeddingConfig::fromArray($embeddingData);
         }
 
         $imageExtraction = null;
@@ -431,27 +339,22 @@ readonly class ExtractionConfig
         }
 
         return new self(
-            ocr: $ocr,
-            pdf: $pdf,
-            chunking: $chunking,
-            embedding: $embedding,
-            imageExtraction: $imageExtraction,
-            page: $page,
-            languageDetection: $languageDetection,
-            keywords: $keywords,
-            extractImages: $extractImages,
-            extractTables: $extractTables,
-            preserveFormatting: $preserveFormatting,
-            outputFormat: $outputFormat,
             useCache: $useCache,
             enableQualityProcessing: $enableQualityProcessing,
+            ocr: $ocr,
             forceOcr: $forceOcr,
+            chunking: $chunking,
+            images: $imageExtraction,
+            pdfOptions: $pdf,
+            tokenReduction: $tokenReduction,
+            languageDetection: $languageDetection,
+            pages: $page,
+            keywords: $keywords,
+            postprocessor: $postprocessor,
+            htmlOptions: $htmlOptions,
             maxConcurrentExtractions: $maxConcurrentExtractions,
             resultFormat: $resultFormat,
-            outputEncoding: $outputEncoding,
-            htmlOptions: $htmlOptions,
-            postprocessor: $postprocessor,
-            tokenReduction: $tokenReduction,
+            outputFormat: $outputFormat,
         );
     }
 
@@ -607,42 +510,12 @@ readonly class ExtractionConfig
      */
     public function toArray(): array
     {
-        // If embedding config is provided but chunking is not, auto-enable chunking
-        // so embeddings can be generated for chunks. The Rust pipeline generates
-        // embeddings for chunks, not at the document level.
-        $chunking = $this->chunking;
-        if ($this->embedding !== null) {
-            if ($chunking === null) {
-                $chunking = new ChunkingConfig(embedding: $this->embedding);
-            } elseif ($chunking->embedding === null) {
-                // If chunking exists but has no embedding, use the top-level embedding
-                $chunking = new ChunkingConfig(
-                    maxChars: $chunking->maxChars,
-                    maxOverlap: $chunking->maxOverlap,
-                    respectSentences: $chunking->respectSentences,
-                    respectParagraphs: $chunking->respectParagraphs,
-                    embedding: $this->embedding,
-                );
-            }
-        }
-
-        // If extractImages is enabled but imageExtraction config is not provided,
-        // auto-create an ImageExtractionConfig to enable image extraction
-        $imageExtraction = $this->imageExtraction;
-        if ($this->extractImages && $imageExtraction === null) {
-            $imageExtraction = new ImageExtractionConfig(extractImages: true);
-        } elseif (!$this->extractImages && $imageExtraction !== null) {
-            // If extractImages is false but images config exists, respect the config
-            $imageExtraction = $this->imageExtraction;
-        }
-
         $result = [
             'ocr' => $this->ocr?->toArray(),
-            'pdf' => $this->pdf?->toArray(),
-            'chunking' => $chunking?->toArray(),
-            'embedding' => $this->embedding?->toArray(),
-            'images' => $imageExtraction?->toArray(),
-            'pages' => $this->page?->toArray(),
+            'pdf_options' => $this->pdfOptions?->toArray(),
+            'chunking' => $this->chunking?->toArray(),
+            'images' => $this->images?->toArray(),
+            'pages' => $this->pages?->toArray(),
             'language_detection' => $this->languageDetection?->toArray(),
             'keywords' => $this->keywords?->toArray(),
             'html_options' => $this->htmlOptions,
@@ -651,35 +524,29 @@ readonly class ExtractionConfig
         ];
 
         // Add simple boolean/string fields only if explicitly set to non-default values
-        if ($this->extractImages) {
-            $result['extract_images'] = true;
+        // useCache defaults to true, so only add if false
+        if (!$this->useCache) {
+            $result['use_cache'] = false;
         }
-        if (!$this->extractTables) {
-            $result['extract_tables'] = false;
+        // enableQualityProcessing defaults to true, so only add if false
+        if (!$this->enableQualityProcessing) {
+            $result['enable_quality_processing'] = false;
         }
-        if ($this->preserveFormatting) {
-            $result['preserve_formatting'] = true;
-        }
-        if ($this->outputFormat !== null) {
-            $result['output_format'] = $this->outputFormat;
-        }
-        if ($this->useCache) {
-            $result['use_cache'] = true;
-        }
-        if ($this->enableQualityProcessing) {
-            $result['enable_quality_processing'] = true;
-        }
+        // forceOcr defaults to false, so only add if true
         if ($this->forceOcr) {
             $result['force_ocr'] = true;
         }
-        if ($this->maxConcurrentExtractions !== 4) {
+        // maxConcurrentExtractions defaults to null, so only add if set
+        if ($this->maxConcurrentExtractions !== null) {
             $result['max_concurrent_extractions'] = $this->maxConcurrentExtractions;
         }
+        // resultFormat defaults to 'unified', so only add if different
         if ($this->resultFormat !== 'unified') {
             $result['result_format'] = $this->resultFormat;
         }
-        if ($this->outputEncoding !== 'plain') {
-            $result['output_encoding'] = $this->outputEncoding;
+        // outputFormat defaults to 'plain', so only add if different
+        if ($this->outputFormat !== 'plain') {
+            $result['output_format'] = $this->outputFormat;
         }
 
         return array_filter($result, static fn ($value): bool => $value !== null);
