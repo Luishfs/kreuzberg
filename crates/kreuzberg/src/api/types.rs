@@ -216,7 +216,8 @@ pub struct CacheClearResponse {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct EmbedRequest {
-    /// Text strings to generate embeddings for
+    /// Text strings to generate embeddings for (at least one required)
+    #[cfg_attr(feature = "api", schema(min_items = 1))]
     pub texts: Vec<String>,
     /// Optional embedding configuration (model, batch size, etc.)
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -248,15 +249,15 @@ fn default_chunker_type() -> String {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "api", derive(utoipa::ToSchema))]
 pub struct ChunkRequest {
-    /// Text to chunk
-    #[cfg_attr(feature = "api", schema(example = "This is sample text to chunk."))]
+    /// Text to chunk (must not be empty)
+    #[cfg_attr(feature = "api", schema(example = "This is sample text to chunk.", min_length = 1))]
     pub text: String,
     /// Optional chunking configuration
     #[serde(skip_serializing_if = "Option::is_none")]
     pub config: Option<ChunkingConfigRequest>,
     /// Chunker type (text or markdown)
     #[serde(default = "default_chunker_type")]
-    #[cfg_attr(feature = "api", schema(example = "text"))]
+    #[cfg_attr(feature = "api", schema(example = "text", pattern = "^(text|markdown)$"))]
     pub chunker_type: String,
 }
 

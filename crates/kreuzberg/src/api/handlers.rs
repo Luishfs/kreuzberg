@@ -311,7 +311,8 @@ pub async fn cache_clear_handler() -> Result<Json<CacheClearResponse>, ApiError>
     request_body = EmbedRequest,
     responses(
         (status = 200, description = "Embeddings generated", body = EmbedResponse),
-        (status = 400, description = "Bad request", body = crate::api::types::ErrorResponse),
+        (status = 400, description = "Bad request - validation failed (e.g., empty texts array)", body = crate::api::types::ErrorResponse),
+        (status = 422, description = "Unprocessable entity - invalid JSON body", body = String),
         (status = 500, description = "Internal server error", body = crate::api::types::ErrorResponse),
     )
 )]
@@ -405,7 +406,8 @@ pub async fn embed_handler(Json(request): Json<EmbedRequest>) -> Result<Json<Emb
     request_body = EmbedRequest,
     responses(
         (status = 200, description = "Embeddings generated", body = EmbedResponse),
-        (status = 400, description = "Bad request", body = crate::api::types::ErrorResponse),
+        (status = 400, description = "Bad request - validation failed (e.g., empty texts array)", body = crate::api::types::ErrorResponse),
+        (status = 422, description = "Unprocessable entity - invalid JSON body", body = String),
         (status = 500, description = "Internal server error", body = crate::api::types::ErrorResponse),
     )
 )]
@@ -429,7 +431,8 @@ pub async fn embed_handler(Json(_request): Json<EmbedRequest>) -> Result<Json<Em
     request_body = ChunkRequest,
     responses(
         (status = 200, description = "Text chunked successfully", body = ChunkResponse),
-        (status = 400, description = "Bad request", body = crate::api::types::ErrorResponse),
+        (status = 400, description = "Bad request - validation failed (e.g., empty text)", body = crate::api::types::ErrorResponse),
+        (status = 422, description = "Unprocessable entity - invalid JSON body", body = String),
         (status = 500, description = "Internal server error", body = crate::api::types::ErrorResponse),
     )
 )]
