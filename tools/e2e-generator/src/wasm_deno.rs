@@ -10,7 +10,7 @@ use crate::fixtures::{Assertions, ExtractionMethod, Fixture, InputType, WasmTarg
 
 const DENO_HELPERS_TEMPLATE: &str = r#"import { assertEquals, assertExists } from "@std/assert";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
-import { extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
+import { enableOcr, extractBytes, initWasm } from "npm:@kreuzberg/wasm@^4.0.0";
 // @deno-types="../../crates/kreuzberg-wasm/dist/index.d.ts"
 import type {
     ChunkingConfig,
@@ -20,6 +20,7 @@ import type {
     LanguageDetectionConfig,
     Metadata,
     OcrConfig,
+    PageExtractionConfig,
     PdfConfig,
     PostProcessorConfig,
     Table,
@@ -35,6 +36,7 @@ export type {
     LanguageDetectionConfig,
     Metadata,
     OcrConfig,
+    PageExtractionConfig,
     PdfConfig,
     PostProcessorConfig,
     Table,
@@ -42,7 +44,7 @@ export type {
     TokenReductionConfig,
 };
 
-export { extractBytes, initWasm };
+export { enableOcr, extractBytes, initWasm };
 
 const WORKSPACE_ROOT = new URL("../..", import.meta.url).pathname.replace(/\/$/, "");
 const TEST_DOCUMENTS = `${WORKSPACE_ROOT}/test_documents`;
@@ -164,6 +166,16 @@ function mapLanguageDetectionConfig(raw: PlainRecord): LanguageDetectionConfig {
     return config as unknown as LanguageDetectionConfig;
 }
 
+function mapPageConfig(raw: PlainRecord): PageExtractionConfig {
+    const config: PlainRecord = {};
+    assignBooleanField(config, raw, "extract_pages", "extractPages");
+    assignBooleanField(config, raw, "insert_page_markers", "insertPageMarkers");
+    if (typeof raw.marker_format === "string") {
+        (config as unknown as PageExtractionConfig).markerFormat = raw.marker_format;
+    }
+    return config as unknown as PageExtractionConfig;
+}
+
 function mapPostProcessorConfig(raw: PlainRecord): PostProcessorConfig {
     const config: PlainRecord = {};
     assignBooleanField(config, raw, "enabled", "enabled");
@@ -206,6 +218,10 @@ export function buildConfig(raw: unknown): ExtractionConfig {
 
     if (isPlainRecord(source.images)) {
         result.images = mapImageExtractionConfig(source.images as PlainRecord);
+    }
+
+    if (isPlainRecord(source.pages)) {
+        result.pages = mapPageConfig(source.pages as PlainRecord);
     }
 
     if (isPlainRecord(source.pdf_options)) {
@@ -807,11 +823,15 @@ fn render_category(category: &str, fixtures: &[&Fixture]) -> Result<String> {
     writeln!(buffer)?;
     writeln!(
         buffer,
-        "import {{ assertions, buildConfig, extractBytes, initWasm, resolveDocument, shouldSkipFixture }} from \"./helpers.ts\";"
+        "import {{ assertions, buildConfig, enableOcr, extractBytes, initWasm, resolveDocument, shouldSkipFixture }} from \"./helpers.ts\";"
     )?;
     writeln!(buffer, "import type {{ ExtractionResult }} from \"./helpers.ts\";\n")?;
-    writeln!(buffer, "// Initialize WASM module once at module load time")?;
-    writeln!(buffer, "await initWasm();\n")?;
+    writeln!(
+        buffer,
+        "// Initialize WASM module and enable OCR once at module load time"
+    )?;
+    writeln!(buffer, "await initWasm();")?;
+    writeln!(buffer, "await enableOcr();\n")?;
 
     for fixture in fixtures {
         buffer.write_str(&render_test(fixture)?)?;

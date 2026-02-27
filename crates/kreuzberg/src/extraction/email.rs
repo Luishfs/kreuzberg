@@ -113,17 +113,25 @@ pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
 
     let subject = message.subject().map(|s| s.to_string());
 
-    let from_email = message
-        .from()
-        .and_then(|from| from.first())
-        .and_then(|addr| addr.address())
-        .map(|s| s.to_string());
+    let from_email = message.from().and_then(|from| from.first()).and_then(|addr| {
+        let email = addr.address()?;
+        Some(match addr.name() {
+            Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
+            _ => email.to_string(),
+        })
+    });
 
     let to_emails: Vec<String> = message
         .to()
         .map(|to| {
             to.iter()
-                .filter_map(|addr| addr.address().map(|s| s.to_string()))
+                .filter_map(|addr| {
+                    let email = addr.address()?;
+                    Some(match addr.name() {
+                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
+                        _ => email.to_string(),
+                    })
+                })
                 .collect()
         })
         .unwrap_or_else(Vec::new);
@@ -132,7 +140,13 @@ pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         .cc()
         .map(|cc| {
             cc.iter()
-                .filter_map(|addr| addr.address().map(|s| s.to_string()))
+                .filter_map(|addr| {
+                    let email = addr.address()?;
+                    Some(match addr.name() {
+                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
+                        _ => email.to_string(),
+                    })
+                })
                 .collect()
         })
         .unwrap_or_else(Vec::new);
@@ -141,12 +155,27 @@ pub fn parse_eml_content(data: &[u8]) -> Result<EmailExtractionResult> {
         .bcc()
         .map(|bcc| {
             bcc.iter()
-                .filter_map(|addr| addr.address().map(|s| s.to_string()))
+                .filter_map(|addr| {
+                    let email = addr.address()?;
+                    Some(match addr.name() {
+                        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
+                        _ => email.to_string(),
+                    })
+                })
                 .collect()
         })
         .unwrap_or_else(Vec::new);
 
-    let date = message.date().map(|d| d.to_rfc3339());
+    let date = message
+        .header("Date")
+        .and_then(|hv| {
+            if let mail_parser::HeaderValue::Text(s) = hv {
+                Some(s.trim().to_string())
+            } else {
+                None
+            }
+        })
+        .or_else(|| message.date().map(|d| d.to_rfc3339()));
 
     let message_id = message.message_id().map(|id| id.to_string());
 
@@ -300,9 +329,13 @@ fn extract_msg_from_cfb<F: std::io::Read + std::io::Seek>(
 
     let subject = read_msg_string_prop(comp, "", 0x0037); // PR_SUBJECT
     let sender_name = read_msg_string_prop(comp, "", 0x0C1A); // PR_SENDER_NAME
-    let from_email = read_msg_string_prop(comp, "", 0x0C1F) // PR_SENDER_EMAIL_ADDRESS
+    let sender_email = read_msg_string_prop(comp, "", 0x0C1F) // PR_SENDER_EMAIL_ADDRESS
         .or_else(|| read_msg_string_prop(comp, "", 0x0065)) // PR_SENT_REPRESENTING_EMAIL
         .filter(|s| !s.is_empty());
+    let from_email = sender_email.as_ref().map(|email| match sender_name.as_deref() {
+        Some(name) if !name.is_empty() => format!("\"{}\" <{}>", name, email),
+        _ => email.clone(),
+    });
     let display_to = read_msg_string_prop(comp, "", 0x0E04); // PR_DISPLAY_TO
     let display_cc = read_msg_string_prop(comp, "", 0x0E03); // PR_DISPLAY_CC
     let display_bcc = read_msg_string_prop(comp, "", 0x0E02); // PR_DISPLAY_BCC
