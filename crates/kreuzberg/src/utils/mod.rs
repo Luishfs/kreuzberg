@@ -29,7 +29,5 @@ pub use pool::{
 
 pub use pool_sizing::{PoolSizeHint, estimate_pool_size};
 
-pub use json_utils::snake_to_camel;
 
-#[cfg(feature = "quality")]
-pub use quality::{calculate_quality_score, clean_extracted_text, normalize_spaces};
+pub use json_utils::snake_to_camel;
