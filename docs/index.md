@@ -2,10 +2,13 @@
 description: "Kreuzberg – Extract text, tables, and metadata from 75+ file formats with a Rust core and native bindings for 12 languages. No GPU required."
 ---
 
+<div class="hero-banner" markdown>
+![Kreuzberg](assets/Docs-banner.png)
+</div>
+
 # Kreuzberg Documentation
 
-Kreuzberg is a document intelligence platform with a high‑performance Rust core and native bindings for Python, TypeScript/Node.js, C#, Ruby, Go, Elixir, and Rust itself. Use it as an SDK, CLI, Docker image, REST API server, or MCP tool to extract text, tables, and metadata from 75+ file formats (PDF, Office, images, HTML, XML, archives, email, and more) with optional OCR and post-processing pipelines.
-
+Kreuzberg is a document intelligence platform with a high‑performance Rust core and native bindings for Python, TypeScript/Node.js, C#, Ruby, Go, Elixir, and Rust itself. You can use it as an SDK, CLI, Docker image, REST API server, or MCP tool to extract text, tables, and metadata from 75+ file formats (PDF, Office, images, HTML, XML, archives, email, and more) with optional OCR and post-processing pipelines.
 
 <div class="hero-badges" markdown>
 
@@ -17,9 +20,10 @@ Kreuzberg is a document intelligence platform with a high‑performance Rust cor
 
 ---
 
-## Why Kreuzberg ?
- 
+## Why Kreuzberg
+
 <div class="grid cards" markdown>
+
 
 -   :material-flash:{ .lg .middle } **High Performance**
 
@@ -37,7 +41,7 @@ Kreuzberg is a document intelligence platform with a high‑performance Rust cor
 
     ---
 
-    Built-in Tesseract, PaddleOCR, and EasyOCR support. 100+ languages, table detection, and automatic fallback.
+    Tesseract and PaddleOCR work across all language bindings. EasyOCR is available for Python only.
 
 -   :material-translate:{ .lg .middle } **12 Language Bindings**
 
@@ -49,7 +53,7 @@ Kreuzberg is a document intelligence platform with a high‑performance Rust cor
 
     ---
 
-    Extend with custom extractors, OCR backends, post-processors, and validators — all hot-pluggable at runtime.
+    Register custom extractors, OCR backends, post-processors, and validators. Plugin authoring is primarily supported in Python; all bindings can consume registered plugins.
 
 -   :material-server:{ .lg .middle } **Flexible Deployment**
 
