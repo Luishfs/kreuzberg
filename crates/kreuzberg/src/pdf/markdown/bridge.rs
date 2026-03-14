@@ -211,6 +211,8 @@ struct CharInfo {
     is_monospace: bool,
     has_map_error: bool,
     is_symbolic: bool,
+    /// True if the character is a hyphen as determined by pdfium's `is_hyphen()` API.
+    is_hyphen: bool,
 }
 
 /// Remove characters from sidebar annotations (e.g., arXiv identifiers along the left margin).
@@ -623,6 +625,7 @@ fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
                 is_monospace: false,
                 has_map_error: false,
                 is_symbolic: false,
+                is_hyphen: false,
             });
             continue;
         }
@@ -666,6 +669,7 @@ fn chars_to_segments(page: &PdfPage) -> Option<Vec<SegmentData>> {
             is_monospace: ch.font_is_fixed_pitch(),
             has_map_error: ch.has_unicode_map_error().unwrap_or(false),
             is_symbolic: ch.font_is_symbolic(),
+            is_hyphen: ch.is_hyphen().unwrap_or(false),
         });
     }
 
@@ -875,6 +879,7 @@ mod tests {
             is_monospace: false,
             has_map_error: false,
             is_symbolic: false,
+            is_hyphen: false,
         }
     }
 
