@@ -104,16 +104,22 @@ impl EmbeddingEngine {
 
         let ids_tensor = ndarray::Array::from_shape_vec((batch_size, encoding_length), ids_array)
             .map_err(|e| EmbedError::Shape(e.to_string()))?;
-        let mask_tensor = ndarray::Array::from_shape_vec((batch_size, encoding_length), mask_array.clone())
-            .map_err(|e| EmbedError::Shape(e.to_string()))?;
-        let attention_mask = ndarray::Array::from_shape_vec((batch_size, encoding_length), mask_array)
-            .map_err(|e| EmbedError::Shape(e.to_string()))?;
         let type_ids_tensor = ndarray::Array::from_shape_vec((batch_size, encoding_length), type_ids_array)
             .map_err(|e| EmbedError::Shape(e.to_string()))?;
 
+        let mask_nd = ndarray::Array::from_shape_vec((batch_size, encoding_length), mask_array)
+            .map_err(|e| EmbedError::Shape(e.to_string()))?;
+        // Clone mask only when mean pooling needs it for post-processing.
+        let attention_mask_for_pooling = if self.pooling == Pooling::Mean {
+            Some(mask_nd.clone())
+        } else {
+            None
+        };
+        let mask_tensor = Value::from_array(mask_nd)?;
+
         let mut session_inputs = ort::inputs![
             "input_ids" => Value::from_array(ids_tensor)?,
-            "attention_mask" => Value::from_array(mask_tensor)?,
+            "attention_mask" => mask_tensor,
         ];
 
         if self.need_token_type_ids {
@@ -137,31 +143,19 @@ impl EmbeddingEngine {
 
         let tensor: ArrayView<f32, Dim<IxDynImpl>> = output_value.try_extract_array().map_err(EmbedError::Ort)?;
 
-        // Pool and normalize
-        let pooled = self.pool(&tensor, attention_mask)?;
+        // Pool (without normalization — caller controls normalization)
+        let pooled = match attention_mask_for_pooling {
+            Some(mask) => mean_pool(&tensor, mask)?,
+            None => cls_pool(&tensor)?,
+        };
 
         let embeddings: Vec<Vec<f32>> = pooled
             .rows()
             .into_iter()
-            .map(|row| {
-                let slice = row.as_slice().unwrap_or(&[]);
-                normalize(slice)
-            })
+            .map(|row| row.as_slice().unwrap_or(&[]).to_vec())
             .collect();
 
         Ok(embeddings)
-    }
-
-    /// Apply pooling strategy to raw token embeddings.
-    fn pool(
-        &self,
-        tensor: &ArrayView<f32, Dim<IxDynImpl>>,
-        attention_mask: Array2<i64>,
-    ) -> Result<Array2<f32>, EmbedError> {
-        match self.pooling {
-            Pooling::Cls => cls_pool(tensor),
-            Pooling::Mean => mean_pool(tensor, attention_mask),
-        }
     }
 }
 
