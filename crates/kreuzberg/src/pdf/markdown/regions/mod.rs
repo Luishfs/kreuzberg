@@ -6,6 +6,8 @@
 
 mod assignment;
 mod heading;
+#[cfg(feature = "layout-detection")]
+pub(super) mod layout_validation;
 mod merge;
 mod reading_order;
 pub(super) mod table_recognition;
@@ -59,12 +61,18 @@ pub(super) fn assemble_region_paragraphs(
     doc_body_font_size: Option<f32>,
     page_index: usize,
     extracted_table_bboxes: &[crate::types::BoundingBox],
+    hint_validations: &[layout_validation::RegionValidation],
 ) -> Vec<PdfParagraph> {
     // Assign segments to layout regions. No quality gates — Docling's approach
     // is to always trust the layout model and assign all cells to clusters.
     // Unassigned segments go through the fallback pipeline.
-    let (mut regions, unassigned_indices) =
-        assignment::assign_segments_to_regions_refined(&segments, hints, min_confidence, extracted_table_bboxes);
+    let (mut regions, unassigned_indices) = assignment::assign_segments_to_regions_refined(
+        &segments,
+        hints,
+        min_confidence,
+        extracted_table_bboxes,
+        hint_validations,
+    );
 
     if regions.is_empty() {
         tracing::trace!(page = page_index, "no layout regions — using fallback pipeline");
@@ -454,7 +462,7 @@ mod tests {
             make_segment("world", 55.0, 700.0, 40.0, 12.0),
         ];
         let hints = vec![make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert_eq!(regions.len(), 1);
         assert_eq!(regions[0].segment_indices.len(), 2);
         assert!(unassigned.is_empty());
@@ -470,7 +478,7 @@ mod tests {
             make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0),
             make_hint(LayoutHintClass::Text, 0.9, 250.0, 690.0, 500.0, 720.0),
         ];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert_eq!(regions.len(), 2);
         assert_eq!(regions[0].segment_indices.len(), 1);
         assert_eq!(regions[1].segment_indices.len(), 1);
@@ -484,7 +492,7 @@ mod tests {
             make_segment("Outside", 500.0, 100.0, 40.0, 12.0),
         ];
         let hints = vec![make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert_eq!(regions[0].segment_indices.len(), 1);
         assert_eq!(unassigned.len(), 1);
     }
@@ -496,7 +504,7 @@ mod tests {
             make_hint(LayoutHintClass::Text, 0.9, 0.0, 0.0, 600.0, 800.0), // large
             make_hint(LayoutHintClass::Code, 0.9, 30.0, 690.0, 200.0, 720.0), // small
         ];
-        let (regions, _) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, _) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         // Segment should be in the Code region (smaller area)
         assert!(regions[0].segment_indices.is_empty()); // Text (large)
         assert_eq!(regions[1].segment_indices.len(), 1); // Code (small)
@@ -509,7 +517,7 @@ mod tests {
         // Center point at x=200 is exactly on the boundary; overlap approach should capture it
         let segments = vec![make_segment("straddling", 180.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         // With overlap-based assignment, partial overlap should assign the segment
         assert_eq!(regions[0].segment_indices.len(), 1);
         assert!(unassigned.is_empty());
@@ -522,7 +530,7 @@ mod tests {
         // Only 5pt of 40pt width overlaps = 12.5% < 20% threshold
         let segments = vec![make_segment("barely", 195.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert!(regions[0].segment_indices.is_empty());
         assert_eq!(unassigned.len(), 1);
     }
@@ -538,7 +546,7 @@ mod tests {
             make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 110.0, 720.0),
             make_hint(LayoutHintClass::Text, 0.9, 100.0, 690.0, 300.0, 720.0),
         ];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         // Should go to region 2 (higher IoS)
         assert!(regions[0].segment_indices.is_empty());
         assert_eq!(regions[1].segment_indices.len(), 1);
@@ -550,7 +558,7 @@ mod tests {
         // Segments fully inside regions should still work (regression test)
         let segments = vec![make_segment("centered", 50.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert_eq!(regions[0].segment_indices.len(), 1);
         assert!(unassigned.is_empty());
     }
@@ -601,7 +609,7 @@ mod tests {
             make_segment("}", 10.0, 670.0, 10.0, 12.0),
         ];
         let hints = vec![make_hint(LayoutHintClass::Code, 0.9, 0.0, 660.0, 200.0, 720.0)];
-        let paragraphs = assemble_region_paragraphs(segments, &hints, &[], 0.5, None, 0, &[]);
+        let paragraphs = assemble_region_paragraphs(segments, &hints, &[], 0.5, None, 0, &[], &[]);
         assert!(!paragraphs.is_empty());
         assert!(paragraphs[0].is_code_block);
     }
@@ -610,7 +618,7 @@ mod tests {
     fn test_assemble_heading_region() {
         let segments = vec![make_segment("1 Introduction", 10.0, 700.0, 120.0, 18.0)];
         let hints = vec![make_hint(LayoutHintClass::SectionHeader, 0.9, 0.0, 690.0, 200.0, 725.0)];
-        let paragraphs = assemble_region_paragraphs(segments, &hints, &[], 0.5, None, 0, &[]);
+        let paragraphs = assemble_region_paragraphs(segments, &hints, &[], 0.5, None, 0, &[], &[]);
         assert_eq!(paragraphs.len(), 1);
         assert_eq!(paragraphs[0].heading_level, Some(2));
     }
@@ -619,7 +627,7 @@ mod tests {
     fn test_low_confidence_hints_ignored() {
         let segments = vec![make_segment("text", 10.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Code, 0.3, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert!(regions.is_empty());
         assert_eq!(unassigned.len(), 1);
     }
@@ -635,7 +643,8 @@ mod tests {
             x1: 200.0,
             y1: 720.0,
         };
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[extracted_bbox]);
+        let (regions, unassigned) =
+            assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[extracted_bbox], &[]);
         // Table excluded from regions, segment suppressed by extracted bbox
         assert!(regions.is_empty());
         assert!(unassigned.is_empty());
@@ -648,7 +657,7 @@ mod tests {
         let segments = vec![make_segment("table text", 10.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Table, 0.9, 0.0, 690.0, 200.0, 720.0)];
         // No extracted bboxes — TATR failed
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert!(regions.is_empty()); // Table excluded from regions
         assert_eq!(unassigned.len(), 1); // Segment recovered to unassigned
     }
@@ -659,7 +668,7 @@ mod tests {
         // text (<4 alnum chars) inside them is suppressed as OCR artifacts.
         let segments = vec![make_segment("ab", 10.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Picture, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert!(regions.is_empty());
         assert_eq!(unassigned.len(), 0); // suppressed (too short)
     }
@@ -670,7 +679,7 @@ mod tests {
         // as unassigned so it appears in the output (e.g., "Fig. 3" captions).
         let segments = vec![make_segment("Fig. 3", 10.0, 700.0, 40.0, 12.0)];
         let hints = vec![make_hint(LayoutHintClass::Picture, 0.9, 0.0, 690.0, 200.0, 720.0)];
-        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[]);
+        let (regions, unassigned) = assignment::assign_segments_to_regions(&segments, &hints, 0.5, &[], &[]);
         assert!(regions.is_empty());
         assert_eq!(unassigned.len(), 1); // preserved as unassigned
     }
@@ -688,7 +697,7 @@ mod tests {
             make_hint(LayoutHintClass::Text, 0.9, 0.0, 690.0, 200.0, 720.0),
             make_hint(LayoutHintClass::Code, 0.9, 0.0, 640.0, 200.0, 665.0),
         ];
-        let paragraphs = assemble_region_paragraphs(segments, &hints, &[], 0.5, None, 0, &[]);
+        let paragraphs = assemble_region_paragraphs(segments, &hints, &[], 0.5, None, 0, &[], &[]);
         assert_eq!(paragraphs.len(), 3);
         assert_eq!(paragraphs[0].heading_level, Some(1)); // Title
         assert_eq!(paragraphs[0].layout_class, Some(LayoutHintClass::Title));
@@ -945,7 +954,7 @@ mod tests {
             make_hint(LayoutHintClass::Code, 0.9, 200.0, 695.0, 400.0, 715.0), // tight
         ];
         // With refinement the tight region should claim the "near_small" segment
-        let (regions, _) = assignment::assign_segments_to_regions_refined(&segments, &hints, 0.5, &[]);
+        let (regions, _) = assignment::assign_segments_to_regions_refined(&segments, &hints, 0.5, &[], &[]);
         // The Code region (index 1) should have at least the segment near_small
         let code_region = regions.iter().find(|r| r.hint.class == LayoutHintClass::Code);
         assert!(code_region.is_some(), "Code region should exist");
@@ -968,7 +977,7 @@ mod tests {
             200.0,
             720.0,
         )];
-        let (regions, _) = assignment::assign_segments_to_regions_refined(&segments, &hints, 0.5, &[]);
+        let (regions, _) = assignment::assign_segments_to_regions_refined(&segments, &hints, 0.5, &[], &[]);
         assert_eq!(regions.len(), 1);
         assert_eq!(regions[0].hint.class, LayoutHintClass::SectionHeader);
         assert!((regions[0].hint.confidence - 0.85).abs() < 1e-4);

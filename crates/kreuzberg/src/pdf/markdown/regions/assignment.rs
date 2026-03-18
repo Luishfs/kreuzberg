@@ -25,12 +25,14 @@ const MAX_REFINEMENT_ITERATIONS: usize = 3;
 ///
 /// Table and Picture regions are excluded from assignment — handled separately.
 /// Segments overlapping successfully extracted tables are suppressed (>=50% IoS).
-/// Segments overlapping Picture regions are suppressed unless substantive.
+/// Segments overlapping Picture regions are suppressed unless substantive
+/// or the region was validated as empty (no text CCs in the rendered image).
 pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
     segments: &[SegmentData],
     hints: &'a [LayoutHint],
     min_confidence: f32,
     extracted_table_bboxes: &[crate::types::BoundingBox],
+    hint_validations: &[super::layout_validation::RegionValidation],
 ) -> (Vec<LayoutRegion<'a>>, Vec<usize>) {
     let confident_hints: Vec<&LayoutHint> = hints
         .iter()
@@ -45,10 +47,18 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
     // extracted_table_bboxes — failed extractions don't suppress anything.
     let suppress_bboxes = extracted_table_bboxes;
 
-    // Collect Picture region bounding boxes for suppression.
-    let picture_hints: Vec<&LayoutHint> = hints
+    // Collect Picture region bounding boxes for suppression, paired with
+    // their validation status. Empty-validated Picture regions don't suppress.
+    let picture_hints: Vec<(&LayoutHint, bool)> = hints
         .iter()
-        .filter(|h| h.confidence >= min_confidence && h.class == LayoutHintClass::Picture)
+        .enumerate()
+        .filter(|(_, h)| h.confidence >= min_confidence && h.class == LayoutHintClass::Picture)
+        .map(|(idx, h)| {
+            let is_empty = hint_validations
+                .get(idx)
+                .is_some_and(|v| *v == super::layout_validation::RegionValidation::Empty);
+            (h, is_empty)
+        })
         .collect();
 
     if confident_hints.is_empty() && suppress_bboxes.is_empty() && picture_hints.is_empty() {
@@ -98,11 +108,14 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions<'a>(
             continue;
         }
 
-        // Suppress segments inside Picture regions — but only if the text
-        // looks like OCR artifacts (garbled hex, figure labels, etc.).
-        // Substantive text (lyrics, captions, embedded prose) is preserved
-        // as unassigned so it still appears in the output.
-        let in_picture = picture_hints.iter().any(|ph| {
+        // Suppress segments inside Picture regions — but only if:
+        // 1. The Picture region was NOT validated as empty (has text CCs)
+        // 2. The segment text is not substantive (short or garbled)
+        // Empty-validated Picture regions are false positives — don't suppress.
+        let in_picture = picture_hints.iter().any(|(ph, is_empty)| {
+            if *is_empty {
+                return false; // Empty region — don't suppress
+            }
             let hint_rect = Rect::from_lbrt(ph.left, ph.bottom, ph.right, ph.top);
             seg_rect.intersection_over_self(&hint_rect) >= 0.5
         });
@@ -164,9 +177,16 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions_refined<'a>(
     hints: &'a [LayoutHint],
     min_confidence: f32,
     extracted_table_bboxes: &[crate::types::BoundingBox],
+    hint_validations: &[super::layout_validation::RegionValidation],
 ) -> (Vec<LayoutRegion<'a>>, Vec<usize>) {
-    // First pass: assign with original bboxes
-    let (regions, unassigned) = assign_segments_to_regions(segments, hints, min_confidence, extracted_table_bboxes);
+    // First pass: assign with original bboxes, using validation for Picture suppression
+    let (regions, unassigned) = assign_segments_to_regions(
+        segments,
+        hints,
+        min_confidence,
+        extracted_table_bboxes,
+        hint_validations,
+    );
 
     if regions.is_empty() {
         return (regions, unassigned);
@@ -196,7 +216,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions_refined<'a>(
 
     for _ in 1..MAX_REFINEMENT_ITERATIONS {
         let (new_regions, _) =
-            assign_segments_to_regions(segments, &current_hints, min_confidence, extracted_table_bboxes);
+            assign_segments_to_regions(segments, &current_hints, min_confidence, extracted_table_bboxes, &[]);
 
         // Check if assignments changed
         let new_assignments: Vec<Vec<usize>> = new_regions.iter().map(|r| r.segment_indices.clone()).collect();
@@ -213,7 +233,7 @@ pub(in crate::pdf::markdown) fn assign_segments_to_regions_refined<'a>(
     // Final assignment with the last refined hints, but we need to return regions
     // that reference the original hints (for class/confidence), with the refined assignments
     let (final_regions_refined, final_unassigned) =
-        assign_segments_to_regions(segments, &current_hints, min_confidence, extracted_table_bboxes);
+        assign_segments_to_regions(segments, &current_hints, min_confidence, extracted_table_bboxes, &[]);
 
     // Map refined regions back to original hints by matching class + position
     let mut result_regions: Vec<LayoutRegion<'a>> = Vec::new();

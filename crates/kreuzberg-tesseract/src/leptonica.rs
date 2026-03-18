@@ -122,6 +122,24 @@ unsafe extern "C" {
     /// 8 bpp Pix, or null on failure.
     fn pixConvertRGBToGray(pixs: *mut c_void, rwt: f32, gwt: f32, bwt: f32) -> *mut c_void;
 
+    /// Creates a Leptonica BOX with the given coordinates.
+    fn boxCreate(x: i32, y: i32, w: i32, h: i32) -> *mut c_void;
+
+    /// Frees a Leptonica BOX.
+    fn boxDestroy(pbox: *mut *mut c_void);
+
+    /// Clips a rectangular region from a Pix.
+    ///
+    /// Returns a new Pix containing the clipped region, or null on failure.
+    /// `pboxc` (optional) receives the actual clipped box; pass null to ignore.
+    fn pixClipRectangle(pixs: *mut c_void, box_: *mut c_void, pboxc: *mut *mut c_void) -> *mut c_void;
+
+    /// Counts connected components in a 1 bpp image.
+    ///
+    /// `connectivity` is 4 or 8. Writes the count to `*pcount`.
+    /// Returns 0 on success.
+    fn pixCountConnComp(pix: *mut c_void, connectivity: i32, pcount: *mut i32) -> i32;
+
 }
 
 // ---------------------------------------------------------------------------
@@ -487,6 +505,52 @@ impl Pix {
             Err(TesseractError::NullPointerError)
         } else {
             Ok(Pix { ptr: result })
+        }
+    }
+
+    /// Clips a rectangular sub-region from this image.
+    ///
+    /// Returns a new Pix containing only the pixels within the given rectangle.
+    /// Coordinates are in pixel space: (x, y) is the top-left corner.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TesseractError::NullPointerError` if the crop fails.
+    pub fn clip_rectangle(&self, x: i32, y: i32, w: i32, h: i32) -> Result<Pix> {
+        // SAFETY: boxCreate allocates a new BOX on the heap.
+        let box_ = unsafe { boxCreate(x, y, w, h) };
+        if box_.is_null() {
+            return Err(TesseractError::NullPointerError);
+        }
+        // SAFETY: pixClipRectangle returns a new Pix clipped to the BOX region.
+        // We pass null for pboxc (we don't need the clipped box coordinates back).
+        let result = unsafe { pixClipRectangle(self.ptr, box_, std::ptr::null_mut()) };
+        // SAFETY: Free the BOX we allocated.
+        let mut box_mut = box_;
+        unsafe { boxDestroy(&mut box_mut) };
+        if result.is_null() {
+            Err(TesseractError::NullPointerError)
+        } else {
+            Ok(Pix { ptr: result })
+        }
+    }
+
+    /// Counts connected components in a 1 bpp (binary) image.
+    ///
+    /// `connectivity` should be 4 or 8.
+    ///
+    /// # Errors
+    ///
+    /// Returns `TesseractError::OcrError` if `pixCountConnComp` fails
+    /// (e.g., wrong bit depth — image must be 1 bpp).
+    pub fn count_connected_components(&self, connectivity: i32) -> Result<i32> {
+        let mut count: i32 = 0;
+        // SAFETY: self.ptr is a valid Pix. count is a valid stack local.
+        let status = unsafe { pixCountConnComp(self.ptr, connectivity, &mut count) };
+        if status != 0 {
+            Err(TesseractError::OcrError)
+        } else {
+            Ok(count)
         }
     }
 

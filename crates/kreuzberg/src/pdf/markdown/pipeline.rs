@@ -357,6 +357,9 @@ struct PageInput {
     page_hints: Option<Vec<LayoutHint>>,
     /// Bounding boxes of tables that were successfully extracted for this page.
     table_bboxes: Vec<crate::types::BoundingBox>,
+    /// Per-hint validation results from CC analysis (parallel to page_hints).
+    /// Empty when layout-detection is not active.
+    hint_validations: Vec<super::regions::layout_validation::RegionValidation>,
     /// Whether this page's structure-tree paragraphs need font-size classification.
     needs_classify: bool,
 }
@@ -377,6 +380,7 @@ fn process_single_page(
         heuristic_segments,
         page_hints,
         table_bboxes,
+        hint_validations,
         needs_classify,
     } = input;
 
@@ -431,6 +435,7 @@ fn process_single_page(
                 doc_body_font_size,
                 i,
                 &table_bboxes,
+                &hint_validations,
             )
         } else {
             // Standard pipeline: XY-Cut → lines → paragraphs → classify
@@ -780,6 +785,42 @@ pub fn render_document_as_markdown_with_tables(
         map
     };
 
+    // Validate layout regions via connected component analysis.
+    // Regions flagged as Empty should not suppress segments.
+    #[cfg(feature = "layout-detection")]
+    let validations_by_page: std::collections::HashMap<
+        usize,
+        Vec<super::regions::layout_validation::RegionValidation>,
+    > = {
+        let mut map = std::collections::HashMap::new();
+        if let (Some(images), Some(results), Some(hints_pages)) = (layout_images, layout_results, layout_hints) {
+            for page_idx in 0..page_count as usize {
+                if let (Some(img), Some(res), Some(hints)) =
+                    (images.get(page_idx), results.get(page_idx), hints_pages.get(page_idx))
+                {
+                    let validations = super::regions::layout_validation::validate_page_regions(img, hints, res);
+                    if validations.contains(&super::regions::layout_validation::RegionValidation::Empty) {
+                        tracing::debug!(
+                            page = page_idx,
+                            empty_count = validations
+                                .iter()
+                                .filter(|v| **v == super::regions::layout_validation::RegionValidation::Empty)
+                                .count(),
+                            "layout validation: found empty regions"
+                        );
+                    }
+                    map.insert(page_idx, validations);
+                }
+            }
+        }
+        map
+    };
+    #[cfg(not(feature = "layout-detection"))]
+    let validations_by_page: std::collections::HashMap<
+        usize,
+        Vec<super::regions::layout_validation::RegionValidation>,
+    > = std::collections::HashMap::new();
+
     // Stage 3: Per-page structured extraction (parallelised with rayon).
     //
     // Pre-split all per-page owned data into a Vec<PageInput> so that rayon can
@@ -793,6 +834,7 @@ pub fn render_document_as_markdown_with_tables(
             heuristic_segments: std::mem::take(&mut all_page_segments[i]),
             page_hints: layout_hints.and_then(|h| h.get(i)).cloned(),
             table_bboxes: extracted_table_bboxes_by_page.get(&i).cloned().unwrap_or_default(),
+            hint_validations: validations_by_page.get(&i).cloned().unwrap_or_default(),
             needs_classify: struct_tree_needs_classify.contains(&i),
         })
         .collect();
