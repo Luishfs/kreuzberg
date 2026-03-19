@@ -972,6 +972,7 @@ pub struct PdfConfig {
 impl PdfConfig {
     #[new]
     #[pyo3(signature = (extract_images=None, passwords=None, extract_metadata=None, hierarchy=None, extract_annotations=None, top_margin_fraction=None, bottom_margin_fraction=None, allow_single_column_tables=None))]
+    #[allow(clippy::too_many_arguments)]
     fn new(
         extract_images: Option<bool>,
         passwords: Option<Vec<String>>,
