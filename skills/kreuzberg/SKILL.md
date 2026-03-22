@@ -1,7 +1,7 @@
 ---
 name: kreuzberg
 description: >-
-  Extract text, tables, metadata, and images from 88+ document formats
+  Extract text, tables, metadata, and images from 91+ document formats
   (PDF, Office, images, HTML, email, archives, academic) using Kreuzberg.
   Use when writing code that calls Kreuzberg APIs in Python, Node.js/TypeScript,
   Rust, or CLI. Covers installation, extraction (sync/async), configuration
@@ -15,7 +15,7 @@ metadata:
 
 # Kreuzberg Document Extraction
 
-Kreuzberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 88+ file formats including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
+Kreuzberg is a high-performance document intelligence library with a Rust core and native bindings for Python, Node.js/TypeScript, Ruby, Go, Java, C#, PHP, and Elixir. It extracts text, tables, metadata, and images from 91+ file formats including PDF, Office documents, images (with OCR), HTML, email, archives, and academic formats.
 
 Use this skill when writing code that:
 - Extracts text or metadata from documents

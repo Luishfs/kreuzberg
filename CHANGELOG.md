@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+---
+
+## [4.5.3] - 2026-03-22
+
 ### Added
 
 - **Apple iWork Format Support**: Native parsing for modern (2013+) `.pages`, `.numbers`, and `.key` files via a new `iwork` feature flag. Uses zero-allocation protobuf text extraction from Snappy-compressed IWA containers.
@@ -177,7 +181,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **Format count updated to 88+**: Documentation across all READMEs, docs, and package manifests updated to reflect expanded format support (previously 75+).
+- **Format count updated to 91+**: Documentation across all READMEs, docs, and package manifests updated to reflect expanded format support (previously 75+).
 
 ## [4.4.5]
 

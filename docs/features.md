@@ -1,16 +1,16 @@
 # Features
 
-Kreuzberg is a document intelligence library built on a Rust core with bindings for 12 languages. It extracts text, tables, and metadata from 88+ file formats, runs OCR when needed, and feeds the results through a configurable post-processing pipeline -- chunking, embeddings, keyword extraction, and more.
+Kreuzberg is a document intelligence library built on a Rust core with bindings for 12 languages. It extracts text, tables, and metadata from 91+ file formats, runs OCR when needed, and feeds the results through a configurable post-processing pipeline -- chunking, embeddings, keyword extraction, and more.
 
 This page is a map of what Kreuzberg can do. Each section links to the guide or reference page where you will find configuration details and code examples.
 
-![Kreuzberg features overview -- 88+ input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/features-overview.png)
+![Kreuzberg features overview -- 91+ input formats flow through extraction, OCR, and processing to produce text, tables, chunks, and metadata](assets/features-overview.png)
 
 ---
 
 ## Format Support
 
-Kreuzberg handles 88+ file formats through native Rust extractors. No external tools such as LibreOffice are required.
+Kreuzberg handles 91+ file formats through native Rust extractors. No external tools such as LibreOffice are required.
 
 === "Documents"
 

@@ -21,7 +21,7 @@ The following configuration options are not supported in WASM:
 
 All other Kreuzberg features work fully in WASM:
 
-- **Text Extraction** – All 88+ file formats supported
+- **Text Extraction** – All 91+ file formats supported
 - **OCR via Tesseract WASM** – Browser-native Tesseract for scanned documents and images
 - **Embeddings** – FastEmbed-based local vector generation
 - **Chunking** – Text segmentation for RAG pipelines

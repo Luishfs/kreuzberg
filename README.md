@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.5.2" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.5.3" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -66,13 +66,13 @@
   </a>
 </div>
 
-Extract text and metadata from a wide range of file formats (88+), generate embeddings and post-process at native speeds without needing a GPU.
+Extract text and metadata from a wide range of file formats (91+), generate embeddings and post-process at native speeds without needing a GPU.
 
 ## Key Features
 
 - **Extensible architecture** – Plugin system for custom OCR backends, validators, post-processors, and document extractors
 - **Polyglot** – Native bindings for Rust, Python, TypeScript/Node.js, Ruby, Go, Java, C#, PHP, Elixir, R, and C
-- **88+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
+- **91+ file formats** – PDF, Office documents, images, HTML, XML, emails, archives, academic formats across 8 categories
 - **OCR support** – Tesseract (all bindings, including Tesseract-WASM for browsers), PaddleOCR (all native bindings), EasyOCR (Python), extensible via plugin API
 - **High performance** – Rust core with native PDFium, SIMD optimizations and full parallelism
 - **Flexible deployment** – Use as library, CLI tool, REST API server, or MCP server
@@ -150,7 +150,7 @@ To use embeddings functionality:
 
 ## Supported Formats
 
-88+ file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+91+ file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
 
 ### Office Documents
 

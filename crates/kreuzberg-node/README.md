@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.5.2" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.5.3" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -61,7 +61,7 @@
 </div>
 
 
-Extract text, tables, images, and metadata from 88+ file formats including PDF, Office documents, and images. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions.
+Extract text, tables, images, and metadata from 91+ file formats including PDF, Office documents, and images. Native NAPI-RS bindings for Node.js with superior performance, async/await support, and TypeScript type definitions.
 
 
 ## Installation
@@ -319,9 +319,9 @@ This binding uses NAPI-RS to provide native Node.js bindings with:
 
 ## Features
 
-### Supported File Formats (88+)
+### Supported File Formats (91+)
 
-88+ file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+91+ file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
 
 #### Office Documents
 

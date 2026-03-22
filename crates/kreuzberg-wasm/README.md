@@ -22,7 +22,7 @@
     <img src="https://img.shields.io/maven-central/v/dev.kreuzberg/kreuzberg?label=Java&color=007ec6" alt="Java">
   </a>
   <a href="https://github.com/kreuzberg-dev/kreuzberg/releases">
-    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.5.2" alt="Go">
+    <img src="https://img.shields.io/github/v/tag/kreuzberg-dev/kreuzberg?label=Go&color=007ec6&filter=v4.5.3" alt="Go">
   </a>
   <a href="https://www.nuget.org/packages/Kreuzberg/">
     <img src="https://img.shields.io/nuget/v/Kreuzberg?label=C%23&color=007ec6" alt="C#">
@@ -61,7 +61,7 @@
 </div>
 
 
-Extract text, tables, images, and metadata from 88+ file formats including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support.
+Extract text, tables, images, and metadata from 91+ file formats including PDF, Office documents, and images. WebAssembly bindings for browsers, Deno, and Cloudflare Workers with portable deployment and multi-threading support.
 
 
 ## Installation
@@ -271,9 +271,9 @@ extractDocuments(fileBytes, mimes)
 
 ## Features
 
-### Supported File Formats (88+)
+### Supported File Formats (91+)
 
-88+ file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
+91+ file formats across 8 major categories with intelligent format detection and comprehensive metadata extraction.
 
 #### Office Documents
 
@@ -510,7 +510,7 @@ WASM runs in single-threaded environments without access to ONNX Runtime, which 
 - **Language Detection** – Identify document language
 - **Image Extraction** – Embedded images from documents
 
-All 88+ file formats supported by Kreuzberg are available in WASM, with the exception that features requiring ONNX Runtime (layout detection) will fail gracefully with an unsupported error.
+All 91+ file formats supported by Kreuzberg are available in WASM, with the exception that features requiring ONNX Runtime (layout detection) will fail gracefully with an unsupported error.
 
 ## Documentation
 
