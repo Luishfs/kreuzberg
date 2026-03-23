@@ -266,9 +266,10 @@ fn build_image_document_structure(ocr_text: Option<&str>) -> crate::types::docum
 
     let mut builder = DocumentStructureBuilder::new().source_format("image");
     if let Some(text) = ocr_text
-        && !text.trim().is_empty() {
-            builder.push_paragraph(text.trim(), vec![], None, None);
-        }
+        && !text.trim().is_empty()
+    {
+        builder.push_paragraph(text.trim(), vec![], None, None);
+    }
     builder.push_image(None, Some(0), None, None);
     builder.build()
 }

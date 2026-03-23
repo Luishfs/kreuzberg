@@ -26,6 +26,28 @@ use std::io::Read;
 /// Maximum size for an individual IWA file to guard against decompression bombs.
 const MAX_IWA_DECOMPRESSED_SIZE: usize = 64 * 1024 * 1024; // 64 MiB
 
+/// Collects all .iwa file paths from a ZIP archive.
+///
+/// Opens the ZIP from `content`, iterates every entry, and returns the names of
+/// all entries whose path ends with `.iwa`. Entries that cannot be read are
+/// silently skipped (consistent with the per-extractor `filter_map` pattern).
+pub(crate) fn collect_iwa_paths(content: &[u8]) -> Result<Vec<String>> {
+    let cursor = Cursor::new(content);
+    let mut archive =
+        zip::ZipArchive::new(cursor).map_err(|e| KreuzbergError::parsing(format!("Failed to open iWork ZIP: {e}")))?;
+
+    let iwa_paths: Vec<String> = (0..archive.len())
+        .filter_map(|i| {
+            archive.by_index(i).ok().and_then(|f| {
+                let name = f.name().to_string();
+                if name.ends_with(".iwa") { Some(name) } else { None }
+            })
+        })
+        .collect();
+
+    Ok(iwa_paths)
+}
+
 /// Open a ZIP archive from bytes and collect all `.iwa` entry names.
 pub fn list_iwa_entries(content: &[u8]) -> Result<Vec<String>> {
     let cursor = Cursor::new(content);

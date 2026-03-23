@@ -665,8 +665,7 @@ impl DocumentExtractor for MdxExtractor {
         } else {
             None
         };
-        let clean_markdown =
-            Self::strip_mdx_syntax_collecting(&remaining_content, jsx_blocks_buf.as_mut());
+        let clean_markdown = Self::strip_mdx_syntax_collecting(&remaining_content, jsx_blocks_buf.as_mut());
 
         if metadata.title.is_none()
             && !metadata.additional.contains_key("title")

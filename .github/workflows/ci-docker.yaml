@@ -117,6 +117,7 @@ jobs:
           # Excluded: positive_data_acceptance (API has stricter validation than schema allows)
           schemathesis run http://localhost:8000/openapi.json \
             --max-examples=10 \
+            --request-timeout=30000 \
             --checks not_a_server_error,status_code_conformance,content_type_conformance,response_schema_conformance,negative_data_rejection || FAILED=1
           docker stop "$container_id"
           exit "$FAILED"

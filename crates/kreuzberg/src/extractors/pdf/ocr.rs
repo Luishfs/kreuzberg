@@ -648,10 +648,8 @@ pub(crate) async fn run_ocr_pipeline(
 ) -> crate::Result<String> {
     use crate::plugins::registry::get_ocr_backend_registry;
 
-    let ocr_config = config
-        .ocr
-        .as_ref()
-        .ok_or_else(|| crate::error::KreuzbergError::parsing("OCR configuration missing"))?;
+    let default_ocr_config = crate::core::config::OcrConfig::default();
+    let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
 
     // Sort stages by priority (highest first)
     let mut stages = pipeline.stages.clone();

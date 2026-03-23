@@ -495,6 +495,53 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
                 NodeContent::PageBreak => {
                     content_hash.aset("node_type", "page_break")?;
                 }
+                NodeContent::Slide { number, title } => {
+                    content_hash.aset("node_type", "slide")?;
+                    content_hash.aset("number", number as i64)?;
+                    if let Some(t) = title {
+                        content_hash.aset("title", t)?;
+                    } else {
+                        content_hash.aset("title", ruby.qnil().as_value())?;
+                    }
+                }
+                NodeContent::DefinitionList => {
+                    content_hash.aset("node_type", "definition_list")?;
+                }
+                NodeContent::DefinitionItem { term, definition } => {
+                    content_hash.aset("node_type", "definition_item")?;
+                    content_hash.aset("term", term)?;
+                    content_hash.aset("definition", definition)?;
+                }
+                NodeContent::Citation { key, text } => {
+                    content_hash.aset("node_type", "citation")?;
+                    content_hash.aset("key", key)?;
+                    content_hash.aset("text", text)?;
+                }
+                NodeContent::Admonition { kind, title } => {
+                    content_hash.aset("node_type", "admonition")?;
+                    content_hash.aset("kind", kind)?;
+                    if let Some(t) = title {
+                        content_hash.aset("title", t)?;
+                    } else {
+                        content_hash.aset("title", ruby.qnil().as_value())?;
+                    }
+                }
+                NodeContent::RawBlock { format, content } => {
+                    content_hash.aset("node_type", "raw_block")?;
+                    content_hash.aset("format", format)?;
+                    content_hash.aset("content", content)?;
+                }
+                NodeContent::MetadataBlock { entries } => {
+                    content_hash.aset("node_type", "metadata_block")?;
+                    let entries_array = ruby.ary_new();
+                    for (key, value) in entries {
+                        let entry_array = ruby.ary_new();
+                        entry_array.push(ruby.str_new(&key))?;
+                        entry_array.push(ruby.str_new(&value))?;
+                        entries_array.push(entry_array)?;
+                    }
+                    content_hash.aset("entries", entries_array)?;
+                }
             }
             node_hash.aset("content", content_hash)?;
 
@@ -579,6 +626,26 @@ pub fn extraction_result_to_ruby(ruby: &Ruby, result: RustExtractionResult) -> R
                             kind_hash.aset("title", t)?;
                         } else {
                             kind_hash.aset("title", ruby.qnil().as_value())?;
+                        }
+                    }
+                    AnnotationKind::Highlight => {
+                        kind_hash.aset("annotation_type", "highlight")?;
+                    }
+                    AnnotationKind::Color { value } => {
+                        kind_hash.aset("annotation_type", "color")?;
+                        kind_hash.aset("value", value)?;
+                    }
+                    AnnotationKind::FontSize { value } => {
+                        kind_hash.aset("annotation_type", "font_size")?;
+                        kind_hash.aset("value", value)?;
+                    }
+                    AnnotationKind::Custom { name, value } => {
+                        kind_hash.aset("annotation_type", "custom")?;
+                        kind_hash.aset("name", name)?;
+                        if let Some(v) = value {
+                            kind_hash.aset("value", v)?;
+                        } else {
+                            kind_hash.aset("value", ruby.qnil().as_value())?;
                         }
                     }
                 }

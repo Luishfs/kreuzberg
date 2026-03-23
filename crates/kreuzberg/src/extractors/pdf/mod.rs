@@ -150,10 +150,8 @@ async fn run_ocr_with_layout(
     config: &ExtractionConfig,
     path: Option<&std::path::Path>,
 ) -> crate::Result<String> {
-    let ocr_config = config
-        .ocr
-        .as_ref()
-        .ok_or_else(|| crate::error::KreuzbergError::parsing("OCR configuration missing"))?;
+    let default_ocr_config = crate::core::config::OcrConfig::default();
+    let ocr_config = config.ocr.as_ref().unwrap_or(&default_ocr_config);
 
     // Check for pipeline configuration
     if let Some(pipeline) = ocr_config.effective_pipeline() {

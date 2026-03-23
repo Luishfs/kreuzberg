@@ -16,6 +16,7 @@
 
 #![allow(clippy::too_many_arguments)]
 
+pub(crate) mod constants;
 pub mod angle_net;
 pub mod base_net;
 pub mod crnn_net;

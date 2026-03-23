@@ -1098,9 +1098,10 @@ impl FictionBookExtractor {
                                         "strikethrough" => Some(AnnotationKind::Strikethrough),
                                         "code" => Some(AnnotationKind::Code),
                                         _ => None,
-                                    } {
-                                        annotations.push(TextAnnotation { start, end, kind });
                                     }
+                                {
+                                    annotations.push(TextAnnotation { start, end, kind });
+                                }
                             }
                         }
                         _ => {}

@@ -139,11 +139,12 @@ pub(crate) fn build_document_structure(content: &[u8]) -> Result<crate::types::d
     let mut builder = DocumentStructureBuilder::new().source_format("opml");
 
     if let Some(opml) = doc.root().children().find(|n| n.tag_name().name() == "opml")
-        && let Some(body) = opml.children().find(|n| n.tag_name().name() == "body") {
-            for outline in body.children().filter(|n| n.tag_name().name() == "outline") {
-                build_outline_structure(outline, 1, &mut builder);
-            }
+        && let Some(body) = opml.children().find(|n| n.tag_name().name() == "body")
+    {
+        for outline in body.children().filter(|n| n.tag_name().name() == "outline") {
+            build_outline_structure(outline, 1, &mut builder);
         }
+    }
 
     Ok(builder.build())
 }
