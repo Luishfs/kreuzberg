@@ -27,6 +27,9 @@
 #' @param cache_ttl_secs Integer or NULL. Per-request cache TTL in seconds.
 #'   Overrides the server default TTL for this extraction request. When NULL,
 #'   the server default is used.
+#' @param extraction_timeout_secs Integer or NULL. Extraction timeout in seconds.
+#'   When set, limits the maximum time allowed for an extraction operation.
+#'   When NULL, the server default is used.
 #' @param ... Additional configuration options passed as named list elements.
 #' @return A named list representing the extraction configuration.
 #' @export
@@ -43,6 +46,7 @@ extraction_config <- function(force_ocr = FALSE, ocr = NULL, chunking = NULL,
                               layout = NULL, email = NULL,
                               concurrency = NULL,
                               cache_namespace = NULL, cache_ttl_secs = NULL,
+                              extraction_timeout_secs = NULL,
                               ...) {
   config <- list()
   if (isTRUE(force_ocr)) config$force_ocr <- TRUE
@@ -84,6 +88,9 @@ extraction_config <- function(force_ocr = FALSE, ocr = NULL, chunking = NULL,
   }
   if (!is.null(cache_ttl_secs)) {
     config$cache_ttl_secs <- as.integer(cache_ttl_secs)
+  }
+  if (!is.null(extraction_timeout_secs)) {
+    config$extraction_timeout_secs <- as.integer(extraction_timeout_secs)
   }
   extras <- list(...)
   if (length(extras) > 0) config <- c(config, extras)

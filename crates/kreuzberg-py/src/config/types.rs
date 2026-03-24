@@ -409,6 +409,16 @@ impl ExtractionConfig {
         self.inner.cache_ttl_secs = value;
     }
 
+    #[getter]
+    fn extraction_timeout_secs(&self) -> Option<u64> {
+        self.inner.extraction_timeout_secs
+    }
+
+    #[setter]
+    fn set_extraction_timeout_secs(&mut self, value: Option<u64>) {
+        self.inner.extraction_timeout_secs = value;
+    }
+
     fn __repr__(&self) -> String {
         format!(
             "ExtractionConfig(use_cache={}, enable_quality_processing={}, ocr={}, force_ocr={})",
@@ -2546,6 +2556,16 @@ impl FileExtractionConfig {
     #[setter]
     fn set_layout(&mut self, value: Option<LayoutDetectionConfig>) {
         self.inner.layout = value.map(Into::into);
+    }
+
+    #[getter]
+    fn timeout_secs(&self) -> Option<u64> {
+        self.inner.timeout_secs
+    }
+
+    #[setter]
+    fn set_timeout_secs(&mut self, value: Option<u64>) {
+        self.inner.timeout_secs = value;
     }
 
     fn __repr__(&self) -> String {
