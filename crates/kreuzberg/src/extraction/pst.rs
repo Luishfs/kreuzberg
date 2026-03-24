@@ -1,0 +1,307 @@
+//! PST (Outlook Personal Folders) file extraction.
+//!
+//! This module handles extraction of emails from Microsoft Outlook PST files
+//! using the `outlook-pst` crate.
+//!
+//! # Features
+//!
+//! - **Unicode and ANSI PST support**: Handles both modern and legacy PST formats
+//! - **Folder hierarchy traversal**: Extracts messages from all folders recursively
+//! - **Message properties**: Extracts subject, sender, recipients, body
+//!
+//! # Example
+//!
+//! ```rust,no_run
+//! use kreuzberg::extraction::pst::extract_pst_messages;
+//!
+//! # fn example() -> kreuzberg::Result<()> {
+//! let pst_bytes = std::fs::read("archive.pst")?;
+//! let messages = extract_pst_messages(&pst_bytes)?;
+//!
+//! for msg in &messages {
+//!     println!("Subject: {:?}", msg.subject);
+//! }
+//! # Ok(())
+//! # }
+//! ```
+
+use crate::error::{KreuzbergError, Result};
+use crate::types::EmailExtractionResult;
+use std::collections::HashMap;
+
+#[cfg(feature = "email")]
+use outlook_pst::{
+    ltp::prop_context::PropertyValue,
+    messaging::{folder::Folder as PstFolder, message::Message as PstMessage},
+    ndb::node_id::NodeId,
+};
+#[cfg(feature = "email")]
+use std::rc::Rc;
+
+/// Extract all email messages from a PST file.
+///
+/// Opens the PST file and traverses the full folder hierarchy, extracting
+/// every message including subject, sender, recipients, and body text.
+///
+/// # Arguments
+///
+/// * `pst_data` - Raw bytes of the PST file
+///
+/// # Returns
+///
+/// A vector of `EmailExtractionResult`, one per message found.
+///
+/// # Errors
+///
+/// Returns an error if the PST data cannot be written to a temporary file,
+/// or if the PST format is invalid.
+#[cfg(feature = "email")]
+pub fn extract_pst_messages(pst_data: &[u8]) -> Result<Vec<EmailExtractionResult>> {
+    use std::io::Write;
+
+    // open_store requires a file path, so we write to a uniquely-named temp file
+    let mut temp_file = tempfile::Builder::new()
+        .prefix("kreuzberg_pst_")
+        .suffix(".tmp")
+        .tempfile()
+        .map_err(KreuzbergError::Io)?;
+
+    temp_file.write_all(pst_data).map_err(KreuzbergError::Io)?;
+    temp_file.flush().map_err(KreuzbergError::Io)?;
+
+    extract_from_path(temp_file.path())
+}
+
+#[cfg(feature = "email")]
+fn extract_from_path(path: &std::path::Path) -> Result<Vec<EmailExtractionResult>> {
+    let store = outlook_pst::open_store(path).map_err(|e| KreuzbergError::Validation {
+        message: format!("Failed to open PST file: {e}"),
+        source: None,
+    })?;
+
+    let mut messages = Vec::new();
+
+    let ipm_entry = match store.properties().ipm_sub_tree_entry_id() {
+        Ok(e) => e,
+        Err(_) => return Ok(messages),
+    };
+
+    let root_folder = match store.open_folder(&ipm_entry) {
+        Ok(f) => f,
+        Err(_) => return Ok(messages),
+    };
+
+    // Iterative depth-first traversal to avoid deep recursion
+    let mut folder_stack: Vec<(Rc<dyn PstFolder>, u32)> = vec![(root_folder, 0)];
+
+    while let Some((folder, depth)) = folder_stack.pop() {
+        if depth > 50 {
+            continue;
+        }
+
+        // Extract messages from this folder's contents table
+        if let Some(contents) = folder.contents_table() {
+            let ids: Vec<u32> = contents.rows_matrix().map(|r| u32::from(r.id())).collect();
+            for id in ids {
+                let node = NodeId::from(id);
+                let Ok(entry_id) = store.properties().make_entry_id(node) else {
+                    continue;
+                };
+                let Ok(msg) = store.open_message(&entry_id, None) else {
+                    continue;
+                };
+                messages.push(extract_message_content(msg.as_ref()));
+            }
+        }
+
+        // Queue sub-folders from the hierarchy table
+        if let Some(hierarchy) = folder.hierarchy_table() {
+            let ids: Vec<u32> = hierarchy.rows_matrix().map(|r| u32::from(r.id())).collect();
+            for id in ids {
+                let node = NodeId::from(id);
+                let Ok(entry_id) = store.properties().make_entry_id(node) else {
+                    continue;
+                };
+                let Ok(sub_folder) = store.open_folder(&entry_id) else {
+                    continue;
+                };
+                folder_stack.push((sub_folder, depth + 1));
+            }
+        }
+    }
+
+    Ok(messages)
+}
+
+#[cfg(feature = "email")]
+fn extract_message_content(message: &dyn PstMessage) -> EmailExtractionResult {
+    let props = message.properties();
+
+    let subject = get_str_prop(props, 0x0037); // PR_SUBJECT
+    let sender_name = get_str_prop(props, 0x0C1A); // PR_SENDER_NAME
+    let sender_email = get_str_prop(props, 0x0C1F); // PR_SENDER_EMAIL_ADDRESS
+    let from_email = sender_email.or(sender_name);
+
+    let plain_text = get_str_prop(props, 0x1000); // PR_BODY
+    let html_content = get_str_prop(props, 0x1013); // PR_HTML (may be Binary; handled below)
+
+    let cleaned_text = plain_text
+        .clone()
+        .or_else(|| html_content.clone())
+        .unwrap_or_default();
+
+    let date = props.get(0x0E06).and_then(|v| {
+        if let PropertyValue::Time(ft) = v {
+            Some(windows_filetime_to_string(*ft))
+        } else {
+            None
+        }
+    });
+
+    // Extract recipients from the recipient table
+    let mut to_emails: Vec<String> = Vec::new();
+    let mut cc_emails: Vec<String> = Vec::new();
+    let mut bcc_emails: Vec<String> = Vec::new();
+
+    if let Some(recipient_table) = message.recipient_table() {
+        let context = recipient_table.context();
+        let col_defs: Vec<(u16, _)> = context.columns().iter().map(|c| (c.prop_id(), c.prop_type())).collect();
+
+        for row in recipient_table.rows_matrix() {
+            let Ok(col_values) = row.columns(context) else {
+                continue;
+            };
+
+            let mut recipient_type: i32 = 1; // default: TO
+            let mut display_name: Option<String> = None;
+            let mut smtp_email: Option<String> = None;
+
+            for ((prop_id, prop_type), value_opt) in col_defs.iter().zip(col_values.iter()) {
+                let Some(value_record) = value_opt else {
+                    continue;
+                };
+                let Ok(value) = recipient_table.read_column(value_record, *prop_type) else {
+                    continue;
+                };
+
+                match prop_id {
+                    0x0C15 => {
+                        // PR_RECIPIENT_TYPE
+                        if let PropertyValue::Integer32(v) = value {
+                            recipient_type = v;
+                        }
+                    }
+                    0x3001 => {
+                        // PR_DISPLAY_NAME
+                        display_name = prop_value_to_string(&value);
+                    }
+                    0x39FE | 0x3003 => {
+                        // PR_SMTP_ADDRESS / PR_EMAIL_ADDRESS
+                        if smtp_email.is_none() {
+                            smtp_email = prop_value_to_string(&value);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+
+            let recipient = smtp_email.or(display_name).unwrap_or_default();
+            if recipient.is_empty() {
+                continue;
+            }
+            match recipient_type {
+                1 => to_emails.push(recipient),  // MAPI_TO
+                2 => cc_emails.push(recipient),  // MAPI_CC
+                3 => bcc_emails.push(recipient), // MAPI_BCC
+                _ => to_emails.push(recipient),
+            }
+        }
+    }
+
+    EmailExtractionResult {
+        subject,
+        from_email,
+        to_emails,
+        cc_emails,
+        bcc_emails,
+        date,
+        message_id: None,
+        plain_text,
+        html_content,
+        cleaned_text,
+        attachments: vec![],
+        metadata: HashMap::new(),
+    }
+}
+
+/// Get a string value from message properties by property ID.
+#[cfg(feature = "email")]
+fn get_str_prop(
+    props: &outlook_pst::messaging::message::MessageProperties,
+    prop_id: u16,
+) -> Option<String> {
+    prop_value_to_string(props.get(prop_id)?)
+}
+
+/// Convert a `PropertyValue` to a `String`, if it holds a string type.
+#[cfg(feature = "email")]
+fn prop_value_to_string(value: &PropertyValue) -> Option<String> {
+    match value {
+        PropertyValue::String8(v) => Some(v.to_string()),
+        PropertyValue::Unicode(v) => Some(v.to_string()),
+        _ => None,
+    }
+}
+
+/// Convert a Windows FILETIME (100-ns intervals since 1601-01-01) to an ISO-8601 string.
+///
+/// Uses a simple Unix timestamp calculation without external date libraries.
+#[cfg(feature = "email")]
+fn windows_filetime_to_string(filetime: i64) -> String {
+    // 100-nanosecond intervals between 1601-01-01 and 1970-01-01
+    const EPOCH_DIFF_100NS: i64 = 116_444_736_000_000_000;
+    let unix_secs = (filetime.saturating_sub(EPOCH_DIFF_100NS)) / 10_000_000;
+
+    // Format as a simple UTC timestamp: "YYYY-MM-DD HH:MM:SS UTC"
+    // Days since Unix epoch
+    if unix_secs < 0 {
+        return format!("(invalid timestamp: {})", filetime);
+    }
+    let secs = unix_secs as u64;
+    let seconds_of_day = secs % 86400;
+    let days = secs / 86400;
+
+    let hh = seconds_of_day / 3600;
+    let mm = (seconds_of_day % 3600) / 60;
+    let ss = seconds_of_day % 60;
+
+    // Gregorian calendar calculation
+    let (year, month, day) = days_to_ymd(days);
+
+    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", year, month, day, hh, mm, ss)
+}
+
+/// Convert days since Unix epoch (1970-01-01) to (year, month, day).
+#[cfg(feature = "email")]
+fn days_to_ymd(days: u64) -> (u64, u64, u64) {
+    // Algorithm from: https://howardhinnant.github.io/date_algorithms.html
+    let z = days + 719468;
+    let era = z / 146097;
+    let doe = z % 146097;
+    let yoe = (doe - doe / 1460 + doe / 36524 - doe / 146096) / 365;
+    let y = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let d = doy - (153 * mp + 2) / 5 + 1;
+    let m = if mp < 10 { mp + 3 } else { mp - 9 };
+    let y = if m <= 2 { y + 1 } else { y };
+    (y, m, d)
+}
+
+#[cfg(not(feature = "email"))]
+pub fn extract_pst_messages(_pst_data: &[u8]) -> Result<Vec<EmailExtractionResult>> {
+    Err(KreuzbergError::FeatureNotEnabled {
+        feature: "email".to_string(),
+        context: Some("PST extraction requires the 'email' feature to be enabled".to_string()),
+    })
+}
