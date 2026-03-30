@@ -143,11 +143,11 @@ pub(crate) fn resolve_image_uris(doc: &mut InternalDocument, base_dir: &Path, co
         .collect();
 
     for url in &image_urls {
-        if let Some(resolved) = resolve_image_path(base_dir, url) {
-            if let Some(img) = read_image_file(&resolved, image_index) {
-                doc.images.push(img);
-                image_index += 1;
-            }
+        if let Some(resolved) = resolve_image_path(base_dir, url)
+            && let Some(img) = read_image_file(&resolved, image_index)
+        {
+            doc.images.push(img);
+            image_index += 1;
         }
     }
 }

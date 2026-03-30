@@ -95,7 +95,7 @@ fn parse_keynote(content: &[u8]) -> Result<KeynoteData> {
         .iter()
         .filter(|p| {
             let filename = p.rsplit('/').next().unwrap_or(p);
-            !(filename.starts_with("Slide") && !filename.starts_with("MasterSlide"))
+            !filename.starts_with("Slide") || filename.starts_with("MasterSlide")
         })
         .collect();
 

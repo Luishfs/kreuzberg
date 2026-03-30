@@ -298,10 +298,8 @@ pub fn extract_metadata_from_zip(content: &[u8]) -> crate::types::metadata::Meta
     // Try to read Metadata/Properties.plist (XML plist with doc metadata)
     if let Ok(mut file) = archive.by_name("Metadata/Properties.plist") {
         let mut buf = Vec::new();
-        if file.read_to_end(&mut buf).is_ok() {
-            if let Ok(text) = std::str::from_utf8(&buf) {
-                parse_plist_metadata(text, &mut metadata);
-            }
+        if file.read_to_end(&mut buf).is_ok() && let Ok(text) = std::str::from_utf8(&buf) {
+            parse_plist_metadata(text, &mut metadata);
         }
     }
 
@@ -309,12 +307,10 @@ pub fn extract_metadata_from_zip(content: &[u8]) -> crate::types::metadata::Meta
     // (some iWork files store the doc title here)
     if let Ok(mut file) = archive.by_name("Metadata/DocumentIdentifier") {
         let mut buf = Vec::new();
-        if file.read_to_end(&mut buf).is_ok() {
-            if let Ok(text) = std::str::from_utf8(&buf) {
-                let trimmed = text.trim();
-                if !trimmed.is_empty() && metadata.title.is_none() {
-                    metadata.title = Some(trimmed.to_string());
-                }
+        if file.read_to_end(&mut buf).is_ok() && let Ok(text) = std::str::from_utf8(&buf) {
+            let trimmed = text.trim();
+            if !trimmed.is_empty() && metadata.title.is_none() {
+                metadata.title = Some(trimmed.to_string());
             }
         }
     }
@@ -338,8 +334,7 @@ fn parse_plist_metadata(plist: &str, metadata: &mut crate::types::metadata::Meta
             while j < lines.len() && lines[j].is_empty() {
                 j += 1;
             }
-            if j < lines.len() {
-                if let Some(value) = extract_plist_tag(lines[j], "string") {
+            if j < lines.len() && let Some(value) = extract_plist_tag(lines[j], "string") {
                     match key.as_str() {
                         "title" | "Title" => {
                             if metadata.title.is_none() {
@@ -372,7 +367,6 @@ fn parse_plist_metadata(plist: &str, metadata: &mut crate::types::metadata::Meta
                     continue;
                 }
             }
-        }
         i += 1;
     }
 }
@@ -381,11 +375,11 @@ fn parse_plist_metadata(plist: &str, metadata: &mut crate::types::metadata::Meta
 fn extract_plist_tag(line: &str, tag: &str) -> Option<String> {
     let open = format!("<{tag}>");
     let close = format!("</{tag}>");
-    if let Some(start) = line.find(&open) {
-        if let Some(end) = line.find(&close) {
-            let content = &line[start + open.len()..end];
-            return Some(content.to_string());
-        }
+    if let Some(start) = line.find(&open)
+        && let Some(end) = line.find(&close)
+    {
+        let content = &line[start + open.len()..end];
+        return Some(content.to_string());
     }
     None
 }
