@@ -212,13 +212,23 @@ impl DocumentExtractor for EmailExtractor {
     ) -> Result<InternalDocument> {
         let mut doc = self.extract_sync(content, mime_type, config)?;
 
-        // Recursively extract attachment content when archive depth allows it.
+        // Recursively extract attachment content and nested messages when archive depth allows.
         if config.max_archive_depth > 0 {
             let fallback_codepage = config.email.as_ref().and_then(|e| e.msg_fallback_codepage);
             if let Ok(email_result) =
                 crate::extraction::email::extract_email_content(content, mime_type, fallback_codepage)
             {
-                let (children, warnings) = extract_attachment_children(&email_result.attachments, config).await;
+                let (mut children, warnings) = extract_attachment_children(&email_result.attachments, config).await;
+
+                // Also extract nested message/rfc822 parts (e.g. from multipart/digest)
+                // as separate ArchiveEntry children for recursive processing.
+                if mime_type == "message/rfc822" {
+                    let (nested_children, nested_warnings) =
+                        extract_nested_message_children(content, config).await;
+                    children.extend(nested_children);
+                    doc.processing_warnings.extend(nested_warnings);
+                }
+
                 if !children.is_empty() {
                     doc.children = Some(children);
                 }
@@ -313,6 +323,63 @@ pub(crate) async fn extract_attachment_children(
                     source: Cow::Borrowed("email_attachment_extraction"),
                     message: Cow::Owned(format!("Failed to extract '{}': {}", filename, e)),
                 });
+            }
+        }
+    }
+
+    (children, warnings)
+}
+
+/// Extract nested `message/rfc822` sub-messages as `ArchiveEntry` children.
+///
+/// Parses the top-level EML to find `PartType::Message` parts (e.g. in
+/// `multipart/digest` emails) and recursively extracts each one via
+/// `extract_bytes` with `message/rfc822` MIME type. This makes nested
+/// messages available as separate children for recursive processing,
+/// complementing the existing text-merging in `collect_nested_message_text`
+/// / `collect_nested_message_html`.
+async fn extract_nested_message_children(
+    content: &[u8],
+    config: &ExtractionConfig,
+) -> (Vec<ArchiveEntry>, Vec<ProcessingWarning>) {
+    use mail_parser::PartType;
+
+    let mut children = Vec::new();
+    let mut warnings = Vec::new();
+
+    let message = match mail_parser::MessageParser::default().parse(content) {
+        Some(msg) => msg,
+        None => return (children, warnings),
+    };
+
+    let mut nested_idx: usize = 0;
+    for part in &message.parts {
+        if let PartType::Message(sub_msg) = &part.body {
+            let raw_bytes = sub_msg.raw_message();
+            if raw_bytes.is_empty() {
+                continue;
+            }
+
+            let filename = format!("nested_message_{nested_idx}.eml");
+            nested_idx += 1;
+
+            let mut child_config = config.clone();
+            child_config.max_archive_depth = config.max_archive_depth.saturating_sub(1);
+
+            match crate::core::extractor::extract_bytes(raw_bytes, "message/rfc822", &child_config).await {
+                Ok(result) => {
+                    children.push(ArchiveEntry {
+                        path: filename,
+                        mime_type: "message/rfc822".to_string(),
+                        result: Box::new(result),
+                    });
+                }
+                Err(e) => {
+                    warnings.push(ProcessingWarning {
+                        source: Cow::Borrowed("nested_message_extraction"),
+                        message: Cow::Owned(format!("Failed to extract '{}': {}", filename, e)),
+                    });
+                }
             }
         }
     }
