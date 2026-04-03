@@ -71,16 +71,18 @@ fn map_content_role(role: &ContentRole) -> (SemanticRole, Option<String>) {
 
 // ── hOCR → PdfParagraph adapter ─────────────────────────────────────────
 
-/// Convert hOCR-derived `InternalDocument` elements into `PdfParagraph`s.
+/// Convert OCR `InternalDocument` elements into `PdfParagraph`s.
 ///
-/// Each `OcrText` element from the hOCR parser becomes a `PdfParagraph` with:
-/// - Text and line structure from hOCR paragraph boundaries
+/// Works with any `InternalDocument` containing `OcrText` elements — from tesseract
+/// hOCR parsing or PaddleOCR TextBlock conversion. Each `OcrText` element becomes
+/// a `PdfParagraph` with:
+/// - Text and line structure
 /// - Bounding box converted from image coordinates (y=0 at top) to PDF coordinates (y=0 at bottom)
-/// - Default font size and formatting (hOCR doesn't carry per-paragraph font info reliably)
+/// - Default font size and formatting
 ///
-/// The resulting paragraphs can be fed directly into `apply_layout_overrides` and
-/// `assemble_internal_document`, matching the pdfium native text pipeline exactly.
-pub(crate) fn hocr_to_paragraphs(
+/// The resulting paragraphs feed into `apply_layout_overrides` and
+/// `assemble_internal_document`, matching the pdfium native text pipeline.
+pub(crate) fn ocr_doc_to_paragraphs(
     doc: &crate::types::internal::InternalDocument,
     page_height_px: u32,
 ) -> Vec<super::types::PdfParagraph> {
@@ -360,25 +362,25 @@ mod tests {
     }
 
     #[test]
-    fn test_hocr_to_paragraphs_basic() {
+    fn test_ocr_doc_to_paragraphs_basic() {
         let mut doc = crate::types::internal::InternalDocument::new("pdf");
         doc.push_element(make_ocr_element("Hello World", 1, 100.0, 50.0, 500.0, 100.0));
         doc.push_element(make_ocr_element("Second paragraph", 1, 100.0, 120.0, 500.0, 170.0));
 
-        let paragraphs = hocr_to_paragraphs(&doc, 1000);
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
         assert_eq!(paragraphs.len(), 2);
         assert_eq!(paragraphs[0].text, "Hello World");
         assert_eq!(paragraphs[1].text, "Second paragraph");
     }
 
     #[test]
-    fn test_hocr_to_paragraphs_bbox_flip() {
+    fn test_ocr_doc_to_paragraphs_bbox_flip() {
         // Image coords: y=0 at top. Element at y=50..100 on a 1000px page.
         // PDF coords: y=0 at bottom. Should become bottom=900, top=950.
         let mut doc = crate::types::internal::InternalDocument::new("pdf");
         doc.push_element(make_ocr_element("Test", 1, 100.0, 50.0, 500.0, 100.0));
 
-        let paragraphs = hocr_to_paragraphs(&doc, 1000);
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
         let bbox = paragraphs[0].block_bbox.unwrap();
         // (left, bottom, right, top)
         assert_eq!(bbox.0, 100.0, "left should be preserved");
@@ -388,7 +390,7 @@ mod tests {
     }
 
     #[test]
-    fn test_hocr_to_paragraphs_multiline() {
+    fn test_ocr_doc_to_paragraphs_multiline() {
         let mut doc = crate::types::internal::InternalDocument::new("pdf");
         doc.push_element(make_ocr_element(
             "Line one\nLine two\nLine three",
@@ -399,7 +401,7 @@ mod tests {
             200.0,
         ));
 
-        let paragraphs = hocr_to_paragraphs(&doc, 1000);
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
         assert_eq!(paragraphs.len(), 1);
         assert_eq!(paragraphs[0].lines.len(), 3);
         assert_eq!(paragraphs[0].lines[0].segments[0].text, "Line one");
@@ -408,35 +410,35 @@ mod tests {
     }
 
     #[test]
-    fn test_hocr_to_paragraphs_all_elements() {
+    fn test_ocr_doc_to_paragraphs_all_elements() {
         // Each per-page hOCR doc is independent, so all OcrText elements
         // are included regardless of their stored page number.
         let mut doc = crate::types::internal::InternalDocument::new("pdf");
         doc.push_element(make_ocr_element("First text", 1, 0.0, 0.0, 100.0, 50.0));
         doc.push_element(make_ocr_element("Second text", 1, 0.0, 60.0, 100.0, 110.0));
 
-        let paragraphs = hocr_to_paragraphs(&doc, 1000);
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
         assert_eq!(paragraphs.len(), 2);
     }
 
     #[test]
-    fn test_hocr_to_paragraphs_skips_empty() {
+    fn test_ocr_doc_to_paragraphs_skips_empty() {
         let mut doc = crate::types::internal::InternalDocument::new("pdf");
         doc.push_element(make_ocr_element("", 1, 0.0, 0.0, 100.0, 50.0));
         doc.push_element(make_ocr_element("   ", 1, 0.0, 60.0, 100.0, 110.0));
         doc.push_element(make_ocr_element("Real text", 1, 0.0, 120.0, 100.0, 170.0));
 
-        let paragraphs = hocr_to_paragraphs(&doc, 1000);
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
         assert_eq!(paragraphs.len(), 1);
         assert_eq!(paragraphs[0].text, "Real text");
     }
 
     #[test]
-    fn test_hocr_to_paragraphs_all_flags_default() {
+    fn test_ocr_doc_to_paragraphs_all_flags_default() {
         let mut doc = crate::types::internal::InternalDocument::new("pdf");
         doc.push_element(make_ocr_element("Test", 1, 0.0, 0.0, 100.0, 50.0));
 
-        let paragraphs = hocr_to_paragraphs(&doc, 1000);
+        let paragraphs = ocr_doc_to_paragraphs(&doc, 1000);
         let p = &paragraphs[0];
         assert_eq!(p.heading_level, None);
         assert!(!p.is_bold);

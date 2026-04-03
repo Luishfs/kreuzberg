@@ -807,7 +807,7 @@ pub(crate) async fn extract_with_ocr(
                         "hOCR InternalDocument for page"
                     );
                     let mut paragraphs =
-                        crate::pdf::structure::adapters::hocr_to_paragraphs(ocr_doc, ocr_render_height);
+                        crate::pdf::structure::adapters::ocr_doc_to_paragraphs(ocr_doc, ocr_render_height);
                     tracing::debug!(
                         page = page_idx + 1,
                         paragraph_count = paragraphs.len(),

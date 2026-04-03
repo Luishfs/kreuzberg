@@ -119,7 +119,10 @@ impl PaddleOcrBackend {
         let cls_model_path = Self::find_onnx_model(&shared.cls_model)?;
         let rec_model_path = Self::find_onnx_model(&resolved.model_dir)?;
 
-        let num_threads = crate::core::config::concurrency::resolve_thread_budget(None).min(4);
+        // Use 1 ONNX thread per engine since multiple pages run concurrently
+        // via JoinSet. Page-level parallelism is more efficient than per-engine
+        // multi-threading for OCR workloads.
+        let num_threads = 1;
 
         let dict_path = resolved.dict_file.to_str().ok_or_else(|| crate::KreuzbergError::Ocr {
             message: "Invalid dictionary file path".to_string(),
@@ -385,6 +388,38 @@ impl OcrBackend for PaddleOcrBackend {
             .do_ocr(&ocr_image_bytes, paddle_lang, Arc::clone(&effective_config))
             .await?;
 
+        // Build structured InternalDocument from OCR elements for the layout
+        // classification pipeline (same path as tesseract hOCR).
+        let ocr_doc = {
+            use crate::types::extraction::BoundingBox;
+            use crate::types::internal::{ElementKind, InternalDocument, InternalElement};
+            use crate::types::ocr_elements::OcrElementLevel;
+
+            let mut doc = InternalDocument::new("pdf");
+            for elem in &ocr_elements {
+                let (left, top, width, height) = elem.geometry.to_aabb();
+                let bbox = BoundingBox {
+                    x0: left as f64,
+                    y0: top as f64,
+                    x1: (left + width) as f64,
+                    y1: (top + height) as f64,
+                };
+                let mut ie = InternalElement::text(
+                    ElementKind::OcrText {
+                        level: OcrElementLevel::Line,
+                    },
+                    &elem.text,
+                    0,
+                )
+                .with_page(elem.page_number as u32);
+                ie.bbox = Some(bbox);
+                ie.ocr_confidence = Some(elem.confidence.clone());
+                ie.ocr_geometry = Some(elem.geometry.clone());
+                doc.push_element(ie);
+            }
+            doc
+        };
+
         // Table detection
         let mut tables: Vec<Table> = vec![];
         let mut table_count = 0;
@@ -457,7 +492,7 @@ impl OcrBackend for PaddleOcrBackend {
             #[cfg(feature = "tree-sitter")]
             code_intelligence: None,
             formatted_content: None,
-            ocr_internal_document: None,
+            ocr_internal_document: Some(ocr_doc),
         })
     }
 
