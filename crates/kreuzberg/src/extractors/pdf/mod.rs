@@ -839,6 +839,8 @@ impl PdfExtractor {
             // When the OCR path produced a structured InternalDocument, use it
             // instead of naively splitting text on double newlines.
             #[cfg(feature = "ocr")]
+            let has_ocr_doc = ocr_internal_doc.is_some();
+            #[cfg(feature = "ocr")]
             let mut doc = if let Some(mut ocr_doc) = ocr_internal_doc.take() {
                 ocr_doc.mime_type = std::borrow::Cow::Owned(mime_type.to_string());
                 ocr_doc
@@ -853,6 +855,8 @@ impl PdfExtractor {
                 }
                 d
             };
+            #[cfg(not(feature = "ocr"))]
+            let has_ocr_doc = false;
             #[cfg(not(feature = "ocr"))]
             let mut doc = {
                 let mut d = InternalDocument::new("pdf");
@@ -878,7 +882,32 @@ impl PdfExtractor {
                 format: Some(crate::types::FormatMetadata::Pdf(pdf_metadata.pdf_specific)),
                 ..Default::default()
             };
-            doc.tables = tables;
+            // When the OCR path produced a structured InternalDocument, its tables are
+            // already embedded with matching ElementKind::Table indices. Overwriting
+            // doc.tables would break those references. Instead, merge any additional
+            // tables (e.g., native-extracted tables) that aren't already present.
+            // When no OCR doc was produced, assign all tables and create Table elements
+            // so they are rendered through comrak's build_table().
+            if has_ocr_doc {
+                // The OCR doc already has tables with matching ElementKind::Table
+                // indices. Only merge tables not already present (e.g., native tables)
+                // and create corresponding elements for them.
+                for table in tables {
+                    if !doc
+                        .tables
+                        .iter()
+                        .any(|t| t.page_number == table.page_number && t.markdown == table.markdown)
+                    {
+                        let table_index = doc.push_table(table);
+                        doc.push_element(InternalElement::text(ElementKind::Table { table_index }, "", 0));
+                    }
+                }
+            } else {
+                for table in tables {
+                    let table_index = doc.push_table(table);
+                    doc.push_element(InternalElement::text(ElementKind::Table { table_index }, "", 0));
+                }
+            }
             if let Some(imgs) = images {
                 doc.images = imgs;
             }

@@ -588,7 +588,7 @@ pub fn is_well_formed_table(grid: &[Vec<String>]) -> bool {
                 .filter(|c| !c.is_empty())
                 .collect::<Vec<_>>()
                 .join(" ");
-            if concatenated.len() < 30 {
+            if concatenated.len() < 15 {
                 continue;
             }
             eligible_rows += 1;
@@ -1407,6 +1407,33 @@ mod tests {
         assert!(
             is_well_formed_table(&grid),
             "Table with varied column types should be accepted"
+        );
+    }
+
+    #[test]
+    fn test_well_formed_rejects_multicolumn_prose_short_cells() {
+        // nougat_008 pattern: scanned 3-column PDF where prose text flow is
+        // misdetected as a table. Cells are short (1-3 words each) but the
+        // concatenated rows read as prose with high alphabetic ratio.
+        let grid = vec![
+            vec!["Bookmark".into(), "File PDF".into(), "Year 4".into()],
+            vec!["Numeracy".into(), "Essment".into(), "Test".into()],
+            vec![
+                "Papers is universally".into(),
+                "And Answers compatible".into(),
+                "with any".into(),
+            ],
+            vec!["devices".into(), "to read".into(), "".into()],
+            vec!["Year 4 Maths".into(), "Lesson".into(), "Uk The".into()],
+            vec!["Maths Guy".into(), "ninety fail".into(), "Can you".into()],
+            vec!["pass a GRADE".into(), "four Math".into(), "Test here".into()],
+            vec!["Quick Learnerz".into(), "Year".into(), "four Termly".into()],
+            vec!["Maths Assessment".into(), "Can".into(), "You Pass".into()],
+            vec!["".into(), "Page five".into(), "".into()],
+        ];
+        assert!(
+            !is_well_formed_table(&grid),
+            "3-column prose with short cells (nougat_008 pattern) should be rejected"
         );
     }
 }

@@ -25,6 +25,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **OCR table cells** — OCR-detected tables (via TATR) had empty `cells` vectors, causing comrak to render them as paragraphs instead of proper tables. Now populated from the cell grid, matching the native text path fix.
 - **OCR non-layout InternalDocument** — When layout detection is not active, the OCR path now builds an InternalDocument from results instead of returning None. Ensures structured output regardless of layout detection availability.
 - **Italian/European PDF ligature corruption** — Extended contextual ligature repair to handle `tt`, `ti`, `tti` ligatures common in Italian fonts. Fixes garbled text like `Dire*ore` → `Direttore`, `ges:one` → `gestione`, `progeM` → `progetti`.
+- **OCR layout false heading classification** — Tesseract+layout pipeline was worse than pure tesseract (33% vs 41% SF1) because layout confidence threshold was too low (0.5). Raised to 0.7 for OCR path where font-size validation is unavailable.
+- **OCR table rendering** — OCR-detected tables were not linked to InternalDocument elements, causing comrak to skip them entirely. Tables now properly registered via `push_table()` with corresponding `ElementKind::Table` elements.
+- **Spurious table detection** — Multi-column prose with short cells (like nougat_008) bypassed the prose row check due to a 30-char minimum row length. Lowered to 15 chars so short-cell prose tables are correctly rejected.
 
 ---
 
