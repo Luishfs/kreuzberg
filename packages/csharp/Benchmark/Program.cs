@@ -111,6 +111,60 @@ try
 
         return 0;
     }
+    else if (mode == "batch")
+    {
+        // Batch mode: extract multiple files and output JSON array
+        var batchPaths = argsSpan.Slice(modeIndex + 1).ToArray();
+
+        if (batchPaths.Length == 0)
+        {
+            Console.Error.WriteLine("Error: At least one file path required for batch mode");
+            return 1;
+        }
+
+        var batchResults = new List<object>();
+        foreach (var bp in batchPaths)
+        {
+            var batchFilePath = bp.ToString();
+            var batchSw = System.Diagnostics.Stopwatch.StartNew();
+            try
+            {
+                if (!File.Exists(batchFilePath))
+                {
+                    batchSw.Stop();
+                    batchResults.Add(new { error = $"File not found: {batchFilePath}", _extraction_time_ms = 0.0, _ocr_used = false });
+                    continue;
+                }
+
+                var batchContent = await File.ReadAllBytesAsync(batchFilePath);
+                var batchMimeType = GuessMimeType(batchFilePath);
+                var batchResult = KreuzbergClient.ExtractBytesSync(batchContent, batchMimeType, benchConfig);
+                batchSw.Stop();
+
+                var batchFormatType = batchResult.Metadata?.Format?.Type;
+                var batchOcrUsed = batchFormatType == FormatType.Ocr
+                    || ((batchFormatType == FormatType.Image || batchFormatType == FormatType.Pdf) && ocrEnabled);
+                batchResults.Add(new
+                {
+                    content = batchResult.Content,
+                    _extraction_time_ms = batchSw.Elapsed.TotalMilliseconds,
+                    _ocr_used = batchOcrUsed
+                });
+            }
+            catch (Exception ex)
+            {
+                batchSw.Stop();
+                if (debug)
+                {
+                    Console.Error.WriteLine($"[DEBUG] Exception extracting {batchFilePath}: {ex.GetType().Name}: {ex.Message}");
+                }
+                batchResults.Add(new { error = $"{ex.GetType().Name}: {ex.Message}", _extraction_time_ms = batchSw.Elapsed.TotalMilliseconds, _ocr_used = false });
+            }
+        }
+
+        Console.WriteLine(JsonSerializer.Serialize(batchResults));
+        return 0;
+    }
     else if (mode == "server")
     {
         // Server mode: read file paths from stdin, extract, output JSON lines
@@ -209,7 +263,7 @@ try
     }
     else
     {
-        Console.Error.WriteLine($"Error: Unknown mode '{mode}'. Must be 'sync' or 'server'");
+        Console.Error.WriteLine($"Error: Unknown mode '{mode}'. Must be 'sync', 'batch', or 'server'");
         return 1;
     }
 }

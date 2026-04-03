@@ -261,13 +261,14 @@ public final class KreuzbergExtractJava {
                 debugLog("Extraction completed", "");
             }
         } catch (KreuzbergException | RuntimeException | java.io.IOException e) {
+            double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;
             if (debug) {
                 debugLog("Extraction failed with exception", e.getClass().getName());
                 e.printStackTrace(System.err);
-            } else {
-                e.printStackTrace(System.err);
             }
-            System.exit(1);
+            String errorJson = String.format("{\"error\":%s,\"_extraction_time_ms\":%.3f,\"_ocr_used\":false}",
+                    quote(fullMessage(e)), elapsedMs);
+            System.out.println(errorJson);
             return;
         }
         double elapsedMs = (System.nanoTime() - start) / NANOS_IN_MILLISECOND;

@@ -173,7 +173,7 @@ defmodule KreuzbergExtract do
   end
 
   @doc """
-  Extract multiple files in batch mode.
+  Extract multiple files in batch mode, isolating errors per file.
   """
   def extract_batch(file_paths, config \\ %{}, ocr_enabled \\ false) do
     debug_log("=== BATCH EXTRACTION START ===")
@@ -187,36 +187,28 @@ defmodule KreuzbergExtract do
       debug_log("  [#{idx}] #{path} (exists: #{exists}, size: #{size} bytes)")
     end)
 
-    start_time = System.monotonic_time(:microsecond)
-    start_wall = DateTime.utc_now()
-    debug_log("Timing start (monotonic): #{start_time}, wall: #{DateTime.to_iso8601(start_wall)}")
+    batch_start = System.monotonic_time(:microsecond)
 
-    result = Kreuzberg.batch_extract_files(file_paths, nil, config)
+    results_with_timing =
+      file_paths
+      |> Enum.with_index()
+      |> Enum.map(fn {file_path, idx} ->
+        file_start = System.monotonic_time(:microsecond)
 
-    end_time = System.monotonic_time(:microsecond)
-    end_wall = DateTime.utc_now()
-    total_duration_ms = (end_time - start_time) / 1000.0
-
-    debug_log("Timing end (monotonic): #{end_time}, wall: #{DateTime.to_iso8601(end_wall)}")
-    debug_log("Total duration (milliseconds): #{total_duration_ms}")
-
-    case result do
-      {:ok, results} ->
-        debug_log("Results count: #{length(results)}")
-
-        per_file_duration_ms =
-          if length(file_paths) > 0 do
-            total_duration_ms / length(file_paths)
-          else
-            0
+        result =
+          try do
+            Kreuzberg.extract_file(file_path, nil, config)
+          rescue
+            e -> {:error, inspect(e)}
+          catch
+            _, reason -> {:error, inspect(reason)}
           end
 
-        debug_log("Per-file average duration (milliseconds): #{per_file_duration_ms}")
+        file_end = System.monotonic_time(:microsecond)
+        file_duration_ms = (file_end - file_start) / 1000.0
 
-        results_with_timing =
-          results
-          |> Enum.with_index()
-          |> Enum.map(fn {extraction_result, idx} ->
+        case result do
+          {:ok, extraction_result} ->
             content_length = String.length(extraction_result.content || "")
             debug_log("  Result[#{idx}] - content length: #{content_length}, has metadata: true")
 
@@ -225,19 +217,26 @@ defmodule KreuzbergExtract do
             %{
               "content" => content,
               "metadata" => metadata,
-              "_extraction_time_ms" => per_file_duration_ms,
-              "_batch_total_ms" => total_duration_ms,
+              "_extraction_time_ms" => file_duration_ms,
               "_ocr_used" => determine_ocr_used(metadata, ocr_enabled)
             }
-          end)
 
-        debug_log("=== BATCH EXTRACTION END ===")
-        {:ok, results_with_timing}
+          {:error, reason} ->
+            debug_log("  Result[#{idx}] - ERROR: #{inspect(reason)}")
+            %{
+              "error" => inspect(reason),
+              "_extraction_time_ms" => file_duration_ms,
+              "_ocr_used" => false
+            }
+        end
+      end)
 
-      {:error, reason} ->
-        debug_log("ERROR during batch extraction: #{inspect(reason)}")
-        {:error, reason}
-    end
+    batch_end = System.monotonic_time(:microsecond)
+    total_duration_ms = (batch_end - batch_start) / 1000.0
+    debug_log("Total duration (milliseconds): #{total_duration_ms}")
+    debug_log("=== BATCH EXTRACTION END ===")
+
+    {:ok, results_with_timing}
   end
 
   @doc """

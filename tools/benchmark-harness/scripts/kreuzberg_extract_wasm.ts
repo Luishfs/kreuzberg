@@ -220,7 +220,7 @@ async function extractAsync(filePath: string, ocrEnabled: boolean): Promise<Extr
 async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<ExtractionOutput[]> {
 	const config = createConfig(ocrEnabled);
 	const start = performance.now();
-	const results = await Promise.all(
+	const settled = await Promise.allSettled(
 		filePaths.map((fp) => {
 			const mime = guessMimeType(fp);
 			return withTimeout(extractFile(fp, mime, config), fp, mime);
@@ -231,7 +231,16 @@ async function extractBatch(filePaths: string[], ocrEnabled: boolean): Promise<E
 	const perFileDurationMs = filePaths.length > 0 ? totalDurationMs / filePaths.length : 0;
 
 	const peakMemory = process.memoryUsage().rss;
-	return results.map((result) => {
+	return settled.map((settlement, i) => {
+		if (settlement.status === "rejected") {
+			const reason = settlement.reason instanceof Error ? settlement.reason.message : String(settlement.reason);
+			return {
+				error: reason,
+				_extraction_time_ms: 0,
+				_ocr_used: false,
+			} as unknown as ExtractionOutput;
+		}
+		const result = settlement.value;
 		const metadata = (result.metadata as Record<string, unknown>) ?? {};
 		return {
 			content: result.content,

@@ -611,6 +611,24 @@ jobs:
               fi
               export OPENSSL_INCLUDE_DIR=/usr/include
             fi
+            # Download ORT shared libraries inside the manylinux container so
+            # ort-sys links dynamically against them instead of statically
+            # embedding the glibc 2.38+ binaries it would otherwise download.
+            echo "=== Downloading ORT shared libraries ==="
+            ARCH=$(uname -m)
+            ORT_VERSION="1.20.1"
+            if [ "$ARCH" = "aarch64" ]; then
+              ORT_ARCHIVE="onnxruntime-linux-aarch64-${ORT_VERSION}.tgz"
+            else
+              ORT_ARCHIVE="onnxruntime-linux-x64-${ORT_VERSION}.tgz"
+            fi
+            ORT_URL="https://github.com/microsoft/onnxruntime/releases/download/v${ORT_VERSION}/${ORT_ARCHIVE}"
+            curl -fsSL "${ORT_URL}" -o /tmp/ort.tgz
+            tar -xzf /tmp/ort.tgz -C /tmp
+            ORT_DIR=$(find /tmp -maxdepth 1 -type d -name "onnxruntime-linux-*" | head -n1)
+            cp "${ORT_DIR}"/lib/libonnxruntime.so* /usr/lib/ 2>/dev/null || true
+            export ORT_LIB_LOCATION="${ORT_DIR}/lib"
+            export ORT_PREFER_DYNAMIC_LINK=1
             # Build CLI binary inside container
             # Note: before-script-linux CWD is the working-directory (packages/python),
             # but cargo outputs to the workspace root's target/ dir
@@ -3142,7 +3160,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Update NPM
-        run: npm install -g npm
+        run: corepack enable && corepack prepare npm@latest --activate
         shell: bash
 
       - name: Prepare artifact directory
