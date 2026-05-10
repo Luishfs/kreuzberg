@@ -2,6 +2,8 @@
 import Kreuzberg
 
 // Clear all registered plugins in each registry
+try Kreuzberg.clearDocumentExtractors()
+try Kreuzberg.clearRenderers()
 try Kreuzberg.clearOcrBackends()
 try Kreuzberg.clearPostProcessors()
 try Kreuzberg.clearValidators()

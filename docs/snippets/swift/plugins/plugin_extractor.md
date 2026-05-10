@@ -1,11 +1,13 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="swift-bridge 0.1.59 does not expose SwiftDocumentExtractorBox constructor or protocol definition in generated Swift code. Custom extractors must be implemented in Rust and registered via FFI shim." -->
 ```swift title="Swift"
 import Kreuzberg
 
-// DocumentExtractor trait-bridge support requires alef-side InternalDocument 
-// bridging (alef >= 0.16); custom DocumentExtractor implementations remain 
-// Rust-only until then.
+// Custom DocumentExtractor registration is not available from Swift.
 //
-// Custom extractors must be implemented in Rust and registered through a
-// Rust shim crate that links both `kreuzberg` and the Swift binding crate.
+// The Rust FFI (packages/swift/rust/src/lib.rs) accepts SwiftDocumentExtractorBox,
+// but swift-bridge does not generate the Swift-side protocol definition or
+// constructor required to implement and register instances.
+//
+// Solution: Implement DocumentExtractor in Rust and wrap it in a Rust FFI shim
+// that links both `kreuzberg` and the `kreuzberg-swift` package.
 ```

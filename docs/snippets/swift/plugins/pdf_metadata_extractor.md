@@ -1,12 +1,13 @@
-<!-- snippet:skip -->
+<!-- snippet:skip reason="swift-bridge 0.1.59 does not expose SwiftDocumentExtractorBox constructor or protocol definition in generated Swift code. Custom extractors must be implemented in Rust and registered via FFI shim." -->
 ```swift title="Swift"
 import Kreuzberg
 
-// DocumentExtractor trait-bridge support requires alef-side InternalDocument 
-// bridging (alef >= 0.16); custom DocumentExtractor implementations remain 
-// Rust-only until then.
+// Custom DocumentExtractor registration is not available from Swift.
+// 
+// The FFI defines SwiftDocumentExtractorBox opaque type (packages/swift/rust/src/lib.rs),
+// but swift-bridge's Swift code generator does not emit the protocol definition or
+// factory required to construct and register instances from Swift.
 //
-// PDF metadata is already populated on ExtractionResult.metadata by the
-// built-in PDF extractor. To augment metadata, write a PostProcessor in 
-// Rust or post-process results in Swift after extraction.
+// Workaround: Augment PDF extraction results by implementing a PostProcessor in Rust,
+// or post-process ExtractionResult.metadata in Swift after extraction.
 ```
