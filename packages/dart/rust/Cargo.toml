@@ -17,6 +17,7 @@ flutter_rust_bridge = "2.12.0"
 serde_json = "1"
 tokio = { version = "1", features = ["rt"] }
 async-trait = "0.1"
+
 [target.'cfg(not(all(target_os = "android", target_arch = "x86_64")))'.dependencies]
 kreuzberg = { path = "../../../crates/kreuzberg", features = ["full"] }
 
@@ -27,9 +28,9 @@ kreuzberg = { path = "../../../crates/kreuzberg", default-features = false, feat
 # flutter_rust_bridge uses #[cfg(frb_expand)] internally during macro expansion.
 # Declare it as a known cfg so rustc does not emit unexpected_cfgs warnings.
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(frb_expand)'] }
-# Alef emits `pub(crate) inner: ...` opaque-mirror fields for every Rust newtype.
-# Some are unread within the dart wrapper itself (their job is to keep ownership
-# and pass through frb). RUSTFLAGS=-D warnings in CI promotes the unused-field
-# warning to an error on Windows; mask it at the crate level since these fields
-# are part of the alef-emitted contract, not dead code we control.
+# Alef emits `pub(crate) inner: kreuzberg::*` fields on opaque mirror structs;
+# the dart wrapper itself never reads them (they exist to hold ownership and
+# pass through frb). RUSTFLAGS=-D warnings on the Windows publish runner
+# promotes the unused-field warning to a hard error. Allow at crate scope
+# since these are alef-generated and not under our control here.
 dead_code = "allow"
