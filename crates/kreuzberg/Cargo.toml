@@ -499,3 +499,6 @@ tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 zip = { version = ">=7.0.0, <8.7.0", default-features = false, features = [
     "deflate-flate2",
 ] }
+
+[lints]
+workspace = true
