@@ -9,6 +9,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`kreuzberg` crate root**: plugin_api surface (`list_*`, `clear_*`, `register_*`,
+  `unregister_*` for all six plugin types; `detect_mime_type_from_bytes`,
+  `get_extensions_for_mime`) was already present in the internal module tree but not
+  wired up as top-level `pub use` items. The re-exports are now confirmed in place and
+  the 9 e2e fixtures that carried a stale "not re-exported" skip block have had that
+  block removed — those fixtures are now active across all language targets.
+
 ### Fixed
 
 - **alef-backend-php**: emit reverse `From<binding> for kreuzberg::Core` impls for metadata DTOs
