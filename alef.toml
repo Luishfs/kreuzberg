@@ -1,5 +1,5 @@
 [workspace]
-alef_version = "0.17.8"
+alef_version = "0.17.10"
 languages = [
   "python",
   "node",
@@ -862,6 +862,11 @@ function = "extract_file"
 module = "kreuzberg"
 async = true
 returns_result = true
+# kreuzberg's `chunks` is a plain `Vec<TextChunk>` field on `ExtractionResult`,
+# not a streaming channel. Without this opt-out, alef's streaming auto-detect
+# triggers on any assertion targeting `chunks` / `chunks.length` and emits
+# `range over stream` / `ChatCompletionChunk` codegen.
+streaming = false
 args = [
   { name = "path", field = "input.path", type = "file_path" },
   { name = "mime_type", field = "input.mime_type", type = "string", optional = true },
@@ -883,6 +888,7 @@ function = "extract_bytes"
 module = "kreuzberg"
 async = true
 returns_result = true
+streaming = false
 args = [
   { name = "content", field = "input.data", type = "bytes" },
   { name = "mime_type", field = "input.mime_type", type = "string" },
@@ -914,6 +920,7 @@ function = "extract_file_sync"
 module = "kreuzberg"
 async = false
 returns_result = true
+streaming = false
 skip_languages = ["wasm"]
 args = [
   { name = "path", field = "input.path", type = "file_path" },
@@ -945,6 +952,7 @@ function = "extract_bytes_sync"
 module = "kreuzberg"
 async = false
 returns_result = true
+streaming = false
 skip_languages = ["wasm"]
 args = [
   { name = "content", field = "input.data", type = "bytes" },
@@ -2657,6 +2665,17 @@ result_is_simple = true
 extra_args = ["None", "None"]
 
 [crates.e2e.calls.render_pdf_page_to_png.overrides.csharp]
+result_is_bytes = true
+result_is_simple = true
+extra_args = ["null", "null"]
+
+[crates.e2e.calls.render_pdf_page_to_png.overrides.go]
+result_is_bytes = true
+result_is_simple = true
+result_is_array = true
+extra_args = ["nil", "nil"]
+
+[crates.e2e.calls.render_pdf_page_to_png.overrides.java]
 result_is_bytes = true
 result_is_simple = true
 extra_args = ["null", "null"]
