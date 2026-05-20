@@ -21,23 +21,17 @@
 
 package dev.kreuzberg
 
-/**
- * Embedding model types supported by Kreuzberg.
- */
+/** Embedding model types supported by Kreuzberg. */
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = EmbeddingModelTypeDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = EmbeddingModelTypeSerializer::class)
 sealed class EmbeddingModelType {
-    /**
-     * Use a preset model configuration (recommended)
-     */
+    /** Use a preset model configuration (recommended) */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Preset(
         val name: String
     ) : EmbeddingModelType()
-    /**
-     * Use a custom ONNX model from HuggingFace
-     */
+    /** Use a custom ONNX model from HuggingFace */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Custom(

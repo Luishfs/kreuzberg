@@ -28,21 +28,13 @@ package dev.kreuzberg
  * returning structured data that conforms to the schema.
  */
 data class StructuredExtractionConfig(
-    /**
-     * JSON Schema defining the desired output structure.
-     */
+    /** JSON Schema defining the desired output structure. */
     val schema: String,
-    /**
-     * Schema name passed to the LLM's structured output mode.
-     */
+    /** Schema name passed to the LLM's structured output mode. */
     val schemaName: String,
-    /**
-     * Optional schema description for the LLM.
-     */
+    /** Optional schema description for the LLM. */
     val schemaDescription: String?,
-    /**
-     * Enable strict mode — output must exactly match the schema.
-     */
+    /** Enable strict mode — output must exactly match the schema. */
     val strict: Boolean,
     /**
      * Custom Jinja2 extraction prompt template. When `null`, a default template is used.
@@ -54,8 +46,6 @@ data class StructuredExtractionConfig(
      * - `{{ schema_description }}` — The schema description (may be empty).
      */
     val prompt: String?,
-    /**
-     * LLM configuration for the extraction.
-     */
+    /** LLM configuration for the extraction. */
     val llm: LlmConfig
 )

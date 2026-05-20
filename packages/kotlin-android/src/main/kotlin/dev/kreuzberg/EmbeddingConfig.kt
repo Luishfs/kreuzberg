@@ -30,21 +30,13 @@ import java.nio.file.Path
  * Requires the `embeddings` feature to be enabled.
  */
 data class EmbeddingConfig(
-    /**
-     * The embedding model to use (defaults to "balanced" preset if not specified)
-     */
+    /** The embedding model to use (defaults to "balanced" preset if not specified) */
     val model: EmbeddingModelType,
-    /**
-     * Whether to normalize embedding vectors (recommended for cosine similarity)
-     */
+    /** Whether to normalize embedding vectors (recommended for cosine similarity) */
     val normalize: Boolean,
-    /**
-     * Batch size for embedding generation
-     */
+    /** Batch size for embedding generation */
     val batchSize: Long,
-    /**
-     * Show model download progress
-     */
+    /** Show model download progress */
     val showDownloadProgress: Boolean,
     /**
      * Custom cache directory for model files

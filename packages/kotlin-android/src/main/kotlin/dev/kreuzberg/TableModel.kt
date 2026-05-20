@@ -29,29 +29,19 @@ package dev.kreuzberg
  * YAML).
  */
 enum class TableModel {
-    /**
-     * TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection.
-     */
+    /** TATR (Table Transformer) -- default, 30MB, DETR-based row/column detection. */
     TATR,
-    /**
-     * SLANeXT wired variant -- 365MB, optimized for bordered tables.
-     */
+    /** SLANeXT wired variant -- 365MB, optimized for bordered tables. */
     SLANET_WIRED,
-    /**
-     * SLANeXT wireless variant -- 365MB, optimized for borderless tables.
-     */
+    /** SLANeXT wireless variant -- 365MB, optimized for borderless tables. */
     SLANET_WIRELESS,
-    /**
-     * SLANet-plus -- 7.78MB, lightweight general-purpose.
-     */
+    /** SLANet-plus -- 7.78MB, lightweight general-purpose. */
     SLANET_PLUS,
     /**
      * Classifier-routed SLANeXT: auto-select wired/wireless per table.
      * Uses PP-LCNet classifier (6.78MB) + both SLANeXT variants (730MB total).
      */
     SLANET_AUTO,
-    /**
-     * Disable table structure model inference entirely; use heuristic path only.
-     */
+    /** Disable table structure model inference entirely; use heuristic path only. */
     DISABLED;
 }

@@ -28,12 +28,8 @@ package dev.kreuzberg
  * discriminant. Sheet count and sheet names are stored inside this struct.
  */
 data class ExcelMetadata(
-    /**
-     * Number of sheets in the workbook.
-     */
+    /** Number of sheets in the workbook. */
     val sheetCount: Int?,
-    /**
-     * Names of all sheets in the workbook.
-     */
+    /** Names of all sheets in the workbook. */
     val sheetNames: List<String>?
 )

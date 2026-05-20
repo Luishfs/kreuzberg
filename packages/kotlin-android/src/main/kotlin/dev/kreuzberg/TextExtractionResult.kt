@@ -28,32 +28,18 @@ package dev.kreuzberg
  * for Markdown files, structural elements like headers and links.
  */
 data class TextExtractionResult(
-    /**
-     * Extracted text content
-     */
+    /** Extracted text content */
     val content: String,
-    /**
-     * Number of lines
-     */
+    /** Number of lines */
     val lineCount: Long,
-    /**
-     * Number of words
-     */
+    /** Number of words */
     val wordCount: Long,
-    /**
-     * Number of characters
-     */
+    /** Number of characters */
     val characterCount: Long,
-    /**
-     * Markdown headers (text only, Markdown files only)
-     */
+    /** Markdown headers (text only, Markdown files only) */
     val headers: List<String>?,
-    /**
-     * Markdown links as (text, URL) tuples (Markdown files only)
-     */
+    /** Markdown links as (text, URL) tuples (Markdown files only) */
     val links: List<String>?,
-    /**
-     * Code blocks as (language, code) tuples (Markdown files only)
-     */
+    /** Code blocks as (language, code) tuples (Markdown files only) */
     val codeBlocks: List<String>?
 )

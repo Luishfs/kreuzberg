@@ -29,9 +29,7 @@ package dev.kreuzberg
  * included in page content.
  */
 data class HierarchyConfig(
-    /**
-     * Enable hierarchy extraction
-     */
+    /** Enable hierarchy extraction */
     val enabled: Boolean,
     /**
      * Number of font size clusters to use for hierarchy levels (1-7)
@@ -40,9 +38,7 @@ data class HierarchyConfig(
      * Larger values create more fine-grained hierarchy levels.
      */
     val kClusters: Long,
-    /**
-     * Include bounding box information in hierarchy blocks
-     */
+    /** Include bounding box information in hierarchy blocks */
     val includeBbox: Boolean,
     /**
      * OCR coverage threshold for smart OCR triggering (0.0-1.0)

@@ -21,28 +21,16 @@
 
 package dev.kreuzberg
 
-/**
- * Metadata for a semantic element.
- */
+/** Metadata for a semantic element. */
 data class ElementMetadata(
-    /**
-     * Page number (1-indexed)
-     */
+    /** Page number (1-indexed) */
     val pageNumber: Int?,
-    /**
-     * Source filename or document name
-     */
+    /** Source filename or document name */
     val filename: String?,
-    /**
-     * Bounding box coordinates if available
-     */
+    /** Bounding box coordinates if available */
     val coordinates: String?,
-    /**
-     * Position index in the element sequence
-     */
+    /** Position index in the element sequence */
     val elementIndex: Long?,
-    /**
-     * Additional custom metadata
-     */
+    /** Additional custom metadata */
     val additional: Map<String, String>
 )

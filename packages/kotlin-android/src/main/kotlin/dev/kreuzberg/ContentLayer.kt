@@ -27,20 +27,12 @@ package dev.kreuzberg
  * Replaces separate body/furniture arrays with per-node granularity.
  */
 enum class ContentLayer {
-    /**
-     * Main document body content.
-     */
+    /** Main document body content. */
     BODY,
-    /**
-     * Page/section header (running header).
-     */
+    /** Page/section header (running header). */
     HEADER,
-    /**
-     * Page/section footer (running footer).
-     */
+    /** Page/section footer (running footer). */
     FOOTER,
-    /**
-     * Footnote content.
-     */
+    /** Footnote content. */
     FOOTNOTE;
 }

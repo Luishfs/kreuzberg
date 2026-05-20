@@ -28,16 +28,10 @@ package dev.kreuzberg
  * enabling precise identification of formatted regions.
  */
 data class TextAnnotation(
-    /**
-     * Start byte offset in the node's text content (inclusive).
-     */
+    /** Start byte offset in the node's text content (inclusive). */
     val start: Int,
-    /**
-     * End byte offset in the node's text content (exclusive).
-     */
+    /** End byte offset in the node's text content (exclusive). */
     val end: Int,
-    /**
-     * Annotation type.
-     */
+    /** Annotation type. */
     val kind: AnnotationKind
 )

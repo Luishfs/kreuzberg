@@ -21,17 +21,11 @@
 
 package dev.kreuzberg
 
-/**
- * Keyword extraction configuration.
- */
+/** Keyword extraction configuration. */
 data class KeywordConfig(
-    /**
-     * Algorithm to use for extraction.
-     */
+    /** Algorithm to use for extraction. */
     val algorithm: KeywordAlgorithm,
-    /**
-     * Maximum number of keywords to extract (default: 10).
-     */
+    /** Maximum number of keywords to extract (default: 10). */
     val maxKeywords: Long,
     /**
      * Minimum score threshold (0.0-1.0, default: 0.0).
@@ -54,12 +48,8 @@ data class KeywordConfig(
      * If None, no stopword filtering is applied.
      */
     val language: String?,
-    /**
-     * YAKE-specific tuning parameters.
-     */
+    /** YAKE-specific tuning parameters. */
     val yakeParams: YakeParams?,
-    /**
-     * RAKE-specific tuning parameters.
-     */
+    /** RAKE-specific tuning parameters. */
     val rakeParams: RakeParams?
 )

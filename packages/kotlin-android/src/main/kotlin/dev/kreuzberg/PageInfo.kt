@@ -28,29 +28,17 @@ package dev.kreuzberg
  * and visibility state (for presentations).
  */
 data class PageInfo(
-    /**
-     * Page number (1-indexed)
-     */
+    /** Page number (1-indexed) */
     val number: Int,
-    /**
-     * Page title (usually for presentations)
-     */
+    /** Page title (usually for presentations) */
     val title: String?,
-    /**
-     * Dimensions in points (PDF) or pixels (images): (width, height)
-     */
+    /** Dimensions in points (PDF) or pixels (images): (width, height) */
     val dimensions: List<Double>?,
-    /**
-     * Number of images on this page
-     */
+    /** Number of images on this page */
     val imageCount: Int?,
-    /**
-     * Number of tables on this page
-     */
+    /** Number of tables on this page */
     val tableCount: Int?,
-    /**
-     * Whether this page is hidden (e.g., in presentations)
-     */
+    /** Whether this page is hidden (e.g., in presentations) */
     val hidden: Boolean?,
     /**
      * Whether this page is blank (no meaningful text, no images, no tables)

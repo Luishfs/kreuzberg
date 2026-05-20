@@ -27,21 +27,13 @@ package dev.kreuzberg
  * Captures information about OCR processing configuration and results.
  */
 data class OcrMetadata(
-    /**
-     * OCR language code(s) used
-     */
+    /** OCR language code(s) used */
     val language: String,
-    /**
-     * Tesseract Page Segmentation Mode (PSM)
-     */
+    /** Tesseract Page Segmentation Mode (PSM) */
     val psm: Int,
-    /**
-     * Output format (e.g., "text", "hocr")
-     */
+    /** Output format (e.g., "text", "hocr") */
     val outputFormat: String,
-    /**
-     * Number of tables detected
-     */
+    /** Number of tables detected */
     val tableCount: Int,
     val tableRows: Int?,
     val tableCols: Int?

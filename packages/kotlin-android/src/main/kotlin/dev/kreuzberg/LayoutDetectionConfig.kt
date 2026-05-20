@@ -29,13 +29,9 @@ package dev.kreuzberg
  * is enabled for PDF extraction.
  */
 data class LayoutDetectionConfig(
-    /**
-     * Confidence threshold override (None = use model default).
-     */
+    /** Confidence threshold override (None = use model default). */
     val confidenceThreshold: Float?,
-    /**
-     * Whether to apply postprocessing heuristics (default: true).
-     */
+    /** Whether to apply postprocessing heuristics (default: true). */
     val applyHeuristics: Boolean,
     /**
      * Table structure recognition model.

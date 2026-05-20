@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * Built-in HTML theme selection.
- */
+/** Built-in HTML theme selection. */
 enum class HtmlTheme {
     /**
      * Sensible defaults: system font stack, neutral colours, readable line
@@ -31,17 +29,11 @@ enum class HtmlTheme {
      * can override individual values.
      */
     DEFAULT,
-    /**
-     * GitHub Markdown-inspired palette and spacing.
-     */
+    /** GitHub Markdown-inspired palette and spacing. */
     GIT_HUB,
-    /**
-     * Dark background, light text.
-     */
+    /** Dark background, light text. */
     DARK,
-    /**
-     * Minimal light theme with generous whitespace.
-     */
+    /** Minimal light theme with generous whitespace. */
     LIGHT,
     /**
      * No built-in stylesheet emitted. CSS custom properties are still defined

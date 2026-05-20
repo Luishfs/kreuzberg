@@ -21,17 +21,11 @@
 
 package dev.kreuzberg
 
-/**
- * Metadata about a chunk's position in the original document.
- */
+/** Metadata about a chunk's position in the original document. */
 data class ChunkMetadata(
-    /**
-     * Byte offset where this chunk starts in the original text (UTF-8 valid boundary).
-     */
+    /** Byte offset where this chunk starts in the original text (UTF-8 valid boundary). */
     val byteStart: Long,
-    /**
-     * Byte offset where this chunk ends in the original text (UTF-8 valid boundary).
-     */
+    /** Byte offset where this chunk ends in the original text (UTF-8 valid boundary). */
     val byteEnd: Long,
     /**
      * Number of tokens in this chunk (if available).
@@ -39,13 +33,9 @@ data class ChunkMetadata(
      * This is calculated by the embedding model's tokenizer if embeddings are enabled.
      */
     val tokenCount: Long?,
-    /**
-     * Zero-based index of this chunk in the document.
-     */
+    /** Zero-based index of this chunk in the document. */
     val chunkIndex: Long,
-    /**
-     * Total number of chunks in the document.
-     */
+    /** Total number of chunks in the document. */
     val totalChunks: Long,
     /**
      * First page number this chunk spans (1-indexed).

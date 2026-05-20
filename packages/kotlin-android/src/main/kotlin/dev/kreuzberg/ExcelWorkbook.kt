@@ -28,12 +28,8 @@ package dev.kreuzberg
  * extracted content and metadata.
  */
 data class ExcelWorkbook(
-    /**
-     * All sheets in the workbook
-     */
+    /** All sheets in the workbook */
     val sheets: List<ExcelSheet>,
-    /**
-     * Workbook-level metadata (author, creation date, etc.)
-     */
+    /** Workbook-level metadata (author, creation date, etc.) */
     val metadata: Map<String, String>
 )

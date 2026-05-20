@@ -394,6 +394,17 @@ object Kreuzberg {
         withContext(Dispatchers.IO) { getExtensionsForMime(mimeType) }
 
     /**
+     * Clear all embedding backends from the global registry.
+     *
+     * Calls `shutdown()` on every registered backend, then empties the registry.
+     *
+     * **Errors:**
+     *
+     * - Any error returned by a backend's `shutdown()` method. The first error
+     *   encountered stops processing of remaining backends.
+     */
+    fun clearEmbeddingBackends(): Unit = KreuzbergBridge.nativeClearEmbeddingBackends()
+    /**
      * List the names of all registered embedding backends.
      *
      * Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
@@ -413,20 +424,27 @@ object Kreuzberg {
     suspend fun listEmbeddingBackendsAsync(): List<String> =
         withContext(Dispatchers.IO) { listEmbeddingBackends() }
 
-    /**
-     * List names of all registered document extractors.
-     */
+    /** List names of all registered document extractors. */
     fun listDocumentExtractors(): List<String> {
         val resultJson = KreuzbergBridge.nativeListDocumentExtractors()
         return mapper.readValue(resultJson, object : TypeReference<List<String>>() {})
     }
 
-    /**
-     * List names of all registered document extractors.
-     */
+    /** List names of all registered document extractors. */
     suspend fun listDocumentExtractorsAsync(): List<String> =
         withContext(Dispatchers.IO) { listDocumentExtractors() }
 
+    /**
+     * Clear all document extractors from the global registry.
+     *
+     * Calls `shutdown()` on every registered extractor, then empties the registry.
+     *
+     * **Errors:**
+     *
+     * - Any error returned by an extractor's `shutdown()` method. The first error
+     *   encountered stops processing of remaining extractors.
+     */
+    fun clearDocumentExtractors(): Unit = KreuzbergBridge.nativeClearDocumentExtractors()
     /**
      * List all registered OCR backends.
      *
@@ -453,6 +471,17 @@ object Kreuzberg {
     suspend fun listOcrBackendsAsync(): List<String> =
         withContext(Dispatchers.IO) { listOcrBackends() }
 
+    /**
+     * Clear all OCR backends from the global registry.
+     *
+     * Removes all OCR backends and calls their `shutdown()` methods.
+     *
+     * **Returns:**
+     *
+     * - `Ok(())` if all backends were cleared successfully
+     * - `Err(...)` if any shutdown method failed
+     */
+    fun clearOcrBackends(): Unit = KreuzbergBridge.nativeClearOcrBackends()
     /**
      * List all registered post-processor names.
      *
@@ -483,6 +512,8 @@ object Kreuzberg {
     suspend fun listPostProcessorsAsync(): List<String> =
         withContext(Dispatchers.IO) { listPostProcessors() }
 
+    /** Remove all registered post-processors. */
+    fun clearPostProcessors(): Unit = KreuzbergBridge.nativeClearPostProcessors()
     /**
      * List names of all registered renderers.
      *
@@ -506,19 +537,29 @@ object Kreuzberg {
         withContext(Dispatchers.IO) { listRenderers() }
 
     /**
-     * List names of all registered validators.
+     * Clear all renderers from the global registry.
+     *
+     * Removes every renderer, including the built-in defaults (markdown, html,
+     * djot, plain). After calling this no renderers are registered; re-register
+     * as needed.
+     *
+     * **Errors:**
+     *
+     * Returns an error if the registry lock is poisoned.
      */
+    fun clearRenderers(): Unit = KreuzbergBridge.nativeClearRenderers()
+    /** List names of all registered validators. */
     fun listValidators(): List<String> {
         val resultJson = KreuzbergBridge.nativeListValidators()
         return mapper.readValue(resultJson, object : TypeReference<List<String>>() {})
     }
 
-    /**
-     * List names of all registered validators.
-     */
+    /** List names of all registered validators. */
     suspend fun listValidatorsAsync(): List<String> =
         withContext(Dispatchers.IO) { listValidators() }
 
+    /** Remove all registered validators. */
+    fun clearValidators(): Unit = KreuzbergBridge.nativeClearValidators()
     /**
      * Generate embeddings asynchronously for a list of text strings.
      *

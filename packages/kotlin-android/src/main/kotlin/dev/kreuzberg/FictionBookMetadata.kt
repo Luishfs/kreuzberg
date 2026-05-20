@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * FictionBook (FB2) metadata.
- */
+/** FictionBook (FB2) metadata. */
 data class FictionBookMetadata(
     val genres: List<String>,
     val sequences: List<String>,

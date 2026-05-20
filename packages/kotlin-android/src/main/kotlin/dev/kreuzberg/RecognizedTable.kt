@@ -30,16 +30,10 @@ package dev.kreuzberg
  * the type in their own code.
  */
 data class RecognizedTable(
-    /**
-     * Detection bbox that this table corresponds to (for matching).
-     */
+    /** Detection bbox that this table corresponds to (for matching). */
     val detectionBbox: BBox,
-    /**
-     * Table cells as a 2D vector (rows × columns).
-     */
+    /** Table cells as a 2D vector (rows × columns). */
     val cells: List<List<String>>,
-    /**
-     * Rendered markdown table.
-     */
+    /** Rendered markdown table. */
     val markdown: String
 )

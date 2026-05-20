@@ -28,13 +28,9 @@ package dev.kreuzberg
  * font size clustering and hierarchical analysis.
  */
 data class HierarchicalBlock(
-    /**
-     * The text content of this block
-     */
+    /** The text content of this block */
     val text: String,
-    /**
-     * The font size of the text in this block
-     */
+    /** The font size of the text in this block */
     val fontSize: Float,
     /**
      * The hierarchy level of this block (H1-H6 or Body)

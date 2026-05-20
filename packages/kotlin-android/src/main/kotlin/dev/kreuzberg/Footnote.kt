@@ -21,16 +21,10 @@
 
 package dev.kreuzberg
 
-/**
- * Footnote in Djot.
- */
+/** Footnote in Djot. */
 data class Footnote(
-    /**
-     * Footnote label
-     */
+    /** Footnote label */
     val label: String,
-    /**
-     * Footnote content blocks
-     */
+    /** Footnote content blocks */
     val content: List<FormattedBlock>
 )

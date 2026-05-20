@@ -27,45 +27,25 @@ package dev.kreuzberg
  * Contains extracted slide content, metadata, and embedded images/tables.
  */
 data class PptxExtractionResult(
-    /**
-     * Extracted text content from all slides
-     */
+    /** Extracted text content from all slides */
     val content: String,
-    /**
-     * Presentation metadata
-     */
+    /** Presentation metadata */
     val metadata: PptxMetadata,
-    /**
-     * Total number of slides
-     */
+    /** Total number of slides */
     val slideCount: Long,
-    /**
-     * Total number of embedded images
-     */
+    /** Total number of embedded images */
     val imageCount: Long,
-    /**
-     * Total number of tables
-     */
+    /** Total number of tables */
     val tableCount: Long,
-    /**
-     * Extracted images from the presentation
-     */
+    /** Extracted images from the presentation */
     val images: List<ExtractedImage>,
-    /**
-     * Slide structure with boundaries (when page tracking is enabled)
-     */
+    /** Slide structure with boundaries (when page tracking is enabled) */
     val pageStructure: PageStructure?,
-    /**
-     * Per-slide content (when page tracking is enabled)
-     */
+    /** Per-slide content (when page tracking is enabled) */
     val pageContents: List<PageContent>?,
-    /**
-     * Structured document representation
-     */
+    /** Structured document representation */
     val document: DocumentStructure?,
-    /**
-     * Hyperlinks discovered in slides as (url, optional_label) pairs.
-     */
+    /** Hyperlinks discovered in slides as (url, optional_label) pairs. */
     val hyperlinks: List<String>,
     /**
      * Office metadata extracted from docProps/core.xml and docProps/app.xml.

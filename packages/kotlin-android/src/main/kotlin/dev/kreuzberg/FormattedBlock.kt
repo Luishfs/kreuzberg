@@ -27,32 +27,18 @@ package dev.kreuzberg
  * Represents structural elements like headings, paragraphs, lists, code blocks, etc.
  */
 data class FormattedBlock(
-    /**
-     * Type of block element
-     */
+    /** Type of block element */
     val blockType: BlockType,
-    /**
-     * Heading level (1-6) for headings, or nesting level for lists
-     */
+    /** Heading level (1-6) for headings, or nesting level for lists */
     val level: Long?,
-    /**
-     * Inline content within the block
-     */
+    /** Inline content within the block */
     val inlineContent: List<InlineElement>,
-    /**
-     * Element attributes (classes, IDs, key-value pairs)
-     */
+    /** Element attributes (classes, IDs, key-value pairs) */
     val attributes: String?,
-    /**
-     * Language identifier for code blocks
-     */
+    /** Language identifier for code blocks */
     val language: String?,
-    /**
-     * Raw code content for code blocks
-     */
+    /** Raw code content for code blocks */
     val code: String?,
-    /**
-     * Nested blocks for containers (blockquotes, list items, divs)
-     */
+    /** Nested blocks for containers (blockquotes, list items, divs) */
     val children: List<FormattedBlock>
 )

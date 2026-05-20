@@ -55,16 +55,10 @@ data class TreeSitterConfig(
      * When `null`, uses the default: `~/.cache/tree-sitter-language-pack/v{version}/libs/`.
      */
     val cacheDir: Path?,
-    /**
-     * Languages to pre-download on init (e.g., `["python", "rust"]`).
-     */
+    /** Languages to pre-download on init (e.g., `["python", "rust"]`). */
     val languages: List<String>?,
-    /**
-     * Language groups to pre-download (e.g., `["web", "systems", "scripting"]`).
-     */
+    /** Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). */
     val groups: List<String>?,
-    /**
-     * Processing options for code analysis.
-     */
+    /** Processing options for code analysis. */
     val process: TreeSitterProcessConfig
 )

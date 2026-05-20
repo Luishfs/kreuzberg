@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * Types of block-level elements in Djot.
- */
+/** Types of block-level elements in Djot. */
 enum class BlockType {
     PARAGRAPH,
     HEADING,

@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * JATS (Journal Article Tag Suite) metadata.
- */
+/** JATS (Journal Article Tag Suite) metadata. */
 data class JatsMetadata(
     val copyright: String?,
     val license: String?,

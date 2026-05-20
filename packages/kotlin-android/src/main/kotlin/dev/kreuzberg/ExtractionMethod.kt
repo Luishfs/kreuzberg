@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * How the extracted text was produced.
- */
+/** How the extracted text was produced. */
 enum class ExtractionMethod {
     NATIVE,
     OCR,

@@ -28,64 +28,34 @@ package dev.kreuzberg
  * and Office-specific extensions.
  */
 data class CoreProperties(
-    /**
-     * Document title
-     */
+    /** Document title */
     val title: String?,
-    /**
-     * Document subject/topic
-     */
+    /** Document subject/topic */
     val subject: String?,
-    /**
-     * Document creator/author
-     */
+    /** Document creator/author */
     val creator: String?,
-    /**
-     * Keywords or tags
-     */
+    /** Keywords or tags */
     val keywords: String?,
-    /**
-     * Document description/abstract
-     */
+    /** Document description/abstract */
     val description: String?,
-    /**
-     * User who last modified the document
-     */
+    /** User who last modified the document */
     val lastModifiedBy: String?,
-    /**
-     * Revision number
-     */
+    /** Revision number */
     val revision: String?,
-    /**
-     * Creation timestamp (ISO 8601)
-     */
+    /** Creation timestamp (ISO 8601) */
     val created: String?,
-    /**
-     * Last modification timestamp (ISO 8601)
-     */
+    /** Last modification timestamp (ISO 8601) */
     val modified: String?,
-    /**
-     * Document category
-     */
+    /** Document category */
     val category: String?,
-    /**
-     * Content status (Draft, Final, etc.)
-     */
+    /** Content status (Draft, Final, etc.) */
     val contentStatus: String?,
-    /**
-     * Document language
-     */
+    /** Document language */
     val language: String?,
-    /**
-     * Unique identifier
-     */
+    /** Unique identifier */
     val identifier: String?,
-    /**
-     * Document version
-     */
+    /** Document version */
     val version: String?,
-    /**
-     * Last print timestamp (ISO 8601)
-     */
+    /** Last print timestamp (ISO 8601) */
     val lastPrinted: String?
 )

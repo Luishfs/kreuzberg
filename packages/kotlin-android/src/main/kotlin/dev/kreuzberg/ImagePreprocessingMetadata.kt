@@ -28,52 +28,28 @@ package dev.kreuzberg
  * including DPI normalization, resizing, and resampling.
  */
 data class ImagePreprocessingMetadata(
-    /**
-     * Original image dimensions (width, height) in pixels
-     */
+    /** Original image dimensions (width, height) in pixels */
     val originalDimensions: List<Long>,
-    /**
-     * Original image DPI (horizontal, vertical)
-     */
+    /** Original image DPI (horizontal, vertical) */
     val originalDpi: List<Double>,
-    /**
-     * Target DPI from configuration
-     */
+    /** Target DPI from configuration */
     val targetDpi: Int,
-    /**
-     * Scaling factor applied to the image
-     */
+    /** Scaling factor applied to the image */
     val scaleFactor: Double,
-    /**
-     * Whether DPI was auto-adjusted based on content
-     */
+    /** Whether DPI was auto-adjusted based on content */
     val autoAdjusted: Boolean,
-    /**
-     * Final DPI after processing
-     */
+    /** Final DPI after processing */
     val finalDpi: Int,
-    /**
-     * New dimensions after resizing (if resized)
-     */
+    /** New dimensions after resizing (if resized) */
     val newDimensions: List<Long>?,
-    /**
-     * Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.)
-     */
+    /** Resampling algorithm used ("LANCZOS3", "CATMULLROM", etc.) */
     val resampleMethod: String,
-    /**
-     * Whether dimensions were clamped to max_image_dimension
-     */
+    /** Whether dimensions were clamped to max_image_dimension */
     val dimensionClamped: Boolean,
-    /**
-     * Calculated optimal DPI (if auto_adjust_dpi enabled)
-     */
+    /** Calculated optimal DPI (if auto_adjust_dpi enabled) */
     val calculatedDpi: Int?,
-    /**
-     * Whether resize was skipped (dimensions already optimal)
-     */
+    /** Whether resize was skipped (dimensions already optimal) */
     val skippedResize: Boolean,
-    /**
-     * Error message if resize failed
-     */
+    /** Error message if resize failed */
     val resizeError: String?
 )

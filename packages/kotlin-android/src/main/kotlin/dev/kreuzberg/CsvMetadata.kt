@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * CSV/TSV file metadata.
- */
+/** CSV/TSV file metadata. */
 data class CsvMetadata(
     val rowCount: Int,
     val columnCount: Int,

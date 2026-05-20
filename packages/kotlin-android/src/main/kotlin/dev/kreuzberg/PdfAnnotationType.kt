@@ -21,36 +21,20 @@
 
 package dev.kreuzberg
 
-/**
- * Type of PDF annotation.
- */
+/** Type of PDF annotation. */
 enum class PdfAnnotationType {
-    /**
-     * Sticky note / text annotation
-     */
+    /** Sticky note / text annotation */
     TEXT,
-    /**
-     * Highlighted text region
-     */
+    /** Highlighted text region */
     HIGHLIGHT,
-    /**
-     * Hyperlink annotation
-     */
+    /** Hyperlink annotation */
     LINK,
-    /**
-     * Rubber stamp annotation
-     */
+    /** Rubber stamp annotation */
     STAMP,
-    /**
-     * Underline text markup
-     */
+    /** Underline text markup */
     UNDERLINE,
-    /**
-     * Strikeout text markup
-     */
+    /** Strikeout text markup */
     STRIKE_OUT,
-    /**
-     * Any other annotation type
-     */
+    /** Any other annotation type */
     OTHER;
 }

@@ -21,7 +21,5 @@
 
 package dev.kreuzberg
 
-/**
- * Error metadata (for batch operations).
- */
+/** Error metadata (for batch operations). */
 data class ErrorMetadata(val errorType: String, val message: String)

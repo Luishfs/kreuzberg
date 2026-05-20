@@ -150,6 +150,16 @@ detect_mime_type_from_bytes <- function(content) .Call("wrap__detect_mime_type_f
 #' @return A vector of file extensions (without leading dot) for the MIME type.
 #' @export
 get_extensions_for_mime <- function(mime_type) .Call("wrap__get_extensions_for_mime", mime_type, PACKAGE = "kreuzberg")
+#' Clear all embedding backends from the global registry
+#'
+#' Calls `shutdown()` on every registered backend, then empties the registry.
+#' @return Invisible NULL.
+#'
+#' @section Errors:
+#' - Any error returned by a backend's `shutdown()` method. The first error
+#'   encountered stops processing of remaining backends.
+#' @export
+clear_embedding_backends <- function() .Call("wrap__clear_embedding_backends", PACKAGE = "kreuzberg")
 #' List the names of all registered embedding backends
 #'
 #' Used by `kreuzberg-cli` and the api/mcp endpoints; excluded from the
@@ -161,12 +171,29 @@ list_embedding_backends <- function() .Call("wrap__list_embedding_backends", PAC
 #' @return List of character string.
 #' @export
 list_document_extractors <- function() .Call("wrap__list_document_extractors", PACKAGE = "kreuzberg")
+#' Clear all document extractors from the global registry
+#'
+#' Calls `shutdown()` on every registered extractor, then empties the registry.
+#' @return Invisible NULL.
+#'
+#' @section Errors:
+#' - Any error returned by an extractor's `shutdown()` method. The first error
+#'   encountered stops processing of remaining extractors.
+#' @export
+clear_document_extractors <- function() .Call("wrap__clear_document_extractors", PACKAGE = "kreuzberg")
 #' List all registered OCR backends
 #'
 #' Returns the names of all OCR backends currently registered in the global registry.
 #' @return A vector of OCR backend names.
 #' @export
 list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreuzberg")
+#' Clear all OCR backends from the global registry
+#'
+#' Removes all OCR backends and calls their `shutdown()` methods.
+#' @return - `Ok(())` if all backends were cleared successfully
+- `Err(...)` if any shutdown method failed.
+#' @export
+clear_ocr_backends <- function() .Call("wrap__clear_ocr_backends", PACKAGE = "kreuzberg")
 #' List all registered post-processor names
 #'
 #' Returns a vector of all post-processor names currently registered in the
@@ -175,6 +202,10 @@ list_ocr_backends <- function() .Call("wrap__list_ocr_backends", PACKAGE = "kreu
 - `Err(...)` if the registry lock is poisoned.
 #' @export
 list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE = "kreuzberg")
+#' Remove all registered post-processors
+#' @return Invisible NULL.
+#' @export
+clear_post_processors <- function() .Call("wrap__clear_post_processors", PACKAGE = "kreuzberg")
 #' List names of all registered renderers
 #' @return List of character string.
 #'
@@ -182,10 +213,25 @@ list_post_processors <- function() .Call("wrap__list_post_processors", PACKAGE =
 #' Returns an error if the registry lock is poisoned.
 #' @export
 list_renderers <- function() .Call("wrap__list_renderers", PACKAGE = "kreuzberg")
+#' Clear all renderers from the global registry
+#'
+#' Removes every renderer, including the built-in defaults (markdown, html,
+#' djot, plain). After calling this no renderers are registered; re-register
+#' as needed.
+#' @return Invisible NULL.
+#'
+#' @section Errors:
+#' Returns an error if the registry lock is poisoned.
+#' @export
+clear_renderers <- function() .Call("wrap__clear_renderers", PACKAGE = "kreuzberg")
 #' List names of all registered validators
 #' @return List of character string.
 #' @export
 list_validators <- function() .Call("wrap__list_validators", PACKAGE = "kreuzberg")
+#' Remove all registered validators
+#' @return Invisible NULL.
+#' @export
+clear_validators <- function() .Call("wrap__clear_validators", PACKAGE = "kreuzberg")
 #' Generate embeddings asynchronously for a list of text strings
 #'
 #' This is the async counterpart to [`embed_texts`]. It offloads the blocking

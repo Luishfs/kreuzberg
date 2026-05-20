@@ -49,6 +49,22 @@ pub fn build(b: *std.Build) void {
     batch_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&batch_run.step);
 
+    const code_module = b.createModule(.{
+        .root_source_file = b.path("src/code_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    code_module.addImport("kreuzberg", kreuzberg_module);
+    const code_tests = b.addTest(.{
+        .name = "code_test",
+        .root_module = code_module,
+        .use_llvm = true,
+    });
+    const code_run = b.addRunArtifact(code_tests);
+    code_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&code_run.step);
+
     const contract_module = b.createModule(.{
         .root_source_file = b.path("src/contract_test.zig"),
         .target = target,
@@ -112,6 +128,22 @@ pub fn build(b: *std.Build) void {
     const embed_async_pending_run = b.addRunArtifact(embed_async_pending_tests);
     embed_async_pending_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&embed_async_pending_run.step);
+
+    const embed_extra_module = b.createModule(.{
+        .root_source_file = b.path("src/embed_extra_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    embed_extra_module.addImport("kreuzberg", kreuzberg_module);
+    const embed_extra_tests = b.addTest(.{
+        .name = "embed_extra_test",
+        .root_module = embed_extra_module,
+        .use_llvm = true,
+    });
+    const embed_extra_run = b.addRunArtifact(embed_extra_tests);
+    embed_extra_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&embed_extra_run.step);
 
     const embedding_backend_management_module = b.createModule(.{
         .root_source_file = b.path("src/embedding_backend_management_test.zig"),
@@ -208,6 +240,22 @@ pub fn build(b: *std.Build) void {
     const ocr_backend_management_run = b.addRunArtifact(ocr_backend_management_tests);
     ocr_backend_management_run.setCwd(b.path("../../test_documents"));
     test_step.dependOn(&ocr_backend_management_run.step);
+
+    const pdf_module = b.createModule(.{
+        .root_source_file = b.path("src/pdf_test.zig"),
+        .target = target,
+        .optimize = optimize,
+        .link_libc = true,
+    });
+    pdf_module.addImport("kreuzberg", kreuzberg_module);
+    const pdf_tests = b.addTest(.{
+        .name = "pdf_test",
+        .root_module = pdf_module,
+        .use_llvm = true,
+    });
+    const pdf_run = b.addRunArtifact(pdf_tests);
+    pdf_run.setCwd(b.path("../../test_documents"));
+    test_step.dependOn(&pdf_run.step);
 
     const post_processor_management_module = b.createModule(.{
         .root_source_file = b.path("src/post_processor_management_test.zig"),

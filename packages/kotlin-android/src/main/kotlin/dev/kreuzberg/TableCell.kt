@@ -27,20 +27,12 @@ package dev.kreuzberg
  * Future extension point for rich table support with cell-level metadata.
  */
 data class TableCell(
-    /**
-     * Cell content as text
-     */
+    /** Cell content as text */
     val content: String,
-    /**
-     * Row span (number of rows this cell spans)
-     */
+    /** Row span (number of rows this cell spans) */
     val rowSpan: Int,
-    /**
-     * Column span (number of columns this cell spans)
-     */
+    /** Column span (number of columns this cell spans) */
     val colSpan: Int,
-    /**
-     * Whether this is a header cell
-     */
+    /** Whether this is a header cell */
     val isHeader: Boolean
 )

@@ -21,24 +21,14 @@
 
 package dev.kreuzberg
 
-/**
- * Bounding box for an OCR-detected table in pixel coordinates.
- */
+/** Bounding box for an OCR-detected table in pixel coordinates. */
 data class OcrTableBoundingBox(
-    /**
-     * Left x-coordinate (pixels)
-     */
+    /** Left x-coordinate (pixels) */
     val left: Int,
-    /**
-     * Top y-coordinate (pixels)
-     */
+    /** Top y-coordinate (pixels) */
     val top: Int,
-    /**
-     * Right x-coordinate (pixels)
-     */
+    /** Right x-coordinate (pixels) */
     val right: Int,
-    /**
-     * Bottom y-coordinate (pixels)
-     */
+    /** Bottom y-coordinate (pixels) */
     val bottom: Int
 )

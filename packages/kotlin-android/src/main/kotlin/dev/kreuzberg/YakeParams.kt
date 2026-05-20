@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * YAKE-specific parameters.
- */
+/** YAKE-specific parameters. */
 data class YakeParams(
     /**
      * Window size for co-occurrence analysis (default: 2).

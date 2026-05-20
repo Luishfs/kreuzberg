@@ -31,29 +31,17 @@ package dev.kreuzberg
  * boxes and confidence scores.
  */
 sealed class OutputFormat {
-    /**
-     * Plain text content only (default)
-     */
+    /** Plain text content only (default) */
     object Plain : OutputFormat()
-    /**
-     * Markdown format
-     */
+    /** Markdown format */
     object Markdown : OutputFormat()
-    /**
-     * Djot markup format
-     */
+    /** Djot markup format */
     object Djot : OutputFormat()
-    /**
-     * HTML format
-     */
+    /** HTML format */
     object Html : OutputFormat()
-    /**
-     * JSON tree format with heading-driven sections.
-     */
+    /** JSON tree format with heading-driven sections. */
     object Json : OutputFormat()
-    /**
-     * Structured JSON format with full OCR element metadata.
-     */
+    /** Structured JSON format with full OCR element metadata. */
     object Structured : OutputFormat()
     /**
      * Custom renderer registered via the RendererRegistry.

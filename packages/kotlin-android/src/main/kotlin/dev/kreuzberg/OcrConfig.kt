@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * OCR configuration.
- */
+/** OCR configuration. */
 data class OcrConfig(
     /**
      * Whether OCR is enabled.
@@ -35,25 +33,15 @@ data class OcrConfig(
      * Defaults to `true`. When `false`, all other OCR settings are ignored.
      */
     val enabled: Boolean,
-    /**
-     * OCR backend: tesseract, easyocr, paddleocr
-     */
+    /** OCR backend: tesseract, easyocr, paddleocr */
     val backend: String,
-    /**
-     * Language code (e.g., "eng", "deu")
-     */
+    /** Language code (e.g., "eng", "deu") */
     val language: String,
-    /**
-     * Tesseract-specific configuration (optional)
-     */
+    /** Tesseract-specific configuration (optional) */
     val tesseractConfig: TesseractConfig?,
-    /**
-     * Output format for OCR results (optional, for format conversion)
-     */
+    /** Output format for OCR results (optional, for format conversion) */
     val outputFormat: OutputFormat?,
-    /**
-     * PaddleOCR-specific configuration (optional, JSON passthrough)
-     */
+    /** PaddleOCR-specific configuration (optional, JSON passthrough) */
     val paddleOcrConfig: String?,
     /**
      * Arbitrary per-call options passed through to the backend unchanged.
@@ -78,9 +66,7 @@ data class OcrConfig(
      * ```
      */
     val backendOptions: String?,
-    /**
-     * OCR element extraction configuration
-     */
+    /** OCR element extraction configuration */
     val elementConfig: OcrElementConfig?,
     /**
      * Quality thresholds for the native-text-to-OCR fallback decision.

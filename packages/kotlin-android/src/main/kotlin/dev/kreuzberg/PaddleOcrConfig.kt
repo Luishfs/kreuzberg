@@ -30,22 +30,16 @@ import java.nio.file.Path
  * Uses a builder pattern for convenient configuration.
  */
 data class PaddleOcrConfig(
-    /**
-     * Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra")
-     */
+    /** Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") */
     val language: String,
-    /**
-     * Optional custom cache directory for model files
-     */
+    /** Optional custom cache directory for model files */
     val cacheDir: Path?,
     /**
      * Enable angle classification for rotated text (default: false).
      * Can misfire on short text regions, rotating crops incorrectly before recognition.
      */
     val useAngleCls: Boolean,
-    /**
-     * Enable table structure detection (default: false)
-     */
+    /** Enable table structure detection (default: false) */
     val enableTableDetection: Boolean,
     /**
      * Database threshold for text detection (default: 0.3)

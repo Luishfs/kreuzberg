@@ -27,25 +27,15 @@ package dev.kreuzberg
  * Contains metadata and optionally the content of an email attachment.
  */
 data class EmailAttachment(
-    /**
-     * Attachment name (from Content-Disposition header)
-     */
+    /** Attachment name (from Content-Disposition header) */
     val name: String?,
-    /**
-     * Filename of the attachment
-     */
+    /** Filename of the attachment */
     val filename: String?,
-    /**
-     * MIME type of the attachment
-     */
+    /** MIME type of the attachment */
     val mimeType: String?,
-    /**
-     * Size in bytes
-     */
+    /** Size in bytes */
     val size: Long?,
-    /**
-     * Whether this attachment is an image
-     */
+    /** Whether this attachment is an image */
     val isImage: Boolean,
     /**
      * Attachment data (if extracted).

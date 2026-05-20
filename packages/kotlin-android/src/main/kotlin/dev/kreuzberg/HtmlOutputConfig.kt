@@ -42,9 +42,7 @@ data class HtmlOutputConfig(
      * Concatenated before `css` when both are set.
      */
     val cssFile: Path?,
-    /**
-     * Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`.
-     */
+    /** Built-in colour/typography theme. Default: `HtmlTheme.Unstyled`. */
     val theme: HtmlTheme,
     /**
      * CSS class prefix applied to every emitted class name.

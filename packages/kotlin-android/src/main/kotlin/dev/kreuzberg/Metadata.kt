@@ -28,45 +28,25 @@ package dev.kreuzberg
  * via a discriminated union, and additional custom fields from postprocessors.
  */
 data class Metadata(
-    /**
-     * Document title
-     */
+    /** Document title */
     val title: String?,
-    /**
-     * Document subject or description
-     */
+    /** Document subject or description */
     val subject: String?,
-    /**
-     * Primary author(s) - always Vec for consistency
-     */
+    /** Primary author(s) - always Vec for consistency */
     val authors: List<String>?,
-    /**
-     * Keywords/tags - always Vec for consistency
-     */
+    /** Keywords/tags - always Vec for consistency */
     val keywords: List<String>?,
-    /**
-     * Primary language (ISO 639 code)
-     */
+    /** Primary language (ISO 639 code) */
     val language: String?,
-    /**
-     * Creation timestamp (ISO 8601 format)
-     */
+    /** Creation timestamp (ISO 8601 format) */
     val createdAt: String?,
-    /**
-     * Last modification timestamp (ISO 8601 format)
-     */
+    /** Last modification timestamp (ISO 8601 format) */
     val modifiedAt: String?,
-    /**
-     * User who created the document
-     */
+    /** User who created the document */
     val createdBy: String?,
-    /**
-     * User who last modified the document
-     */
+    /** User who last modified the document */
     val modifiedBy: String?,
-    /**
-     * Page/slide/sheet structure with boundaries
-     */
+    /** Page/slide/sheet structure with boundaries */
     val pages: PageStructure?,
     /**
      * Format-specific metadata (discriminated union)
@@ -75,17 +55,11 @@ data class Metadata(
      * Serialized as a nested `"format"` object with a `format_type` discriminator field.
      */
     val format: FormatMetadata?,
-    /**
-     * Image preprocessing metadata (when OCR preprocessing was applied)
-     */
+    /** Image preprocessing metadata (when OCR preprocessing was applied) */
     val imagePreprocessing: ImagePreprocessingMetadata?,
-    /**
-     * JSON schema (for structured data extraction)
-     */
+    /** JSON schema (for structured data extraction) */
     val jsonSchema: String?,
-    /**
-     * Error metadata (for batch operations)
-     */
+    /** Error metadata (for batch operations) */
     val error: ErrorMetadata?,
     /**
      * Extraction duration in milliseconds (for benchmarking).
@@ -94,21 +68,13 @@ data class Metadata(
      * information. It's `null` for single-file extraction (which uses external timing).
      */
     val extractionDurationMs: Long?,
-    /**
-     * Document category (from frontmatter or classification).
-     */
+    /** Document category (from frontmatter or classification). */
     val category: String?,
-    /**
-     * Document tags (from frontmatter).
-     */
+    /** Document tags (from frontmatter). */
     val tags: List<String>?,
-    /**
-     * Document version string (from frontmatter).
-     */
+    /** Document version string (from frontmatter). */
     val documentVersion: String?,
-    /**
-     * Abstract or summary text (from frontmatter).
-     */
+    /** Abstract or summary text (from frontmatter). */
     val abstractText: String?,
     /**
      * Output format identifier (e.g., "markdown", "html", "text").

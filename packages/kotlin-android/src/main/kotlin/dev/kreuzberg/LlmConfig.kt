@@ -40,24 +40,14 @@ data class LlmConfig(
      * the provider's standard environment variable (e.g., `OPENAI_API_KEY`).
      */
     val apiKey: String?,
-    /**
-     * Custom base URL override for the provider endpoint.
-     */
+    /** Custom base URL override for the provider endpoint. */
     val baseUrl: String?,
-    /**
-     * Request timeout in seconds (default: 60).
-     */
+    /** Request timeout in seconds (default: 60). */
     val timeoutSecs: Long?,
-    /**
-     * Maximum retry attempts (default: 3).
-     */
+    /** Maximum retry attempts (default: 3). */
     val maxRetries: Int?,
-    /**
-     * Sampling temperature for generation tasks.
-     */
+    /** Sampling temperature for generation tasks. */
     val temperature: Double?,
-    /**
-     * Maximum tokens to generate.
-     */
+    /** Maximum tokens to generate. */
     val maxTokens: Long?
 )

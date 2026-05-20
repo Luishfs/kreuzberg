@@ -21,24 +21,14 @@
 
 package dev.kreuzberg
 
-/**
- * Link element in Djot.
- */
+/** Link element in Djot. */
 data class DjotLink(
-    /**
-     * Link URL
-     */
+    /** Link URL */
     val url: String,
-    /**
-     * Link text content
-     */
+    /** Link text content */
     val text: String,
-    /**
-     * Optional title
-     */
+    /** Optional title */
     val title: String?,
-    /**
-     * Element attributes
-     */
+    /** Element attributes */
     val attributes: String?
 )

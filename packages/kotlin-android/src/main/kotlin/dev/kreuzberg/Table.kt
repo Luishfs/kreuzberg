@@ -28,17 +28,11 @@ package dev.kreuzberg
  * Tables are converted to both structured cell data and Markdown format.
  */
 data class Table(
-    /**
-     * Table cells as a 2D vector (rows × columns)
-     */
+    /** Table cells as a 2D vector (rows × columns) */
     val cells: List<List<String>>,
-    /**
-     * Markdown representation of the table
-     */
+    /** Markdown representation of the table */
     val markdown: String,
-    /**
-     * Page number where the table was found (1-indexed)
-     */
+    /** Page number where the table was found (1-indexed) */
     val pageNumber: Int,
     /**
      * Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).

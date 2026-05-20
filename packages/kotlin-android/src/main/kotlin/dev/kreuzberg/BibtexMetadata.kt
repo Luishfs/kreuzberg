@@ -21,13 +21,9 @@
 
 package dev.kreuzberg
 
-/**
- * BibTeX bibliography metadata.
- */
+/** BibTeX bibliography metadata. */
 data class BibtexMetadata(
-    /**
-     * Number of entries in the bibliography.
-     */
+    /** Number of entries in the bibliography. */
     val entryCount: Long,
     val citationKeys: List<String>,
     val authors: List<String>,

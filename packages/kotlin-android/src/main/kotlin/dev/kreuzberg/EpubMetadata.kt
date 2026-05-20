@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * EPUB metadata (Dublin Core extensions).
- */
+/** EPUB metadata (Dublin Core extensions). */
 data class EpubMetadata(
     val coverage: String?,
     val dcFormat: String?,

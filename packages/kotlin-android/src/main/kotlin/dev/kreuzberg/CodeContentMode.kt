@@ -28,16 +28,10 @@ package dev.kreuzberg
  * of `ExtractionResult`.
  */
 enum class CodeContentMode {
-    /**
-     * Use TSLP semantic chunks as content (default).
-     */
+    /** Use TSLP semantic chunks as content (default). */
     CHUNKS,
-    /**
-     * Use raw source code as content.
-     */
+    /** Use raw source code as content. */
     RAW,
-    /**
-     * Emit function/class headings + docstrings (no code bodies).
-     */
+    /** Emit function/class headings + docstrings (no code bodies). */
     STRUCTURE;
 }

@@ -48,22 +48,40 @@ object KreuzbergBridge {
     external fun nativeGetExtensionsForMime(mimeType: String): String
 
     @Throws(KreuzbergBridgeException::class)
+    external fun nativeClearEmbeddingBackends()
+
+    @Throws(KreuzbergBridgeException::class)
     external fun nativeListEmbeddingBackends(): String
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeListDocumentExtractors(): String
 
     @Throws(KreuzbergBridgeException::class)
+    external fun nativeClearDocumentExtractors()
+
+    @Throws(KreuzbergBridgeException::class)
     external fun nativeListOcrBackends(): String
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeClearOcrBackends()
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeListPostProcessors(): String
 
     @Throws(KreuzbergBridgeException::class)
+    external fun nativeClearPostProcessors()
+
+    @Throws(KreuzbergBridgeException::class)
     external fun nativeListRenderers(): String
 
     @Throws(KreuzbergBridgeException::class)
+    external fun nativeClearRenderers()
+
+    @Throws(KreuzbergBridgeException::class)
     external fun nativeListValidators(): String
+
+    @Throws(KreuzbergBridgeException::class)
+    external fun nativeClearValidators()
 
     @Throws(KreuzbergBridgeException::class)
     external fun nativeEmbedTextsAsync(texts: String, config: String): String

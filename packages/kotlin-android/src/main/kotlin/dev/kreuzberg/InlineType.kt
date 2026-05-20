@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * Types of inline elements in Djot.
- */
+/** Types of inline elements in Djot. */
 enum class InlineType {
     TEXT,
     STRONG,

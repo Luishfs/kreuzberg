@@ -21,24 +21,14 @@
 
 package dev.kreuzberg
 
-/**
- * Image type classification.
- */
+/** Image type classification. */
 enum class ImageType {
-    /**
-     * Data URI image
-     */
+    /** Data URI image */
     DATA_URI,
-    /**
-     * Inline SVG
-     */
+    /** Inline SVG */
     INLINE_SVG,
-    /**
-     * External image URL
-     */
+    /** External image URL */
     EXTERNAL,
-    /**
-     * Relative path image
-     */
+    /** Relative path image */
     RELATIVE;
 }

@@ -21,36 +21,20 @@
 
 package dev.kreuzberg
 
-/**
- * Semantic kind of a relationship between document elements.
- */
+/** Semantic kind of a relationship between document elements. */
 enum class RelationshipKind {
-    /**
-     * Footnote marker -> footnote definition.
-     */
+    /** Footnote marker -> footnote definition. */
     FOOTNOTE_REFERENCE,
-    /**
-     * Citation marker -> bibliography entry.
-     */
+    /** Citation marker -> bibliography entry. */
     CITATION_REFERENCE,
-    /**
-     * Internal anchor link (`#id`) -> target heading/element.
-     */
+    /** Internal anchor link (`#id`) -> target heading/element. */
     INTERNAL_LINK,
-    /**
-     * Caption paragraph -> figure/table it describes.
-     */
+    /** Caption paragraph -> figure/table it describes. */
     CAPTION,
-    /**
-     * Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`).
-     */
+    /** Label -> labeled element (HTML `<label for>`, LaTeX `\label{}`). */
     LABEL,
-    /**
-     * TOC entry -> target section.
-     */
+    /** TOC entry -> target section. */
     TOC_ENTRY,
-    /**
-     * Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field).
-     */
+    /** Cross-reference (LaTeX `\ref{}`, DOCX cross-reference field). */
     CROSS_REFERENCE;
 }

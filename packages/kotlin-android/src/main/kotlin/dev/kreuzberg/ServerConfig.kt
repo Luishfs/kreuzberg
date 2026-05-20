@@ -36,13 +36,9 @@ package dev.kreuzberg
  * - `max_multipart_field_bytes`: 104_857_600 (100 MB)
  */
 data class ServerConfig(
-    /**
-     * Server host address (e.g., "127.0.0.1", "0.0.0.0")
-     */
+    /** Server host address (e.g., "127.0.0.1", "0.0.0.0") */
     val host: String,
-    /**
-     * Server port number
-     */
+    /** Server port number */
     val port: Short,
     /**
      * CORS allowed origins. Empty vector means allow all origins.
@@ -52,12 +48,8 @@ data class ServerConfig(
      * those origins will be allowed.
      */
     val corsOrigins: List<String>,
-    /**
-     * Maximum size of request body in bytes (default: 100 MB)
-     */
+    /** Maximum size of request body in bytes (default: 100 MB) */
     val maxRequestBodyBytes: Long,
-    /**
-     * Maximum size of multipart fields in bytes (default: 100 MB)
-     */
+    /** Maximum size of multipart fields in bytes (default: 100 MB) */
     val maxMultipartFieldBytes: Long
 )

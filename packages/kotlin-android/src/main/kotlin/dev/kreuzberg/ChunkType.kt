@@ -29,56 +29,30 @@ package dev.kreuzberg
  * Designed to be extended in future versions without breaking changes.
  */
 enum class ChunkType {
-    /**
-     * Section heading or document title.
-     */
+    /** Section heading or document title. */
     HEADING,
-    /**
-     * Party list: names, addresses, and signatories.
-     */
+    /** Party list: names, addresses, and signatories. */
     PARTY_LIST,
-    /**
-     * Definition clause ("X means…", "X shall mean…").
-     */
+    /** Definition clause ("X means…", "X shall mean…"). */
     DEFINITIONS,
-    /**
-     * Operative clause containing legal/contractual action verbs.
-     */
+    /** Operative clause containing legal/contractual action verbs. */
     OPERATIVE_CLAUSE,
-    /**
-     * Signature block with signatures, names, and dates.
-     */
+    /** Signature block with signatures, names, and dates. */
     SIGNATURE_BLOCK,
-    /**
-     * Schedule, annex, appendix, or exhibit section.
-     */
+    /** Schedule, annex, appendix, or exhibit section. */
     SCHEDULE,
-    /**
-     * Table-like content with aligned columns or repeated patterns.
-     */
+    /** Table-like content with aligned columns or repeated patterns. */
     TABLE_LIKE,
-    /**
-     * Mathematical formula or equation.
-     */
+    /** Mathematical formula or equation. */
     FORMULA,
-    /**
-     * Code block or preformatted content.
-     */
+    /** Code block or preformatted content. */
     CODE_BLOCK,
-    /**
-     * Embedded or referenced image content.
-     */
+    /** Embedded or referenced image content. */
     IMAGE,
-    /**
-     * Organizational chart or hierarchy diagram.
-     */
+    /** Organizational chart or hierarchy diagram. */
     ORG_CHART,
-    /**
-     * Diagram, figure, or visual illustration.
-     */
+    /** Diagram, figure, or visual illustration. */
     DIAGRAM,
-    /**
-     * Unclassified or mixed content.
-     */
+    /** Unclassified or mixed content. */
     UNKNOWN;
 }

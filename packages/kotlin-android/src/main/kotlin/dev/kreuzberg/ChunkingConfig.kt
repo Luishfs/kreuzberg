@@ -57,13 +57,9 @@ data class ChunkingConfig(
      * Default: Text
      */
     val chunkerType: ChunkerType,
-    /**
-     * Optional embedding configuration for chunk embeddings.
-     */
+    /** Optional embedding configuration for chunk embeddings. */
     val embedding: EmbeddingConfig?,
-    /**
-     * Use a preset configuration (overrides individual settings if provided).
-     */
+    /** Use a preset configuration (overrides individual settings if provided). */
     val preset: String?,
     /**
      * How to measure chunk size.

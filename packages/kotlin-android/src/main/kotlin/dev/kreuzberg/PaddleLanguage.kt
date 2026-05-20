@@ -27,68 +27,36 @@ package dev.kreuzberg
  * Maps user-friendly language codes to paddle-ocr-rs language identifiers.
  */
 enum class PaddleLanguage {
-    /**
-     * English
-     */
+    /** English */
     ENGLISH,
-    /**
-     * Simplified Chinese
-     */
+    /** Simplified Chinese */
     CHINESE,
-    /**
-     * Japanese
-     */
+    /** Japanese */
     JAPANESE,
-    /**
-     * Korean
-     */
+    /** Korean */
     KOREAN,
-    /**
-     * German
-     */
+    /** German */
     GERMAN,
-    /**
-     * French
-     */
+    /** French */
     FRENCH,
-    /**
-     * Latin script (covers most European languages)
-     */
+    /** Latin script (covers most European languages) */
     LATIN,
-    /**
-     * Cyrillic (Russian and related)
-     */
+    /** Cyrillic (Russian and related) */
     CYRILLIC,
-    /**
-     * Traditional Chinese
-     */
+    /** Traditional Chinese */
     TRADITIONAL_CHINESE,
-    /**
-     * Thai
-     */
+    /** Thai */
     THAI,
-    /**
-     * Greek
-     */
+    /** Greek */
     GREEK,
-    /**
-     * East Slavic (Russian, Ukrainian, Belarusian)
-     */
+    /** East Slavic (Russian, Ukrainian, Belarusian) */
     EAST_SLAVIC,
-    /**
-     * Arabic (Arabic, Persian, Urdu)
-     */
+    /** Arabic (Arabic, Persian, Urdu) */
     ARABIC,
-    /**
-     * Devanagari (Hindi, Marathi, Sanskrit, Nepali)
-     */
+    /** Devanagari (Hindi, Marathi, Sanskrit, Nepali) */
     DEVANAGARI,
-    /**
-     * Tamil
-     */
+    /** Tamil */
     TAMIL,
-    /**
-     * Telugu
-     */
+    /** Telugu */
     TELUGU;
 }

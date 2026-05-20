@@ -21,21 +21,13 @@
 
 package dev.kreuzberg
 
-/**
- * Image extraction configuration.
- */
+/** Image extraction configuration. */
 data class ImageExtractionConfig(
-    /**
-     * Extract images from documents
-     */
+    /** Extract images from documents */
     val extractImages: Boolean,
-    /**
-     * Target DPI for image normalization
-     */
+    /** Target DPI for image normalization */
     val targetDpi: Int,
-    /**
-     * Maximum dimension for images (width or height)
-     */
+    /** Maximum dimension for images (width or height) */
     val maxImageDimension: Int,
     /**
      * Whether to inject image reference placeholders into markdown output.
@@ -44,17 +36,11 @@ data class ImageExtractionConfig(
      * without polluting the markdown output.
      */
     val injectPlaceholders: Boolean,
-    /**
-     * Automatically adjust DPI based on image content
-     */
+    /** Automatically adjust DPI based on image content */
     val autoAdjustDpi: Boolean,
-    /**
-     * Minimum DPI threshold
-     */
+    /** Minimum DPI threshold */
     val minDpi: Int,
-    /**
-     * Maximum DPI threshold
-     */
+    /** Maximum DPI threshold */
     val maxDpi: Int,
     /**
      * Maximum number of image objects to extract per PDF page.

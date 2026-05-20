@@ -4537,15 +4537,25 @@ pub fn register_ocr_backend(name: [*c]const u8, vtable: IOcrBackend, user_data: 
 /// Unregister a previously registered `OcrBackend` implementation by name.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn unregister_ocr_backend(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_unregister_ocr_backend(name, out_error);
+pub fn unregister_ocr_backend(name: [*c]const u8) KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_unregister_ocr_backend(name, &_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Remove ALL registered `OcrBackend` plugins from the registry.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn clear_ocr_backends(out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_clear_ocr_backend(out_error);
+pub fn clear_ocr_backends() KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_clear_ocr_backend(&_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Build an `IOcrBackend` vtable for a concrete Zig type `T`.
@@ -4834,15 +4844,25 @@ pub fn register_post_processor(name: [*c]const u8, vtable: IPostProcessor, user_
 /// Unregister a previously registered `PostProcessor` implementation by name.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn unregister_post_processor(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_unregister_post_processor(name, out_error);
+pub fn unregister_post_processor(name: [*c]const u8) KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_unregister_post_processor(name, &_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Remove ALL registered `PostProcessor` plugins from the registry.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn clear_post_processors(out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_clear_post_processor(out_error);
+pub fn clear_post_processors() KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_clear_post_processor(&_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Build an `IPostProcessor` vtable for a concrete Zig type `T`.
@@ -5106,15 +5126,25 @@ pub fn register_validator(name: [*c]const u8, vtable: IValidator, user_data: ?*a
 /// Unregister a previously registered `Validator` implementation by name.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn unregister_validator(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_unregister_validator(name, out_error);
+pub fn unregister_validator(name: [*c]const u8) KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_unregister_validator(name, &_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Remove ALL registered `Validator` plugins from the registry.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn clear_validators(out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_clear_validator(out_error);
+pub fn clear_validators() KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_clear_validator(&_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Build an `IValidator` vtable for a concrete Zig type `T`.
@@ -5243,15 +5273,25 @@ pub fn register_embedding_backend(name: [*c]const u8, vtable: IEmbeddingBackend,
 /// Unregister a previously registered `EmbeddingBackend` implementation by name.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn unregister_embedding_backend(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_unregister_embedding_backend(name, out_error);
+pub fn unregister_embedding_backend(name: [*c]const u8) KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_unregister_embedding_backend(name, &_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Remove ALL registered `EmbeddingBackend` plugins from the registry.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn clear_embedding_backends(out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_clear_embedding_backend(out_error);
+pub fn clear_embedding_backends() KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_clear_embedding_backend(&_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Build an `IEmbeddingBackend` vtable for a concrete Zig type `T`.
@@ -5449,15 +5489,25 @@ pub fn register_document_extractor(name: [*c]const u8, vtable: IDocumentExtracto
 /// Unregister a previously registered `DocumentExtractor` implementation by name.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn unregister_document_extractor(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_unregister_document_extractor(name, out_error);
+pub fn unregister_document_extractor(name: [*c]const u8) KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_unregister_document_extractor(name, &_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Remove ALL registered `DocumentExtractor` plugins from the registry.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn clear_document_extractors(out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_clear_document_extractor(out_error);
+pub fn clear_document_extractors() KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_clear_document_extractor(&_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Build an `IDocumentExtractor` vtable for a concrete Zig type `T`.
@@ -5622,15 +5672,25 @@ pub fn register_renderer(name: [*c]const u8, vtable: IRenderer, user_data: ?*any
 /// Unregister a previously registered `Renderer` implementation by name.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn unregister_renderer(name: [*c]const u8, out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_unregister_renderer(name, out_error);
+pub fn unregister_renderer(name: [*c]const u8) KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_unregister_renderer(name, &_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Remove ALL registered `Renderer` plugins from the registry.
 ///
 /// Returns 0 on success; non-zero on failure.
-pub fn clear_renderers(out_error: ?*?[*c]u8) i32 {
-    return c.kreuzberg_clear_renderer(out_error);
+pub fn clear_renderers() KreuzbergError!void {
+    var _out_error: [*c]u8 = null;
+    const _rc = c.kreuzberg_clear_renderer(&_out_error);
+    if (_out_error != null) _free_string(_out_error);
+    if (_rc != 0 or c.kreuzberg_last_error_code() != 0) {
+        return _first_error(KreuzbergError);
+    }
 }
 
 /// Build an `IRenderer` vtable for a concrete Zig type `T`.

@@ -33,12 +33,8 @@ data class PageBoundary(
      * Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive)
      */
     val byteStart: Long,
-    /**
-     * Byte offset where this page ends in the content string (UTF-8 valid boundary, exclusive)
-     */
+    /** Byte offset where this page ends in the content string (UTF-8 valid boundary, exclusive) */
     val byteEnd: Long,
-    /**
-     * Page number (1-indexed)
-     */
+    /** Page number (1-indexed) */
     val pageNumber: Int
 )

@@ -28,21 +28,13 @@ package dev.kreuzberg
  * including recognized text and detected tables.
  */
 data class OcrExtractionResult(
-    /**
-     * Recognized text content
-     */
+    /** Recognized text content */
     val content: String,
-    /**
-     * Original MIME type of the processed image
-     */
+    /** Original MIME type of the processed image */
     val mimeType: String,
-    /**
-     * OCR processing metadata (confidence scores, language, etc.)
-     */
+    /** OCR processing metadata (confidence scores, language, etc.) */
     val metadata: Map<String, String>,
-    /**
-     * Tables detected and extracted via OCR
-     */
+    /** Tables detected and extracted via OCR */
     val tables: List<OcrTable>,
     /**
      * Structured OCR elements with bounding boxes and confidence scores.

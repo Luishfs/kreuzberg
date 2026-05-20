@@ -38,13 +38,9 @@ package dev.kreuzberg
  * by avoiding redundant copies during serialization.
  */
 data class PageContent(
-    /**
-     * Page number (1-indexed)
-     */
+    /** Page number (1-indexed) */
     val pageNumber: Int,
-    /**
-     * Text content for this page
-     */
+    /** Text content for this page */
     val content: String,
     /**
      * Tables found on this page (uses Arc for memory efficiency)

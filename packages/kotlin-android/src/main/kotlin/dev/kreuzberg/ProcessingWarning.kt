@@ -33,8 +33,6 @@ data class ProcessingWarning(
      * (e.g., "embedding", "chunking", "language_detection", "output_format").
      */
     val source: String,
-    /**
-     * Human-readable description of what went wrong.
-     */
+    /** Human-readable description of what went wrong. */
     val message: String
 )

@@ -29,12 +29,8 @@ package dev.kreuzberg
  * blob vs. an element-based decomposition.
  */
 enum class ResultFormat {
-    /**
-     * Unified format with all content in `content` field
-     */
+    /** Unified format with all content in `content` field */
     UNIFIED,
-    /**
-     * Element-based format with semantic element extraction
-     */
+    /** Element-based format with semantic element extraction */
     ELEMENT_BASED;
 }

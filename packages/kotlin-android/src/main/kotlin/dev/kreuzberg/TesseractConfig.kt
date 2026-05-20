@@ -29,9 +29,7 @@ package dev.kreuzberg
  * for specific document types (invoices, handwriting, etc.).
  */
 data class TesseractConfig(
-    /**
-     * Language code (e.g., "eng", "deu", "fra")
-     */
+    /** Language code (e.g., "eng", "deu", "fra") */
     val language: String,
     /**
      * Page Segmentation Mode (0-13).
@@ -42,9 +40,7 @@ data class TesseractConfig(
      * - 11: Sparse text with no particular order
      */
     val psm: Int,
-    /**
-     * Output format ("text" or "markdown")
-     */
+    /** Output format ("text" or "markdown") */
     val outputFormat: String,
     /**
      * OCR Engine Mode (0-3).
@@ -68,64 +64,34 @@ data class TesseractConfig(
      * improve quality for scanned documents or low-quality images.
      */
     val preprocessing: ImagePreprocessingConfig?,
-    /**
-     * Enable automatic table detection and reconstruction
-     */
+    /** Enable automatic table detection and reconstruction */
     val enableTableDetection: Boolean,
-    /**
-     * Minimum confidence threshold for table detection (0.0-1.0)
-     */
+    /** Minimum confidence threshold for table detection (0.0-1.0) */
     val tableMinConfidence: Double,
-    /**
-     * Column threshold for table detection (pixels)
-     */
+    /** Column threshold for table detection (pixels) */
     val tableColumnThreshold: Int,
-    /**
-     * Row threshold ratio for table detection (0.0-1.0)
-     */
+    /** Row threshold ratio for table detection (0.0-1.0) */
     val tableRowThresholdRatio: Double,
-    /**
-     * Enable OCR result caching
-     */
+    /** Enable OCR result caching */
     val useCache: Boolean,
-    /**
-     * Use pre-adapted templates for character classification
-     */
+    /** Use pre-adapted templates for character classification */
     val classifyUsePreAdaptedTemplates: Boolean,
-    /**
-     * Enable N-gram language model
-     */
+    /** Enable N-gram language model */
     val languageModelNgramOn: Boolean,
-    /**
-     * Don't reject good words during block-level processing
-     */
+    /** Don't reject good words during block-level processing */
     val tesseditDontBlkrejGoodWds: Boolean,
-    /**
-     * Don't reject good words during row-level processing
-     */
+    /** Don't reject good words during row-level processing */
     val tesseditDontRowrejGoodWds: Boolean,
-    /**
-     * Enable dictionary correction
-     */
+    /** Enable dictionary correction */
     val tesseditEnableDictCorrection: Boolean,
-    /**
-     * Whitelist of allowed characters (empty = all allowed)
-     */
+    /** Whitelist of allowed characters (empty = all allowed) */
     val tesseditCharWhitelist: String,
-    /**
-     * Blacklist of forbidden characters (empty = none forbidden)
-     */
+    /** Blacklist of forbidden characters (empty = none forbidden) */
     val tesseditCharBlacklist: String,
-    /**
-     * Use primary language params model
-     */
+    /** Use primary language params model */
     val tesseditUsePrimaryParamsModel: Boolean,
-    /**
-     * Variable-width space detection
-     */
+    /** Variable-width space detection */
     val textordSpaceSizeIsVariable: Boolean,
-    /**
-     * Use adaptive thresholding method
-     */
+    /** Use adaptive thresholding method */
     val thresholdingMethod: Boolean
 )

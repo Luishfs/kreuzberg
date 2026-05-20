@@ -28,25 +28,15 @@ package dev.kreuzberg
  * converted to Markdown format and dimensional statistics.
  */
 data class ExcelSheet(
-    /**
-     * Sheet name as it appears in Excel
-     */
+    /** Sheet name as it appears in Excel */
     val name: String,
-    /**
-     * Sheet content converted to Markdown tables
-     */
+    /** Sheet content converted to Markdown tables */
     val markdown: String,
-    /**
-     * Number of rows
-     */
+    /** Number of rows */
     val rowCount: Long,
-    /**
-     * Number of columns
-     */
+    /** Number of columns */
     val colCount: Long,
-    /**
-     * Total number of non-empty cells
-     */
+    /** Total number of non-empty cells */
     val cellCount: Long,
     /**
      * Pre-extracted table cells (2D vector of cell values)

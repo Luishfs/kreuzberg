@@ -27,64 +27,34 @@ package dev.kreuzberg
  * Contains PowerPoint-specific document metadata.
  */
 data class PptxAppProperties(
-    /**
-     * Application name (e.g., "Microsoft Office PowerPoint")
-     */
+    /** Application name (e.g., "Microsoft Office PowerPoint") */
     val application: String?,
-    /**
-     * Application version
-     */
+    /** Application version */
     val appVersion: String?,
-    /**
-     * Total editing time in minutes
-     */
+    /** Total editing time in minutes */
     val totalTime: Int?,
-    /**
-     * Company name
-     */
+    /** Company name */
     val company: String?,
-    /**
-     * Document security level
-     */
+    /** Document security level */
     val docSecurity: Int?,
-    /**
-     * Scale crop flag
-     */
+    /** Scale crop flag */
     val scaleCrop: Boolean?,
-    /**
-     * Links up to date flag
-     */
+    /** Links up to date flag */
     val linksUpToDate: Boolean?,
-    /**
-     * Shared document flag
-     */
+    /** Shared document flag */
     val sharedDoc: Boolean?,
-    /**
-     * Hyperlinks changed flag
-     */
+    /** Hyperlinks changed flag */
     val hyperlinksChanged: Boolean?,
-    /**
-     * Number of slides
-     */
+    /** Number of slides */
     val slides: Int?,
-    /**
-     * Number of notes
-     */
+    /** Number of notes */
     val notes: Int?,
-    /**
-     * Number of hidden slides
-     */
+    /** Number of hidden slides */
     val hiddenSlides: Int?,
-    /**
-     * Number of multimedia clips
-     */
+    /** Number of multimedia clips */
     val multimediaClips: Int?,
-    /**
-     * Presentation format (e.g., "Widescreen", "Standard")
-     */
+    /** Presentation format (e.g., "Widescreen", "Standard") */
     val presentationFormat: String?,
-    /**
-     * Slide titles
-     */
+    /** Slide titles */
     val slideTitles: List<String>
 )

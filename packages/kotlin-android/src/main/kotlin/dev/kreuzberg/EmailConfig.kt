@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * Configuration for email extraction.
- */
+/** Configuration for email extraction. */
 data class EmailConfig(
     /**
      * Windows codepage number to use when an MSG file contains no codepage property.

@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * Page Segmentation Mode for Tesseract OCR
- */
+/** Page Segmentation Mode for Tesseract OCR */
 enum class PSMMode {
     OSD_ONLY,
     AUTO_OSD,

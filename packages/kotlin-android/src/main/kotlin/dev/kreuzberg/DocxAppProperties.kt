@@ -27,68 +27,36 @@ package dev.kreuzberg
  * Contains Word-specific document statistics and metadata.
  */
 data class DocxAppProperties(
-    /**
-     * Application name (e.g., "Microsoft Office Word")
-     */
+    /** Application name (e.g., "Microsoft Office Word") */
     val application: String?,
-    /**
-     * Application version
-     */
+    /** Application version */
     val appVersion: String?,
-    /**
-     * Template filename
-     */
+    /** Template filename */
     val template: String?,
-    /**
-     * Total editing time in minutes
-     */
+    /** Total editing time in minutes */
     val totalTime: Int?,
-    /**
-     * Number of pages
-     */
+    /** Number of pages */
     val pages: Int?,
-    /**
-     * Number of words
-     */
+    /** Number of words */
     val words: Int?,
-    /**
-     * Number of characters (excluding spaces)
-     */
+    /** Number of characters (excluding spaces) */
     val characters: Int?,
-    /**
-     * Number of characters (including spaces)
-     */
+    /** Number of characters (including spaces) */
     val charactersWithSpaces: Int?,
-    /**
-     * Number of lines
-     */
+    /** Number of lines */
     val lines: Int?,
-    /**
-     * Number of paragraphs
-     */
+    /** Number of paragraphs */
     val paragraphs: Int?,
-    /**
-     * Company name
-     */
+    /** Company name */
     val company: String?,
-    /**
-     * Document security level
-     */
+    /** Document security level */
     val docSecurity: Int?,
-    /**
-     * Scale crop flag
-     */
+    /** Scale crop flag */
     val scaleCrop: Boolean?,
-    /**
-     * Links up to date flag
-     */
+    /** Links up to date flag */
     val linksUpToDate: Boolean?,
-    /**
-     * Shared document flag
-     */
+    /** Shared document flag */
     val sharedDoc: Boolean?,
-    /**
-     * Hyperlinks changed flag
-     */
+    /** Hyperlinks changed flag */
     val hyperlinksChanged: Boolean?
 )

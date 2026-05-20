@@ -34,17 +34,11 @@ data class EmbeddingPreset(
     val name: String,
     val chunkSize: Long,
     val overlap: Long,
-    /**
-     * HuggingFace repository name for the model.
-     */
+    /** HuggingFace repository name for the model. */
     val modelRepo: String,
-    /**
-     * Pooling strategy: "cls" or "mean".
-     */
+    /** Pooling strategy: "cls" or "mean". */
     val pooling: String,
-    /**
-     * Path to the ONNX model file within the repo.
-     */
+    /** Path to the ONNX model file within the repo. */
     val modelFile: String,
     val dimensions: Long,
     val description: String

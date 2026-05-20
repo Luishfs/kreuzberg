@@ -21,9 +21,7 @@
 
 package dev.kreuzberg
 
-/**
- * Citation file metadata (RIS, PubMed, EndNote).
- */
+/** Citation file metadata (RIS, PubMed, EndNote). */
 data class CitationMetadata(
     val citationCount: Long,
     val format: String?,

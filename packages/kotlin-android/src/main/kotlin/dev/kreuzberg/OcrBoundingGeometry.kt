@@ -30,9 +30,7 @@ package dev.kreuzberg
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = OcrBoundingGeometryDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = OcrBoundingGeometrySerializer::class)
 sealed class OcrBoundingGeometry {
-    /**
-     * Axis-aligned bounding box (typical for Tesseract output).
-     */
+    /** Axis-aligned bounding box (typical for Tesseract output). */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Rectangle(

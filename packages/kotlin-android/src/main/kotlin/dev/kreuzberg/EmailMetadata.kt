@@ -27,32 +27,18 @@ package dev.kreuzberg
  * Includes sender/recipient information, message ID, and attachment list.
  */
 data class EmailMetadata(
-    /**
-     * Sender's email address
-     */
+    /** Sender's email address */
     val fromEmail: String?,
-    /**
-     * Sender's display name
-     */
+    /** Sender's display name */
     val fromName: String?,
-    /**
-     * Primary recipients
-     */
+    /** Primary recipients */
     val toEmails: List<String>,
-    /**
-     * CC recipients
-     */
+    /** CC recipients */
     val ccEmails: List<String>,
-    /**
-     * BCC recipients
-     */
+    /** BCC recipients */
     val bccEmails: List<String>,
-    /**
-     * Message-ID header value
-     */
+    /** Message-ID header value */
     val messageId: String?,
-    /**
-     * List of attachment filenames
-     */
+    /** List of attachment filenames */
     val attachments: List<String>
 )

@@ -34,9 +34,7 @@ package dev.kreuzberg
  * and parent-child relationships are bidirectionally consistent.
  */
 data class DocumentStructure(
-    /**
-     * All nodes in document/reading order.
-     */
+    /** All nodes in document/reading order. */
     val nodes: List<DocumentNode>,
     /**
      * Origin format identifier (e.g. "docx", "pptx", "html", "pdf").

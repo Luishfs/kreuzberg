@@ -28,16 +28,10 @@ package dev.kreuzberg
  * structural statistics about the XML document.
  */
 data class XmlExtractionResult(
-    /**
-     * Extracted text content (XML structure filtered out)
-     */
+    /** Extracted text content (XML structure filtered out) */
     val content: String,
-    /**
-     * Total number of XML elements processed
-     */
+    /** Total number of XML elements processed */
     val elementCount: Long,
-    /**
-     * List of unique element names found (sorted)
-     */
+    /** List of unique element names found (sorted) */
     val uniqueElements: List<String>
 )

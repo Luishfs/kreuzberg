@@ -21,7 +21,5 @@
 
 package dev.kreuzberg
 
-/**
- * Year range for bibliographic metadata.
- */
+/** Year range for bibliographic metadata. */
 data class YearRange(val min: Int?, val max: Int?, val years: List<Int>)

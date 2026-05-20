@@ -214,6 +214,29 @@ def get_extensions_for_mime(mime_type)
 
 ---
 
+#### clear_embedding_backends()
+
+Clear all embedding backends from the global registry.
+
+Calls `shutdown()` on every registered backend, then empties the registry.
+
+**Errors:**
+
+- Any error returned by a backend's `shutdown()` method. The first error
+  encountered stops processing of remaining backends.
+
+**Signature:**
+
+```elixir
+@spec clear_embedding_backends() :: {:ok, term()} | {:error, term()}
+def clear_embedding_backends()
+```
+
+**Returns:** `:ok`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### list_embedding_backends()
 
 List the names of all registered embedding backends.
@@ -249,6 +272,29 @@ def list_document_extractors()
 
 ---
 
+#### clear_document_extractors()
+
+Clear all document extractors from the global registry.
+
+Calls `shutdown()` on every registered extractor, then empties the registry.
+
+**Errors:**
+
+- Any error returned by an extractor's `shutdown()` method. The first error
+  encountered stops processing of remaining extractors.
+
+**Signature:**
+
+```elixir
+@spec clear_document_extractors() :: {:ok, term()} | {:error, term()}
+def clear_document_extractors()
+```
+
+**Returns:** `:ok`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### list_ocr_backends()
 
 List all registered OCR backends.
@@ -267,6 +313,29 @@ def list_ocr_backends()
 ```
 
 **Returns:** `list(String.t())`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### clear_ocr_backends()
+
+Clear all OCR backends from the global registry.
+
+Removes all OCR backends and calls their `shutdown()` methods.
+
+**Returns:**
+
+- `Ok(())` if all backends were cleared successfully
+- `Err(...)` if any shutdown method failed
+
+**Signature:**
+
+```elixir
+@spec clear_ocr_backends() :: {:ok, term()} | {:error, term()}
+def clear_ocr_backends()
+```
+
+**Returns:** `:ok`
 **Errors:** Returns `{:error, reason}`
 
 ---
@@ -295,6 +364,22 @@ def list_post_processors()
 
 ---
 
+#### clear_post_processors()
+
+Remove all registered post-processors.
+
+**Signature:**
+
+```elixir
+@spec clear_post_processors() :: {:ok, term()} | {:error, term()}
+def clear_post_processors()
+```
+
+**Returns:** `:ok`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### list_renderers()
 
 List names of all registered renderers.
@@ -315,6 +400,30 @@ def list_renderers()
 
 ---
 
+#### clear_renderers()
+
+Clear all renderers from the global registry.
+
+Removes every renderer, including the built-in defaults (markdown, html,
+djot, plain). After calling this no renderers are registered; re-register
+as needed.
+
+**Errors:**
+
+Returns an error if the registry lock is poisoned.
+
+**Signature:**
+
+```elixir
+@spec clear_renderers() :: {:ok, term()} | {:error, term()}
+def clear_renderers()
+```
+
+**Returns:** `:ok`
+**Errors:** Returns `{:error, reason}`
+
+---
+
 #### list_validators()
 
 List names of all registered validators.
@@ -327,6 +436,22 @@ def list_validators()
 ```
 
 **Returns:** `list(String.t())`
+**Errors:** Returns `{:error, reason}`
+
+---
+
+#### clear_validators()
+
+Remove all registered validators.
+
+**Signature:**
+
+```elixir
+@spec clear_validators() :: {:ok, term()} | {:error, term()}
+def clear_validators()
+```
+
+**Returns:** `:ok`
 **Errors:** Returns `{:error, reason}`
 
 ---
@@ -500,6 +625,7 @@ Hardware acceleration configuration for ONNX Runtime models.
 Controls which execution provider (CPU, CoreML, CUDA, TensorRT) is used
 for inference in layout detection and embedding generation.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `provider` | `ExecutionProviderType` | `:auto` | Execution provider to use for ONNX inference. |
@@ -514,6 +640,7 @@ A single file extracted from an archive.
 
 When archives (ZIP, TAR, 7Z, GZIP) are extracted with recursive extraction
 enabled, each processable file produces its own full `ExtractionResult`.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -530,6 +657,7 @@ Archive (ZIP/TAR/7Z) metadata.
 
 Extracted from compressed archive files containing file lists and size information.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `format` | `String.t()` | — | Archive format ("ZIP", "TAR", "7Z", etc.) |
@@ -544,6 +672,7 @@ Extracted from compressed archive files containing file lists and size informati
 #### BBox
 
 Bounding box in original image coordinates (x1, y1) top-left, (x2, y2) bottom-right.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -562,6 +691,7 @@ Batch item for byte array extraction.
 Used with `batch_extract_bytes` and `batch_extract_bytes_sync`
 to represent a single item in a batch extraction job.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `binary()` | — | The content bytes to extract from |
@@ -578,6 +708,7 @@ Batch item for file extraction.
 Used with `batch_extract_files` and `batch_extract_files_sync`
 to represent a single file in a batch extraction job.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `path` | `String.t()` | — | Path to the file to extract from |
@@ -589,6 +720,7 @@ to represent a single file in a batch extraction job.
 #### BibtexMetadata
 
 BibTeX bibliography metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -609,6 +741,7 @@ Chunks are created when chunking is enabled in `ExtractionConfig`. Each chunk
 contains the text content, optional embedding vector (if embedding generation
 is configured), and metadata about its position in the document.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | The text content of this chunk. |
@@ -622,6 +755,7 @@ is configured), and metadata about its position in the document.
 #### ChunkMetadata
 
 Metadata about a chunk's position in the original document.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -647,6 +781,7 @@ overlap, trimming behavior, and optional embeddings.
 
 Use `..the default constructor` when constructing to allow for future field additions:
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `max_characters` | `integer()` | `1000` | Maximum size per chunk (in units determined by `sizing`). When `sizing` is `Characters` (default), this is the max character count. When using token-based sizing, this is the max token count. Default: 1000 |
@@ -659,9 +794,9 @@ Use `..the default constructor` when constructing to allow for future field addi
 | `prepend_heading_context` | `boolean()` | `false` | When `true` and `chunker_type` is `Markdown`, prepend the heading hierarchy path (e.g. `"# Title > ## Section\n\n"`) to each chunk's content string. This is useful for RAG pipelines where each chunk needs self-contained context about its position in the document structure. Default: `false` |
 | `topic_threshold` | `float() \| nil` | `nil` | Optional cosine similarity threshold for semantic topic boundary detection. Only used when `chunker_type` is `Semantic` and an `EmbeddingConfig` is provided. You almost never need to set this. When omitted, defaults to `0.75` which works well for most documents. Lower values detect more topic boundaries (more, smaller chunks); higher values detect fewer. Range: `0.0..=1.0`. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -675,6 +810,7 @@ def default()
 #### CitationMetadata
 
 Citation file metadata (RIS, PubMed, EndNote).
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -700,6 +836,7 @@ with format-specific implementation.
 When `nil` on `ExtractionConfig`, each extractor uses its current
 default behavior unchanged.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `include_headers` | `boolean()` | `false` | Include running headers in extraction output. - PDF: Disables top-margin furniture stripping and prevents the layout model from treating `PageHeader`-classified regions as furniture. - DOCX: Includes document headers in text output. - RTF/ODT: Headers already included; this is a no-op when true. - HTML/EPUB: Keeps `<header>` element content. Default: `false` (headers are stripped or excluded). |
@@ -707,9 +844,9 @@ default behavior unchanged.
 | `strip_repeating_text` | `boolean()` | `true` | Enable the heuristic cross-page repeating text detector. When `true` (default), text that repeats verbatim across a supermajority of pages is classified as furniture and stripped.  Disable this if brand names or repeated headings are being incorrectly removed by the heuristic. Note: when a layout-detection model is active, the model may independently classify page-header / page-footer regions as furniture on a per-page basis. To preserve those regions, set `include_headers = true` and/or `include_footers = true` in addition to disabling this flag. Primarily affects PDF extraction. Default: `true`. |
 | `include_watermarks` | `boolean()` | `false` | Include watermark text in extraction output. - PDF: Keeps watermark artifacts and arXiv identifiers. - Other formats: No effect currently. Default: `false` (watermarks are stripped). |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -723,6 +860,7 @@ def default()
 #### ContributorRole
 
 JATS contributor with role.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -738,6 +876,7 @@ Dublin Core metadata from docProps/core.xml
 
 Contains standard metadata fields defined by the Dublin Core standard
 and Office-specific extensions.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -764,6 +903,7 @@ and Office-specific extensions.
 
 CSV/TSV file metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `row_count` | `integer()` | — | Number of rows |
@@ -779,6 +919,7 @@ CSV/TSV file metadata.
 
 dBASE field information.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `String.t()` | — | The name |
@@ -790,6 +931,7 @@ dBASE field information.
 #### DbfMetadata
 
 dBASE (DBF) file metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -804,6 +946,7 @@ dBASE (DBF) file metadata.
 
 MIME type detection response.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mime_type` | `String.t()` | — | Detected MIME type |
@@ -815,6 +958,7 @@ MIME type detection response.
 #### DetectionResult
 
 Page-level detection result containing all detections and page metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -839,6 +983,7 @@ This type captures the full richness of Djot markup, including:
 
 Available when the `djot` feature is enabled.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `plain_text` | `String.t()` | — | Plain text representation for backwards compatibility |
@@ -857,6 +1002,7 @@ Available when the `djot` feature is enabled.
 
 Image element in Djot.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `src` | `String.t()` | — | Image source URL or path |
@@ -870,6 +1016,7 @@ Image element in Djot.
 #### DjotLink
 
 Link element in Djot.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -888,13 +1035,13 @@ Trait for document extractor plugins.
 Implement this trait to add support for new document formats or to override
 built-in extraction behavior with custom logic.
 
-# Return Type
+### Return Type
 
 Extractors return `InternalDocument`, a flat intermediate representation.
 The pipeline converts this into the public `ExtractionResult` via the
 derivation step.
 
-# Priority System
+### Priority System
 
 When multiple extractors support the same MIME type, the registry selects
 the extractor with the highest priority value. Use this to:
@@ -904,13 +1051,13 @@ the extractor with the highest priority value. Use this to:
 
 Default priority is 50.
 
-# Thread Safety
+### Thread Safety
 
 Extractors must be thread-safe (`Send + Sync`) to support concurrent extraction.
 
-##### Functions
+### Functions
 
-###### extract_bytes()
+#### extract_bytes()
 
 Extract content from a byte array.
 
@@ -934,7 +1081,7 @@ The pipeline will convert this into the public `ExtractionResult`.
 def extract_bytes(content, mime_type, config)
 ```
 
-###### extract_file()
+#### extract_file()
 
 Extract content from a file.
 
@@ -955,7 +1102,7 @@ Same as `extract_bytes`, plus file I/O errors.
 def extract_file(path, mime_type, config)
 ```
 
-###### supported_mime_types()
+#### supported_mime_types()
 
 Get the list of MIME types supported by this extractor.
 
@@ -973,14 +1120,14 @@ A slice of MIME type strings.
 def supported_mime_types()
 ```
 
-###### priority()
+#### priority()
 
 Get the priority of this extractor.
 
 Higher priority extractors are preferred when multiple extractors
 support the same MIME type.
 
-# Priority Guidelines
+### Priority Guidelines
 
 - **0-25**: Fallback/low-quality extractors
 - **26-49**: Alternative extractors
@@ -998,7 +1145,7 @@ Priority value (default: 50)
 def priority()
 ```
 
-###### can_handle()
+#### can_handle()
 
 Optional: Check if this extractor can handle a specific file.
 
@@ -1015,7 +1162,7 @@ Defaults to `true` (rely on MIME type matching).
 def can_handle(path, mime_type)
 ```
 
-###### as_sync_extractor()
+#### as_sync_extractor()
 
 Attempt to get a reference to this extractor as a SyncExtractor.
 
@@ -1038,6 +1185,7 @@ A single node in the document tree.
 Each node has deterministic `id`, typed `content`, optional `parent`/`children`
 for tree structure, and metadata like page number, bounding box, and content layer.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `id` | `String.t()` | — | Deterministic identifier (hash of content + position). |
@@ -1058,6 +1206,7 @@ for tree structure, and metadata like page number, bounding box, and content lay
 
 A resolved relationship between two nodes in the document tree.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `source` | `integer()` | — | Source node index (the referencing node). |
@@ -1075,10 +1224,11 @@ A flat array of nodes with index-based parent/child references forming a tree.
 Root-level nodes have `parent: None`. Use `body_roots()` and `furniture_roots()`
 to iterate over top-level content by layer.
 
-# Validation
+### Validation
 
 Call `validate()` after construction to verify all node indices are in bounds
 and parent-child relationships are bidirectionally consistent.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1087,9 +1237,9 @@ and parent-child relationships are bidirectionally consistent.
 | `relationships` | `list(DocumentRelationship)` | `[]` | Resolved relationships between nodes (footnote refs, citations, anchor links, etc.). Populated during derivation from the internal document representation. Empty when no relationships are detected. |
 | `node_types` | `list(String.t())` | `[]` | Sorted, deduplicated list of node type names present in this document. Each value is the snake_case `node_type` tag of the corresponding `NodeContent` variant (e.g. `"paragraph"`, `"heading"`, `"table"`, …). Computed from `nodes` via `DocumentStructure.finalize_node_types`. Empty until that method is called (internal construction paths call it at the end of derivation). |
 
-##### Functions
+### Functions
 
-###### finalize_node_types()
+#### finalize_node_types()
 
 Compute and populate the `node_types` field from the current `nodes`.
 
@@ -1102,7 +1252,7 @@ construction paths (builder, derivation) call this automatically.
 def finalize_node_types()
 ```
 
-###### is_empty()
+#### is_empty()
 
 Check if the document structure is empty.
 
@@ -1112,7 +1262,7 @@ Check if the document structure is empty.
 def is_empty()
 ```
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -1128,6 +1278,7 @@ def default()
 Application properties from docProps/app.xml for DOCX
 
 Contains Word-specific document statistics and metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1158,6 +1309,7 @@ Word document metadata.
 Extracted from DOCX files using shared Office Open XML metadata extraction.
 Integrates with `office_metadata` module for core/app/custom properties.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `core_properties` | `CoreProperties \| nil` | `nil` | Core properties from docProps/core.xml (Dublin Core metadata) Contains title, creator, subject, keywords, dates, etc. Shared format across DOCX/PPTX/XLSX documents. |
@@ -1174,6 +1326,7 @@ Semantic element extracted from document.
 Represents a logical unit of content with semantic classification,
 unique identifier, and metadata for tracking origin and position.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `element_id` | `String.t()` | — | Unique element identifier |
@@ -1187,6 +1340,7 @@ unique identifier, and metadata for tracking origin and position.
 #### ElementMetadata
 
 Metadata for a semantic element.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1205,6 +1359,7 @@ Email attachment representation.
 
 Contains metadata and optionally the content of an email attachment.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `String.t() \| nil` | `nil` | Attachment name (from Content-Disposition header) |
@@ -1221,6 +1376,7 @@ Contains metadata and optionally the content of an email attachment.
 
 Configuration for email extraction.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `msg_fallback_codepage` | `integer() \| nil` | `nil` | Windows codepage number to use when an MSG file contains no codepage property. Defaults to `nil`, which falls back to windows-1252. If an unrecognized or invalid codepage number is supplied (including 0), the behavior silently falls back to windows-1252 — the same as when the MSG file itself contains an unrecognized codepage. No error or warning is emitted. Users should verify output when supplying unusual values. Common values: - 1250: Central European (Polish, Czech, Hungarian, etc.) - 1251: Cyrillic (Russian, Ukrainian, Bulgarian, etc.) - 1252: Western European (default) - 1253: Greek - 1254: Turkish - 1255: Hebrew - 1256: Arabic - 932:  Japanese (Shift-JIS) - 936:  Simplified Chinese (GBK) |
@@ -1234,6 +1390,7 @@ Email extraction result.
 
 Complete representation of an extracted email message (.eml or .msg)
 including headers, body content, and attachments.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1259,6 +1416,7 @@ Email metadata extracted from .eml and .msg files.
 
 Includes sender/recipient information, message ID, and attachment list.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `from_email` | `String.t() \| nil` | `nil` | Sender's email address |
@@ -1275,6 +1433,7 @@ Includes sender/recipient information, message ID, and attachment list.
 #### EmbeddedFile
 
 Embedded file descriptor extracted from the PDF name tree.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1295,14 +1454,14 @@ Host-language bridges (PyO3, napi-rs, Rustler, extendr, magnus, ext-php-rs,
 C FFI, etc.) wrap their synchronous host callables in `spawn_blocking` or the
 equivalent to satisfy the async signature.
 
-# Thread safety
+### Thread safety
 
 Backends must be `Send + Sync + 'static`. They are stored in
 `Arc<dyn EmbeddingBackend>` and called concurrently from kreuzberg's chunking
 pipeline. If the backend's underlying model isn't thread-safe, the backend
 itself must serialize access internally (e.g. via `Mutex<Inner>`).
 
-# Contract
+### Contract
 
 - `embed(texts)` MUST return exactly `texts.len()` vectors, each of length
   `self.dimensions()`. The dispatcher in `embed_texts`
@@ -1323,7 +1482,7 @@ itself must serialize access internally (e.g. via `Mutex<Inner>`).
   held via the `Arc<dyn EmbeddingBackend>` reference, and only releasing
   shared state that isn't needed by `embed`.
 
-# Runtime
+### Runtime
 
 The synchronous `embed_texts` entry uses
 `tokio.task.block_in_place` to await the trait's async `embed`, which
@@ -1333,9 +1492,9 @@ or `tokio.runtime.Builder.new_current_thread()`) must use
 `embed_texts_async` instead, which awaits directly without
 `block_in_place`.
 
-##### Functions
+### Functions
 
-###### dimensions()
+#### dimensions()
 
 Embedding vector dimension. Must be `> 0` and must match the length of
 every vector returned by `embed`.
@@ -1346,7 +1505,7 @@ every vector returned by `embed`.
 def dimensions()
 ```
 
-###### embed()
+#### embed()
 
 Embed a batch of texts, returning one vector per input in order.
 
@@ -1372,6 +1531,7 @@ Embedding configuration for text chunks.
 Configures embedding generation using ONNX models via the vendored embedding engine.
 Requires the `embeddings` feature to be enabled.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `model` | `EmbeddingModelType` | `:preset` | The embedding model to use (defaults to "balanced" preset if not specified) |
@@ -1382,9 +1542,9 @@ Requires the `embeddings` feature to be enabled.
 | `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for the embedding ONNX model. When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
 | `max_embed_duration_secs` | `integer() \| nil` | `nil` | Maximum wall-clock duration (in seconds) for a single `embed()` call when using `EmbeddingModelType.Plugin`. Applies only to the in-process plugin path — protects against hung host-language backends (e.g. a Python callback deadlocked on the GIL, a model stuck on CUDA OOM retries, etc.). On timeout, the dispatcher returns `Plugin` instead of blocking forever. `nil` disables the timeout. The default (60 seconds) is conservative for common in-process inference; increase for large batches on slow hardware. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -1405,6 +1565,7 @@ to provide an optimized configuration for specific scenarios.
 All string fields are owned `String` for FFI compatibility — instances
 are safe to clone and pass across language boundaries.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `name` | `String.t()` | — | The name |
@@ -1423,6 +1584,7 @@ are safe to clone and pass across language boundaries.
 
 EPUB metadata (Dublin Core extensions).
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `coverage` | `String.t() \| nil` | `nil` | Coverage |
@@ -1439,6 +1601,7 @@ EPUB metadata (Dublin Core extensions).
 
 Error metadata (for batch operations).
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `error_type` | `String.t()` | — | Error type |
@@ -1454,6 +1617,7 @@ Excel/spreadsheet format metadata.
 Identifies the document as a spreadsheet source via the `FormatMetadata.Excel`
 discriminant. Sheet count and sheet names are stored inside this struct.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `sheet_count` | `integer() \| nil` | `nil` | Number of sheets in the workbook. |
@@ -1468,6 +1632,7 @@ Single Excel worksheet.
 
 Represents one sheet from an Excel workbook with its content
 converted to Markdown format and dimensional statistics.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1488,6 +1653,7 @@ Excel workbook representation.
 Contains all sheets from an Excel file (.xlsx, .xls, etc.) with
 extracted content and metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `sheets` | `list(ExcelSheet)` | — | All sheets in the workbook |
@@ -1503,6 +1669,7 @@ Extracted image from a document.
 Contains raw image data, metadata, and optional nested OCR results.
 Raw bytes allow cross-language compatibility - users can convert to
 PIL.Image (Python), Sharp (Node.js), or other formats as needed.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1530,6 +1697,7 @@ PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 
 Image metadata extracted from an image file.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `width` | `integer()` | — | Image width in pixels |
@@ -1546,6 +1714,7 @@ Main extraction configuration.
 
 This struct contains all configuration options for the extraction process.
 It can be loaded from TOML, YAML, or JSON files, or created programmatically.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1584,9 +1753,9 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 | `structured_extraction` | `StructuredExtractionConfig \| nil` | `nil` | Structured extraction via LLM (None = disabled). When set, the extracted document content is sent to an LLM with the provided JSON schema. The structured response is stored in `ExtractionResult.structured_output`. |
 | `cancel_token` | `String.t() \| nil` | `nil` | Cancellation token for this extraction (None = no external cancellation). Pass a `CancellationToken` clone here and call `CancellationToken.cancel` from another thread / task to abort the extraction in progress. The extractor checks the token at safe checkpoints (before lock acquisition, between pages, between batch items) and returns `KreuzbergError.Cancelled` when set. The field is excluded from serialization because `CancellationToken` is a runtime handle, not a configuration value. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -1594,7 +1763,7 @@ It can be loaded from TOML, YAML, or JSON files, or created programmatically.
 def default()
 ```
 
-###### needs_image_processing()
+#### needs_image_processing()
 
 Check if image processing is needed by examining OCR and image extraction settings.
 
@@ -1603,7 +1772,7 @@ indicating that image decompression and processing should occur.
 Returns `false` if both are disabled, allowing optimization to skip unnecessary
 image decompression for text-only extraction workflows.
 
-# Optimization Impact
+### Optimization Impact
 For text-only extractions (no OCR, no image extraction), skipping image
 decompression can improve CPU utilization by 5-10% by avoiding wasteful
 image I/O and processing when results won't be used.
@@ -1622,6 +1791,7 @@ def needs_image_processing()
 General extraction result used by the core extraction API.
 
 This is the main result type returned by all extraction functions.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1650,9 +1820,9 @@ This is the main result type returned by all extraction functions.
 | `formatted_content` | `String.t() \| nil` | `nil` | Pre-rendered content in the requested output format. Populated during `derive_extraction_result` before tree derivation consumes element data. `apply_output_format` swaps this into `content` at the end of the pipeline, after post-processors have operated on plain text. |
 | `ocr_internal_document` | `String.t() \| nil` | `nil` | Structured hOCR document for the OCR+layout pipeline. When tesseract produces hOCR output, the parsed `InternalDocument` carries paragraph structure with bounding boxes and confidence scores. The layout classification step enriches these elements before final rendering. |
 
-##### Functions
+### Functions
 
-###### from_ocr()
+#### from_ocr()
 
 Convert from an OCR result.
 
@@ -1668,6 +1838,7 @@ def from_ocr(ocr)
 #### FictionBookMetadata
 
 FictionBook (FB2) metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1687,7 +1858,7 @@ This type is used with `batch_extract_files` and
 `batch_extract_bytes` to allow heterogeneous
 extraction settings within a single batch.
 
-# Excluded Fields
+### Excluded Fields
 
 The following `ExtractionConfig` fields are batch-level only and
 cannot be overridden per file:
@@ -1695,6 +1866,7 @@ cannot be overridden per file:
 - `use_cache` — global caching policy
 - `acceleration` — shared ONNX execution provider
 - `security_limits` — global archive security policy
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1728,6 +1900,7 @@ cannot be overridden per file:
 
 Footnote in Djot.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `label` | `String.t()` | — | Footnote label |
@@ -1741,6 +1914,7 @@ Footnote in Djot.
 Block-level element in a Djot document.
 
 Represents structural elements like headings, paragraphs, lists, code blocks, etc.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1759,6 +1933,7 @@ Represents structural elements like headings, paragraphs, lists, code blocks, et
 
 Individual grid cell with position and span metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | Cell text content. |
@@ -1775,6 +1950,7 @@ Individual grid cell with position and span metadata.
 #### HeaderMetadata
 
 Header/heading element metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1793,6 +1969,7 @@ Heading context for a chunk within a Markdown document.
 
 Contains the heading hierarchy from document root to this chunk's section.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `headings` | `list(HeadingLevel)` | — | The heading hierarchy from document root to this chunk's section. Index 0 is the outermost (h1), last element is the most specific. |
@@ -1803,6 +1980,7 @@ Contains the heading hierarchy from document root to this chunk's section.
 #### HeadingLevel
 
 A single heading in the hierarchy.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1818,6 +1996,7 @@ A text block with hierarchy level assignment.
 
 Represents a block of text with semantic heading information extracted from
 font size clustering and hierarchical analysis.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1837,6 +2016,7 @@ Enables extraction of document hierarchy levels (H1-H6) based on font size
 clustering and semantic analysis. When enabled, hierarchical blocks are
 included in page content.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean()` | `true` | Enable hierarchy extraction |
@@ -1844,9 +2024,9 @@ included in page content.
 | `include_bbox` | `boolean()` | `true` | Include bounding box information in hierarchy blocks |
 | `ocr_coverage_threshold` | `float() \| nil` | `nil` | OCR coverage threshold for smart OCR triggering (0.0-1.0) Determines when OCR should be triggered based on text block coverage. OCR is triggered when text blocks cover less than this fraction of the page. Default: 0.5 (trigger OCR if less than 50% of page has text) |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -1863,6 +2043,7 @@ HTML metadata extracted from HTML documents.
 
 Includes document-level metadata, Open Graph data, Twitter Card metadata,
 and extracted structural elements (headers, links, images, structured data).
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1894,6 +2075,7 @@ When set on `ExtractionConfig.html_output` alongside
 `StyledHtmlRenderer` instead of
 the plain comrak-based renderer.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `css` | `String.t() \| nil` | `nil` | Inline CSS string injected into the output after the theme stylesheet. Concatenated after `css_file` content when both are set. |
@@ -1902,9 +2084,9 @@ the plain comrak-based renderer.
 | `class_prefix` | `String.t()` | — | CSS class prefix applied to every emitted class name. Default: `"kb-"`. Change this if your host application already uses classes that start with `kb-`. |
 | `embed_css` | `boolean()` | `true` | When `true` (default), write the resolved CSS into a `<style>` block immediately after the opening `<div class="{prefix}doc">`. Set to `false` to emit only the structural markup and wire up your own stylesheet targeting the `kb-*` class names. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -1919,6 +2101,7 @@ def default()
 
 Image extraction configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `extract_images` | `boolean()` | `true` | Extract images from documents |
@@ -1931,9 +2114,9 @@ Image extraction configuration.
 | `max_images_per_page` | `integer() \| nil` | `nil` | Maximum number of image objects to extract per PDF page. Some PDFs (e.g. technical diagrams stored as thousands of raster fragments) can trigger extremely long or indefinite extraction times when every image object on a dense page is decoded individually via the PDF extractor. Setting this limit causes kreuzberg to stop collecting individual images once the count per page reaches the cap and emit a warning instead. `nil` (default) means no limit — all images are extracted. |
 | `classify` | `boolean()` | `true` | When `true` (default), extracted images are classified by kind and grouped into clusters where they appear to belong to one figure. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -1950,6 +2133,7 @@ Image metadata extracted from image files.
 
 Includes dimensions, format, and EXIF data.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `width` | `integer()` | — | Image width in pixels |
@@ -1963,6 +2147,7 @@ Includes dimensions, format, and EXIF data.
 #### ImageMetadataType
 
 Image element metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -1984,6 +2169,7 @@ These settings control how images are preprocessed before OCR to improve
 text recognition quality. Different preprocessing strategies work better
 for different document types.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `target_dpi` | `integer()` | `300` | Target DPI for the image (300 is standard, 600 for small text). |
@@ -1994,9 +2180,9 @@ for different document types.
 | `binarization_method` | `String.t()` | `"otsu"` | Binarization method: "otsu", "sauvola", "adaptive". |
 | `invert_colors` | `boolean()` | `false` | Invert colors (white text on black → black on white). |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2013,6 +2199,7 @@ Image preprocessing metadata.
 
 Tracks the transformations applied to an image during OCR preprocessing,
 including DPI normalization, resizing, and resampling.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2038,6 +2225,7 @@ Inline element within a block.
 
 Represents text with formatting, links, images, etc.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `element_type` | `InlineType` | — | Type of inline element |
@@ -2051,6 +2239,7 @@ Represents text with formatting, links, images, etc.
 #### JatsMetadata
 
 JATS (Journal Article Tag Suite) metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2066,6 +2255,7 @@ JATS (Journal Article Tag Suite) metadata.
 
 Extracted keyword with metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `text` | `String.t()` | — | The keyword text. |
@@ -2080,6 +2270,7 @@ Extracted keyword with metadata.
 
 Keyword extraction configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `algorithm` | `KeywordAlgorithm` | `:yake` | Algorithm to use for extraction. |
@@ -2090,9 +2281,9 @@ Keyword extraction configuration.
 | `yake_params` | `YakeParams \| nil` | `nil` | YAKE-specific tuning parameters. |
 | `rake_params` | `RakeParams \| nil` | `nil` | RAKE-specific tuning parameters. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2107,15 +2298,16 @@ def default()
 
 Language detection configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean()` | `true` | Enable language detection |
 | `min_confidence` | `float()` | `0.8` | Minimum confidence threshold (0.0-1.0) |
 | `detect_multiple` | `boolean()` | `false` | Detect multiple languages in the document |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2129,6 +2321,7 @@ def default()
 #### LayoutDetection
 
 A single layout detection result.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2147,6 +2340,7 @@ Controls layout detection behavior in the extraction pipeline.
 When set on `ExtractionConfig`, layout detection
 is enabled for PDF extraction.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `confidence_threshold` | `float() \| nil` | `nil` | Confidence threshold override (None = use model default). |
@@ -2154,9 +2348,9 @@ is enabled for PDF extraction.
 | `table_model` | `TableModel` | `:tatr` | Table structure recognition model. Controls which model is used for table cell detection within layout-detected table regions. Defaults to `TableModel.Tatr`. |
 | `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for ONNX models (layout detection + table structure). When set, controls which execution provider (CPU, CUDA, CoreML, TensorRT) is used for inference. Defaults to `nil` (auto-select per platform). |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2175,6 +2369,7 @@ When layout detection is enabled, each page may have layout regions
 identifying different content types (text, pictures, tables, etc.)
 with confidence scores and spatial positions.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `class_name` | `String.t()` | — | Layout class name (e.g. "picture", "table", "text", "section_header"). |
@@ -2188,6 +2383,7 @@ with confidence scores and spatial positions.
 #### LinkMetadata
 
 Link element metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2207,6 +2403,7 @@ Configuration for an LLM provider/model via liter-llm.
 
 Each feature (VLM OCR, VLM embeddings, structured extraction) carries
 its own `LlmConfig`, allowing different providers per feature.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2229,6 +2426,7 @@ Populated when VLM OCR, structured extraction, or LLM-based embeddings
 are used. Multiple entries may be present when multiple LLM calls occur
 within one extraction (e.g. VLM OCR + structured extraction).
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `model` | `String.t()` | — | The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514"). |
@@ -2248,6 +2446,7 @@ Extraction result metadata.
 
 Contains common fields applicable to all formats, format-specific metadata
 via a discriminated union, and additional custom fields from postprocessors.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2274,9 +2473,9 @@ via a discriminated union, and additional custom fields from postprocessors.
 | `ocr_used` | `boolean()` | — | Whether OCR was used during extraction. Set to `true` whenever the extraction pipeline ran an OCR backend (Tesseract, PaddleOCR, VLM, etc.) and used that output as the primary or fallback text. `false` means native text extraction was used exclusively. |
 | `additional` | `map()` | `%{}` | Additional custom fields from postprocessors. Serialized as a nested `"additional"` object (not flattened at root level). Uses `Cow<'static, str>` keys so static string keys avoid allocation. |
 
-##### Functions
+### Functions
 
-###### is_empty()
+#### is_empty()
 
 Returns `true` when no metadata fields, format-specific metadata, or
 additional postprocessor fields are populated.
@@ -2293,6 +2492,7 @@ def is_empty()
 #### ModelPaths
 
 Combined paths to all models needed for OCR (backward compatibility).
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2313,13 +2513,13 @@ Implement this trait to add custom OCR capabilities. OCR backends can be:
 - FFI bridges to Python libraries (like EasyOCR, PaddleOCR)
 - Cloud-based OCR services (Google Vision, AWS Textract, etc.)
 
-# Thread Safety
+### Thread Safety
 
 OCR backends must be thread-safe (`Send + Sync`) to support concurrent processing.
 
-##### Functions
+### Functions
 
-###### process_image()
+#### process_image()
 
 Process an image and extract text via OCR.
 
@@ -2333,7 +2533,7 @@ An `ExtractionResult` containing the extracted text and metadata.
 - `KreuzbergError.Validation` - Invalid image format or configuration
 - `KreuzbergError.Io` - I/O errors (these always bubble up)
 
-# Reading `backend_options`
+### Reading `backend_options`
 
 Backends that support runtime tuning can read `config.backend_options` and
 deserialize only the keys they care about. Unknown keys are silently ignored,
@@ -2345,7 +2545,7 @@ so multiple backends can coexist in a pipeline without key conflicts.
 def process_image(image_bytes, config)
 ```
 
-###### process_image_file()
+#### process_image_file()
 
 Process a file and extract text via OCR.
 
@@ -2362,7 +2562,7 @@ Same as `process_image`, plus file I/O errors.
 def process_image_file(path, config)
 ```
 
-###### supports_language()
+#### supports_language()
 
 Check if this backend supports a given language code.
 
@@ -2376,7 +2576,7 @@ Check if this backend supports a given language code.
 def supports_language(lang)
 ```
 
-###### backend_type()
+#### backend_type()
 
 Get the backend type identifier.
 
@@ -2390,7 +2590,7 @@ The backend type enum value.
 def backend_type()
 ```
 
-###### supported_languages()
+#### supported_languages()
 
 Optional: Get a list of all supported languages.
 
@@ -2402,7 +2602,7 @@ Defaults to empty list. Override to provide comprehensive language support info.
 def supported_languages()
 ```
 
-###### supports_table_detection()
+#### supports_table_detection()
 
 Optional: Check if the backend supports table detection.
 
@@ -2414,7 +2614,7 @@ Defaults to `false`. Override if your backend can detect and extract tables.
 def supports_table_detection()
 ```
 
-###### supports_document_processing()
+#### supports_document_processing()
 
 Check if the backend supports direct document-level processing (e.g. for PDFs).
 
@@ -2426,7 +2626,7 @@ Defaults to `false`. Override if the backend has optimized document processing.
 def supports_document_processing()
 ```
 
-###### process_document()
+#### process_document()
 
 Process a document file directly via OCR.
 
@@ -2443,6 +2643,7 @@ def process_document(path, config)
 
 #### OcrCacheStats
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `total_files` | `integer()` | — | Total files |
@@ -2458,6 +2659,7 @@ Confidence scores for an OCR element.
 Separates detection confidence (how confident that text exists at this location)
 from recognition confidence (how confident about the actual text content).
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `detection` | `float() \| nil` | `nil` | Detection confidence: how confident the OCR engine is that text exists here. PaddleOCR provides this as `box_score`, Tesseract doesn't have a direct equivalent. Range: 0.0 to 1.0 (or None if not available). |
@@ -2469,6 +2671,7 @@ from recognition confidence (how confident about the actual text content).
 #### OcrConfig
 
 OCR configuration.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2488,9 +2691,9 @@ OCR configuration.
 | `acceleration` | `AccelerationConfig \| nil` | `nil` | Hardware acceleration for ONNX Runtime models (e.g. PaddleOCR, layout detection). Not user-configurable via config files — injected at runtime from `ExtractionConfig.acceleration` before each `process_image` call. |
 | `tessdata_bytes` | `map() \| nil` | `nil` | Caller-supplied Tesseract `traineddata` bytes per language code. Primary use case is the WASM build, which has no filesystem and cannot download tessdata at runtime. Native builds typically rely on `TessdataManager` and ignore this field. When present, the WASM Tesseract backend prefers these bytes over its compile-time-bundled English data. Skipped by serde to keep config files small — supply via the typed API at runtime. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2507,6 +2710,7 @@ A unified OCR element representing detected text with full metadata.
 
 This is the primary type for structured OCR output, preserving all information
 from both Tesseract and PaddleOCR backends.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2528,6 +2732,7 @@ Configuration for OCR element extraction.
 
 Controls how OCR elements are extracted and filtered.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `include_elements` | `boolean()` | — | Whether to include OCR elements in the extraction result. When true, the `ocr_elements` field in `ExtractionResult` will be populated. |
@@ -2544,6 +2749,7 @@ OCR extraction result.
 
 Result of performing OCR on an image or scanned document,
 including recognized text and detected tables.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2562,6 +2768,7 @@ including recognized text and detected tables.
 OCR processing metadata.
 
 Captures information about OCR processing configuration and results.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2583,6 +2790,7 @@ Backends are tried in priority order (highest first). After each backend
 produces output, quality is evaluated. If it meets `quality_thresholds.pipeline_min_quality`,
 the result is accepted. Otherwise the next backend is tried.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `stages` | `list(OcrPipelineStage)` | — | Ordered list of backends to try. Sorted by priority (descending) at runtime. |
@@ -2594,6 +2802,7 @@ the result is accepted. Otherwise the next backend is tried.
 #### OcrPipelineStage
 
 A single backend stage in the OCR pipeline.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2615,6 +2824,7 @@ Quality thresholds for OCR fallback decisions and pipeline quality gating.
 All fields default to the values that match the previous hardcoded behavior,
 so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `min_total_non_whitespace` | `integer()` | `64` | Minimum total non-whitespace characters to consider text substantive. |
@@ -2634,9 +2844,9 @@ so `OcrQualityThresholds.default()` preserves existing semantics exactly.
 | `alnum_ws_ratio_threshold` | `float()` | `0.4` | Alphanumeric+whitespace ratio threshold for skip decisions. |
 | `pipeline_min_quality` | `float()` | `0.5` | Minimum quality score (0.0-1.0) for a pipeline stage result to be accepted. If the result from a backend scores below this, try the next backend. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2650,6 +2860,7 @@ def default()
 #### OcrRotation
 
 Rotation information for an OCR element.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2665,6 +2876,7 @@ Table detected via OCR.
 
 Represents a table structure recognized during OCR processing.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `cells` | `list(list(String.t()))` | — | Table cells as a 2D vector (rows × columns) |
@@ -2679,6 +2891,7 @@ Represents a table structure recognized during OCR processing.
 
 Bounding box for an OCR-detected table in pixel coordinates.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `left` | `integer()` | — | Left x-coordinate (pixels) |
@@ -2692,6 +2905,7 @@ Bounding box for an OCR-detected table in pixel coordinates.
 #### OrientationResult
 
 Document orientation detection result.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2708,6 +2922,7 @@ Configuration for PaddleOCR backend.
 Configures PaddleOCR text detection and recognition with multi-language support.
 Uses a builder pattern for convenient configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `language` | `String.t()` | — | Language code (e.g., "en", "ch", "jpn", "kor", "deu", "fra") |
@@ -2723,9 +2938,9 @@ Uses a builder pattern for convenient configuration.
 | `drop_score` | `float()` | — | Minimum recognition confidence score for text lines (default: 0.5). Text regions with recognition confidence below this threshold are discarded. Matches PaddleOCR Python's `drop_score` parameter. Range: 0.0-1.0 |
 | `model_tier` | `String.t()` | — | Model tier controlling detection/recognition model size and accuracy trade-off. - `"mobile"` (default): Lightweight models (~4.5MB detection, ~16.5MB recognition), fast download and inference - `"server"`: Large, high-accuracy models (~88MB detection, ~84MB recognition), best for GPU or complex documents |
 
-##### Functions
+### Functions
 
-###### with_cache_dir()
+#### with_cache_dir()
 
 Sets a custom cache directory for model files.
 
@@ -2735,7 +2950,7 @@ Sets a custom cache directory for model files.
 def with_cache_dir(path)
 ```
 
-###### with_table_detection()
+#### with_table_detection()
 
 Enables or disables table structure detection.
 
@@ -2745,7 +2960,7 @@ Enables or disables table structure detection.
 def with_table_detection(enable)
 ```
 
-###### with_angle_cls()
+#### with_angle_cls()
 
 Enables or disables angle classification for rotated text.
 
@@ -2755,7 +2970,7 @@ Enables or disables angle classification for rotated text.
 def with_angle_cls(enable)
 ```
 
-###### with_det_db_thresh()
+#### with_det_db_thresh()
 
 Sets the database threshold for text detection.
 
@@ -2765,7 +2980,7 @@ Sets the database threshold for text detection.
 def with_det_db_thresh(threshold)
 ```
 
-###### with_det_db_box_thresh()
+#### with_det_db_box_thresh()
 
 Sets the box threshold for text bounding box refinement.
 
@@ -2775,7 +2990,7 @@ Sets the box threshold for text bounding box refinement.
 def with_det_db_box_thresh(threshold)
 ```
 
-###### with_det_db_unclip_ratio()
+#### with_det_db_unclip_ratio()
 
 Sets the unclip ratio for expanding text bounding boxes.
 
@@ -2785,7 +3000,7 @@ Sets the unclip ratio for expanding text bounding boxes.
 def with_det_db_unclip_ratio(ratio)
 ```
 
-###### with_det_limit_side_len()
+#### with_det_limit_side_len()
 
 Sets the maximum side length for detection images.
 
@@ -2795,7 +3010,7 @@ Sets the maximum side length for detection images.
 def with_det_limit_side_len(length)
 ```
 
-###### with_rec_batch_num()
+#### with_rec_batch_num()
 
 Sets the batch size for recognition inference.
 
@@ -2805,7 +3020,7 @@ Sets the batch size for recognition inference.
 def with_rec_batch_num(batch_size)
 ```
 
-###### with_drop_score()
+#### with_drop_score()
 
 Sets the minimum recognition confidence threshold.
 
@@ -2815,7 +3030,7 @@ Sets the minimum recognition confidence threshold.
 def with_drop_score(score)
 ```
 
-###### with_padding()
+#### with_padding()
 
 Sets padding in pixels added around images before detection.
 
@@ -2825,7 +3040,7 @@ Sets padding in pixels added around images before detection.
 def with_padding(padding)
 ```
 
-###### with_model_tier()
+#### with_model_tier()
 
 Sets the model tier controlling detection/recognition model size.
 
@@ -2835,7 +3050,7 @@ Sets the model tier controlling detection/recognition model size.
 def with_model_tier(tier)
 ```
 
-###### default()
+#### default()
 
 Creates a default configuration with English language support.
 
@@ -2856,6 +3071,7 @@ Tracks where a specific page's content starts and ends in the main content strin
 enabling mapping from byte positions to page numbers. Offsets are guaranteed to be
 at valid UTF-8 character boundaries when using standard String methods (push_str, push, etc.).
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `byte_start` | `integer()` | — | Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive) |
@@ -2875,6 +3091,7 @@ When `nil`, page tracking is disabled.
 Page range tracking in chunk metadata (first_page/last_page) is automatically enabled
 when page boundaries are available and chunking is configured.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `extract_pages` | `boolean()` | `false` | Extract pages as separate array (ExtractionResult.pages) |
@@ -2885,9 +3102,9 @@ when page boundaries are available and chunking is configured.
 
 "` | Page marker format (use {page_num} placeholder) Default: "\n\n<!-- PAGE {page_num} -->\n\n" |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -2905,7 +3122,7 @@ Content for a single page/slide.
 When page extraction is enabled, documents are split into per-page content
 with associated tables and images mapped to each page.
 
-# Performance
+### Performance
 
 Uses Arc-wrapped tables and images for memory efficiency:
 - `Vec<Arc<Table>>` enables zero-copy sharing of table data
@@ -2914,6 +3131,7 @@ Uses Arc-wrapped tables and images for memory efficiency:
 
 This reduces memory overhead for documents with shared tables/images
 by avoiding redundant copies during serialization.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2935,6 +3153,7 @@ Page hierarchy structure containing heading levels and block information.
 Used when PDF text hierarchy extraction is enabled. Contains hierarchical
 blocks with heading levels (H1-H6) for semantic document structure.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `block_count` | `integer()` | — | Number of hierarchy blocks on this page |
@@ -2949,6 +3168,7 @@ Metadata for individual page/slide/sheet.
 
 Captures per-page information including dimensions, content counts,
 and visibility state (for presentations).
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2971,6 +3191,7 @@ Unified page structure for documents.
 Supports different page types (PDF pages, PPTX slides, Excel sheets)
 with character offset boundaries for chunk-to-page mapping.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `total_count` | `integer()` | — | Total number of pages/slides/sheets |
@@ -2984,6 +3205,7 @@ with character offset boundaries for chunk-to-page mapping.
 #### PdfAnnotation
 
 A PDF annotation extracted from a document page.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -2999,6 +3221,7 @@ A PDF annotation extracted from a document page.
 
 PDF-specific configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `extract_images` | `boolean()` | `false` | Extract images from PDF |
@@ -3012,9 +3235,9 @@ PDF-specific configuration.
 | `allow_single_column_tables` | `boolean()` | `false` | Allow single-column pseudo tables in extraction results. By default, tables with fewer than 2 columns (layout-guided) or 3 columns (heuristic) are rejected. When `true`, the minimum column count is relaxed to 1, allowing single-column structured data (glossaries, itemized lists) to be emitted as tables. Other quality filters (density, sparsity, prose detection) still apply. |
 | `ocr_inline_images` | `boolean()` | `false` | Perform OCR on inline images extracted from PDF pages and attach the recognized text to each `ExtractedImage.ocr_result`. Requires Tesseract to be available; if `ExtractionConfig.ocr` is `nil` the extractor falls back to `TesseractConfig.default()`. Per-image failures degrade gracefully (the image is returned without OCR text rather than failing the whole extraction). Default: `false`. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3032,6 +3255,7 @@ PDF-specific metadata.
 Contains metadata fields specific to PDF documents that are not in the common
 `Metadata` structure. Common fields like title, authors, keywords, and dates
 are at the `Metadata` level.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3052,13 +3276,13 @@ Base trait that all plugins must implement.
 This trait provides common functionality for plugin lifecycle management,
 identification, and metadata.
 
-# Thread Safety
+### Thread Safety
 
 All plugins must be `Send + Sync` to support concurrent usage across threads.
 
-##### Functions
+### Functions
 
-###### name()
+#### name()
 
 Returns the unique name/identifier for this plugin.
 
@@ -3073,7 +3297,7 @@ The name should be:
 def name()
 ```
 
-###### version()
+#### version()
 
 Returns the semantic version of this plugin.
 
@@ -3087,7 +3311,7 @@ Defaults to the kreuzberg crate version.
 def version()
 ```
 
-###### initialize()
+#### initialize()
 
 Initialize the plugin.
 
@@ -3096,7 +3320,7 @@ Called once when the plugin is registered. Use this to:
 - Initialize resources (connections, caches, etc.)
 - Validate dependencies
 
-# Thread Safety
+### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during initialization should use interior mutability
@@ -3115,7 +3339,7 @@ Defaults to a no-op for stateless plugins.
 def initialize()
 ```
 
-###### shutdown()
+#### shutdown()
 
 Shutdown the plugin.
 
@@ -3125,7 +3349,7 @@ Use this to:
 - Flush caches
 - Release resources
 
-# Thread Safety
+### Thread Safety
 
 This method takes `&self` instead of `&mut self` to work with `Arc<dyn Plugin>`.
 Plugins needing mutable state during shutdown should use interior mutability
@@ -3143,7 +3367,7 @@ Defaults to a no-op for stateless plugins.
 def shutdown()
 ```
 
-###### description()
+#### description()
 
 Optional plugin description for debugging and logging.
 
@@ -3155,7 +3379,7 @@ Defaults to empty string if not overridden.
 def description()
 ```
 
-###### author()
+#### author()
 
 Optional plugin author information.
 
@@ -3182,7 +3406,7 @@ extraction is complete. They can:
 - Score quality
 - Apply custom transformations
 
-# Processing Order
+### Processing Order
 
 Post-processors are executed in stage order:
 1. **Early** - Language detection, entity extraction
@@ -3191,18 +3415,18 @@ Post-processors are executed in stage order:
 
 Within each stage, processors are executed in registration order.
 
-# Error Handling
+### Error Handling
 
 Post-processor errors are non-fatal by default - they're captured in metadata
 and execution continues. To make errors fatal, return an error from `process()`.
 
-# Thread Safety
+### Thread Safety
 
 Post-processors must be thread-safe (`Send + Sync`).
 
-##### Functions
+### Functions
 
-###### process()
+#### process()
 
 Process an extraction result.
 
@@ -3220,16 +3444,16 @@ Transform or enrich the extraction result. Can modify:
 Return errors for fatal processing failures. Non-fatal errors should be
 captured in metadata directly on the result.
 
-# Performance
+### Performance
 
 This signature avoids unnecessary cloning of large extraction results by
 taking a mutable reference instead of ownership. Processors modify the
 result in place.
 
-# Example - Language Detection
+### Example - Language Detection
 
 
-# Example - Text Cleaning
+### Example - Text Cleaning
 
 ```rust
 async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig)
@@ -3251,7 +3475,7 @@ async fn process(&self, result: &mut ExtractionResult, config: &ExtractionConfig
 def process(result, config)
 ```
 
-###### processing_stage()
+#### processing_stage()
 
 Get the processing stage for this post-processor.
 
@@ -3267,7 +3491,7 @@ The `ProcessingStage` (Early, Middle, or Late).
 def processing_stage()
 ```
 
-###### should_process()
+#### should_process()
 
 Optional: Check if this processor should run for a given result.
 
@@ -3284,7 +3508,7 @@ Defaults to `true` (always run).
 def should_process(result, config)
 ```
 
-###### estimated_duration_ms()
+#### estimated_duration_ms()
 
 Optional: Estimate processing time in milliseconds.
 
@@ -3300,7 +3524,7 @@ Estimated processing time in milliseconds.
 def estimated_duration_ms(result)
 ```
 
-###### priority()
+#### priority()
 
 Execution priority within the processing stage.
 
@@ -3321,6 +3545,7 @@ def priority()
 
 Post-processor configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean()` | `true` | Enable post-processors |
@@ -3329,9 +3554,9 @@ Post-processor configuration.
 | `enabled_set` | `list(String.t()) \| nil` | `nil` | Pre-computed AHashSet for O(1) enabled processor lookup |
 | `disabled_set` | `list(String.t()) \| nil` | `nil` | Pre-computed AHashSet for O(1) disabled processor lookup |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3347,6 +3572,7 @@ def default()
 Application properties from docProps/app.xml for PPTX
 
 Contains PowerPoint-specific document metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3375,6 +3601,7 @@ PowerPoint (PPTX) extraction result.
 
 Contains extracted slide content, metadata, and embedded images/tables.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | Extracted text content from all slides |
@@ -3398,6 +3625,7 @@ PowerPoint presentation metadata.
 
 Extracted from PPTX files containing slide counts and presentation details.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `slide_count` | `integer()` | — | Total number of slides in the presentation |
@@ -3415,6 +3643,7 @@ A non-fatal warning from a processing pipeline stage.
 Captures errors from optional features that don't prevent extraction
 but may indicate degraded results.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `source` | `String.t()` | — | The pipeline stage or feature that produced this warning (e.g., "embedding", "chunking", "language_detection", "output_format"). |
@@ -3427,6 +3656,7 @@ but may indicate degraded results.
 
 Outlook PST archive metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `message_count` | `integer()` | — | Number of messages |
@@ -3438,14 +3668,15 @@ Outlook PST archive metadata.
 
 RAKE-specific parameters.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `min_word_length` | `integer()` | `1` | Minimum word length to consider (default: 1). |
 | `max_words_per_phrase` | `integer()` | `3` | Maximum words in a keyword phrase (default: 3). |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3464,6 +3695,7 @@ Produced by the TATR-based table structure recognizer and surfaced as part of
 layout-aware OCR results.  The struct lives here (under `layout-types`, pure-Rust)
 so that consumers who do not enable `layout-detection` (ORT) can still reference
 the type in their own code.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3488,13 +3720,13 @@ The format name is exposed via `Plugin.name`. For stateless renderers
 the `Plugin` lifecycle methods (`version`, `initialize`, `shutdown`) all
 take no-op defaults and need not be overridden.
 
-# Thread Safety
+### Thread Safety
 
 Renderers must be `Send + Sync` (inherited from `Plugin`).
 
-##### Functions
+### Functions
 
-###### render()
+#### render()
 
 Render an `InternalDocument` to the output format.
 
@@ -3522,6 +3754,7 @@ Configuration for security limits across extractors.
 All limits are intentionally conservative to prevent DoS attacks
 while still supporting legitimate documents.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `max_archive_size` | `integer()` | `524288000` | Maximum uncompressed size for archives (500 MB) |
@@ -3534,9 +3767,9 @@ while still supporting legitimate documents.
 | `max_xml_depth` | `integer()` | `1024` | Maximum XML depth (100 levels) |
 | `max_table_cells` | `integer()` | `100000` | Maximum cells per table (100,000) |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3554,13 +3787,14 @@ API server configuration.
 This struct holds all configuration options for the Kreuzberg API server,
 including host/port settings, CORS configuration, and upload limits.
 
-# Defaults
+### Defaults
 
 - `host`: "127.0.0.1" (localhost only)
 - `port`: 8000
 - `cors_origins`: empty vector (allows all origins)
 - `max_request_body_bytes`: 104_857_600 (100 MB)
 - `max_multipart_field_bytes`: 104_857_600 (100 MB)
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3570,9 +3804,9 @@ including host/port settings, CORS configuration, and upload limits.
 | `max_request_body_bytes` | `integer()` | — | Maximum size of request body in bytes (default: 100 MB) |
 | `max_multipart_field_bytes` | `integer()` | — | Maximum size of multipart fields in bytes (default: 100 MB) |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3580,7 +3814,7 @@ including host/port settings, CORS configuration, and upload limits.
 def default()
 ```
 
-###### listen_addr()
+#### listen_addr()
 
 Get the server listen address (host:port).
 
@@ -3590,7 +3824,7 @@ Get the server listen address (host:port).
 def listen_addr()
 ```
 
-###### cors_allows_all()
+#### cors_allows_all()
 
 Check if CORS allows all origins.
 
@@ -3603,7 +3837,7 @@ are allowed. Returns `false` if specific origins are configured.
 def cors_allows_all()
 ```
 
-###### is_origin_allowed()
+#### is_origin_allowed()
 
 Check if a given origin is allowed by CORS configuration.
 
@@ -3617,7 +3851,7 @@ Returns `true` if:
 def is_origin_allowed(origin)
 ```
 
-###### max_request_body_mb()
+#### max_request_body_mb()
 
 Get maximum request body size in megabytes (rounded up).
 
@@ -3627,7 +3861,7 @@ Get maximum request body size in megabytes (rounded up).
 def max_request_body_mb()
 ```
 
-###### max_multipart_field_mb()
+#### max_multipart_field_mb()
 
 Get maximum multipart field size in megabytes (rounded up).
 
@@ -3644,6 +3878,7 @@ def max_multipart_field_mb()
 
 Structured data (Schema.org, microdata, RDFa) block.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `data_type` | `StructuredDataType` | — | Type of structured data |
@@ -3654,6 +3889,7 @@ Structured data (Schema.org, microdata, RDFa) block.
 ---
 
 #### StructuredDataResult
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3671,6 +3907,7 @@ Configuration for LLM-based structured data extraction.
 
 Sends extracted document content to a VLM with a JSON schema,
 returning structured data that conforms to the schema.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3690,6 +3927,7 @@ A supported document format entry.
 
 Represents a file extension and its corresponding MIME type that Kreuzberg can process.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `extension` | `String.t()` | — | File extension (without leading dot), e.g., "pdf", "docx" |
@@ -3704,6 +3942,7 @@ Extracted table structure.
 
 Represents a table detected and extracted from a document (PDF, image, etc.).
 Tables are converted to both structured cell data and Markdown format.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3721,6 +3960,7 @@ Individual table cell with content and optional styling.
 
 Future extension point for rich table support with cell-level metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | Cell content as text |
@@ -3736,6 +3976,7 @@ Future extension point for rich table support with cell-level metadata.
 Structured table grid with cell-level metadata.
 
 Stores row/column dimensions and a flat list of cells with position info.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3753,6 +3994,7 @@ Tesseract OCR configuration.
 Provides fine-grained control over Tesseract OCR engine parameters.
 Most users can use the defaults, but these settings allow optimization
 for specific document types (invoices, handwriting, etc.).
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3778,9 +4020,9 @@ for specific document types (invoices, handwriting, etc.).
 | `textord_space_size_is_variable` | `boolean()` | `true` | Variable-width space detection |
 | `thresholding_method` | `boolean()` | `false` | Use adaptive thresholding method |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3798,6 +4040,7 @@ Inline text annotation — byte-range based formatting and links.
 Annotations reference byte offsets into the node's text content,
 enabling precise identification of formatted regions.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `start` | `integer()` | — | Start byte offset in the node's text content (inclusive). |
@@ -3813,6 +4056,7 @@ Plain text and Markdown extraction result.
 
 Contains the extracted text along with statistics and,
 for Markdown files, structural elements like headers and links.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3834,6 +4078,7 @@ Text/Markdown metadata.
 Extracted from plain text and Markdown files. Includes word counts and,
 for Markdown, structural elements like headers and links.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `line_count` | `integer()` | — | Number of lines in the document |
@@ -3847,6 +4092,7 @@ for Markdown, structural elements like headers and links.
 ---
 
 #### TokenReductionConfig
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3862,9 +4108,9 @@ for Markdown, structural elements like headers and links.
 | `target_reduction` | `float() \| nil` | `nil` | Target reduction |
 | `enable_semantic_clustering` | `boolean()` | `false` | Enable semantic clustering |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3879,14 +4125,15 @@ def default()
 
 Token reduction configuration.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `mode` | `String.t()` | — | Reduction mode: "off", "light", "moderate", "aggressive", "maximum" |
 | `preserve_important_words` | `boolean()` | `true` | Preserve important words (capitalized, technical terms) |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3903,7 +4150,7 @@ Configuration for tree-sitter language pack integration.
 
 Controls grammar download behavior and code analysis options.
 
-# Example (TOML)
+### Example (TOML)
 
 ```toml
 [tree_sitter]
@@ -3916,6 +4163,7 @@ comments = true
 docstrings = true
 ```
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `enabled` | `boolean()` | `true` | Enable code intelligence processing (default: true). When `false`, tree-sitter analysis is completely skipped even if the config section is present. |
@@ -3924,9 +4172,9 @@ docstrings = true
 | `groups` | `list(String.t()) \| nil` | `nil` | Language groups to pre-download (e.g., `["web", "systems", "scripting"]`). |
 | `process` | `TreeSitterProcessConfig` | — | Processing options for code analysis. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3943,6 +4191,7 @@ Processing options for tree-sitter code analysis.
 
 Controls which analysis features are enabled when extracting code files.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `structure` | `boolean()` | `true` | Extract structural items (functions, classes, structs, etc.). Default: true. |
@@ -3955,9 +4204,9 @@ Controls which analysis features are enabled when extracting code files.
 | `chunk_max_size` | `integer() \| nil` | `nil` | Maximum chunk size in bytes. `nil` disables chunking. |
 | `content_mode` | `CodeContentMode` | `:chunks` | Content rendering mode for code extraction. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -3975,6 +4224,7 @@ A URI extracted from a document.
 Represents any link, reference, or resource pointer found during extraction.
 The `kind` field classifies the URI semantically, while `label` carries
 optional human-readable display text.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -3994,7 +4244,7 @@ Validators check extraction results for quality, completeness, or correctness.
 Unlike post-processors, validator errors **fail fast** - if a validator returns
 an error, the extraction fails immediately.
 
-# Use Cases
+### Use Cases
 
 - **Quality Gates**: Ensure extracted content meets minimum quality standards
 - **Compliance**: Verify content meets regulatory requirements
@@ -4002,20 +4252,20 @@ an error, the extraction fails immediately.
 - **Format Validation**: Verify extracted content structure
 - **Security Checks**: Scan for malicious content
 
-# Error Handling
+### Error Handling
 
 Validator errors are **fatal** - they cause the extraction to fail and bubble up
 to the caller. Use validators for hard requirements that must be met.
 
 For non-fatal checks, use post-processors instead.
 
-# Thread Safety
+### Thread Safety
 
 Validators must be thread-safe (`Send + Sync`).
 
-##### Functions
+### Functions
 
-###### validate()
+#### validate()
 
 Validate an extraction result.
 
@@ -4032,7 +4282,7 @@ if validation fails.
 - `KreuzbergError.Validation` - Validation failed
 - Any other error type appropriate for the failure
 
-# Example - Content Length Validation
+### Example - Content Length Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -4057,7 +4307,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-# Example - Quality Score Validation
+### Example - Quality Score Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -4080,7 +4330,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 }
 ```
 
-# Example - Security Validation
+### Example - Security Validation
 
 ```rust
 async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
@@ -4105,7 +4355,7 @@ async fn validate(&self, result: &ExtractionResult, config: &ExtractionConfig)
 def validate(result, config)
 ```
 
-###### should_validate()
+#### should_validate()
 
 Optional: Check if this validator should run for a given result.
 
@@ -4122,7 +4372,7 @@ Defaults to `true` (always run).
 def should_validate(result, config)
 ```
 
-###### priority()
+#### priority()
 
 Optional: Get the validation priority.
 
@@ -4150,6 +4400,7 @@ Application properties from docProps/app.xml for XLSX
 
 Contains Excel-specific document metadata.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `application` | `String.t() \| nil` | `nil` | Application name (e.g., "Microsoft Excel") |
@@ -4172,6 +4423,7 @@ XML extraction result.
 Contains extracted text content from XML files along with
 structural statistics about the XML document.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `content` | `String.t()` | — | Extracted text content (XML structure filtered out) |
@@ -4187,6 +4439,7 @@ XML metadata extracted during XML parsing.
 
 Provides statistics about XML document structure.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `element_count` | `integer()` | — | Total number of XML elements processed |
@@ -4199,13 +4452,14 @@ Provides statistics about XML document structure.
 
 YAKE-specific parameters.
 
+
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
 | `window_size` | `integer()` | `2` | Window size for co-occurrence analysis (default: 2). Controls the context window for computing co-occurrence statistics. |
 
-##### Functions
+### Functions
 
-###### default()
+#### default()
 
 **Signature:**
 
@@ -4219,6 +4473,7 @@ def default()
 #### YearRange
 
 Year range for bibliographic metadata.
+
 
 | Field | Type | Default | Description |
 |-------|------|---------|-------------|
@@ -4991,6 +5246,7 @@ and provides context for debugging.
 - `LockPoisoned` - Mutex/RwLock poisoning (should not happen in normal operation)
 - `UnsupportedFormat` - Unsupported MIME type or file format
 - `Other` - Catch-all for uncommon errors
+
 
 | Variant | Description |
 |---------|-------------|

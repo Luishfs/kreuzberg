@@ -27,40 +27,22 @@ package dev.kreuzberg
  * Contains Excel-specific document metadata.
  */
 data class XlsxAppProperties(
-    /**
-     * Application name (e.g., "Microsoft Excel")
-     */
+    /** Application name (e.g., "Microsoft Excel") */
     val application: String?,
-    /**
-     * Application version
-     */
+    /** Application version */
     val appVersion: String?,
-    /**
-     * Document security level
-     */
+    /** Document security level */
     val docSecurity: Int?,
-    /**
-     * Scale crop flag
-     */
+    /** Scale crop flag */
     val scaleCrop: Boolean?,
-    /**
-     * Links up to date flag
-     */
+    /** Links up to date flag */
     val linksUpToDate: Boolean?,
-    /**
-     * Shared document flag
-     */
+    /** Shared document flag */
     val sharedDoc: Boolean?,
-    /**
-     * Hyperlinks changed flag
-     */
+    /** Hyperlinks changed flag */
     val hyperlinksChanged: Boolean?,
-    /**
-     * Company name
-     */
+    /** Company name */
     val company: String?,
-    /**
-     * Worksheet names
-     */
+    /** Worksheet names */
     val worksheetNames: List<String>
 )

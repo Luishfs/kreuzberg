@@ -30,58 +30,44 @@ package dev.kreuzberg
 @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = NodeContentDeserializer::class)
 @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = NodeContentSerializer::class)
 sealed class NodeContent {
-    /**
-     * Document title.
-     */
+    /** Document title. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Title(
         val text: String
     ) : NodeContent()
-    /**
-     * Section heading with level (1-6).
-     */
+    /** Section heading with level (1-6). */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Heading(
         val level: Byte,
         val text: String
     ) : NodeContent()
-    /**
-     * Body text paragraph.
-     */
+    /** Body text paragraph. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Paragraph(
         val text: String
     ) : NodeContent()
-    /**
-     * List container — children are `ListItem` nodes.
-     */
+    /** List container — children are `ListItem` nodes. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class List(
         val ordered: Boolean
     ) : NodeContent()
-    /**
-     * Individual list item.
-     */
+    /** Individual list item. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class ListItem(
         val text: String
     ) : NodeContent()
-    /**
-     * Table with structured cell grid.
-     */
+    /** Table with structured cell grid. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Table(
         val grid: TableGrid
     ) : NodeContent()
-    /**
-     * Image reference.
-     */
+    /** Image reference. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Image(
@@ -89,30 +75,22 @@ sealed class NodeContent {
         val imageIndex: Int?,
         val src: String?
     ) : NodeContent()
-    /**
-     * Code block.
-     */
+    /** Code block. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Code(
         val text: String,
         val language: String?
     ) : NodeContent()
-    /**
-     * Block quote — container, children carry the quoted content.
-     */
+    /** Block quote — container, children carry the quoted content. */
     object Quote : NodeContent()
-    /**
-     * Mathematical formula / equation.
-     */
+    /** Mathematical formula / equation. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Formula(
         val text: String
     ) : NodeContent()
-    /**
-     * Footnote reference content.
-     */
+    /** Footnote reference content. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Footnote(
@@ -131,35 +109,25 @@ sealed class NodeContent {
         val headingLevel: Byte?,
         val headingText: String?
     ) : NodeContent()
-    /**
-     * Page break marker.
-     */
+    /** Page break marker. */
     object PageBreak : NodeContent()
-    /**
-     * Presentation slide container — children are the slide's content nodes.
-     */
+    /** Presentation slide container — children are the slide's content nodes. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Slide(
         val number: Int,
         val title: String?
     ) : NodeContent()
-    /**
-     * Definition list container — children are `DefinitionItem` nodes.
-     */
+    /** Definition list container — children are `DefinitionItem` nodes. */
     object DefinitionList : NodeContent()
-    /**
-     * Individual definition list entry with term and definition.
-     */
+    /** Individual definition list entry with term and definition. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class DefinitionItem(
         val term: String,
         val definition: String
     ) : NodeContent()
-    /**
-     * Citation or bibliographic reference.
-     */
+    /** Citation or bibliographic reference. */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class Citation(
@@ -189,9 +157,7 @@ sealed class NodeContent {
         val format: String,
         val content: String
     ) : NodeContent()
-    /**
-     * Structured metadata block (email headers, YAML frontmatter, etc.).
-     */
+    /** Structured metadata block (email headers, YAML frontmatter, etc.). */
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize
     @com.fasterxml.jackson.databind.annotation.JsonSerialize
     data class MetadataBlock(

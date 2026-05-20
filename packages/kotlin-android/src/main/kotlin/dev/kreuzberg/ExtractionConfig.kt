@@ -28,21 +28,13 @@ package dev.kreuzberg
  * It can be loaded from TOML, YAML, or JSON files, or created programmatically.
  */
 data class ExtractionConfig(
-    /**
-     * Enable caching of extraction results
-     */
+    /** Enable caching of extraction results */
     val useCache: Boolean,
-    /**
-     * Enable quality post-processing
-     */
+    /** Enable quality post-processing */
     val enableQualityProcessing: Boolean,
-    /**
-     * OCR configuration (None = OCR disabled)
-     */
+    /** OCR configuration (None = OCR disabled) */
     val ocr: OcrConfig?,
-    /**
-     * Force OCR even for searchable PDFs
-     */
+    /** Force OCR even for searchable PDFs */
     val forceOcr: Boolean,
     /**
      * Force OCR on specific pages only (1-indexed page numbers, must be >= 1).
@@ -65,9 +57,7 @@ data class ExtractionConfig(
      * *Added in v4.7.0.*
      */
     val disableOcr: Boolean,
-    /**
-     * Text chunking configuration (None = chunking disabled)
-     */
+    /** Text chunking configuration (None = chunking disabled) */
     val chunking: ChunkingConfig?,
     /**
      * Content filtering configuration (None = use extractor defaults).
@@ -77,33 +67,19 @@ data class ExtractionConfig(
      * See `ContentFilterConfig` for per-field documentation.
      */
     val contentFilter: ContentFilterConfig?,
-    /**
-     * Image extraction configuration (None = no image extraction)
-     */
+    /** Image extraction configuration (None = no image extraction) */
     val images: ImageExtractionConfig?,
-    /**
-     * PDF-specific options (None = use defaults)
-     */
+    /** PDF-specific options (None = use defaults) */
     val pdfOptions: PdfConfig?,
-    /**
-     * Token reduction configuration (None = no token reduction)
-     */
+    /** Token reduction configuration (None = no token reduction) */
     val tokenReduction: TokenReductionOptions?,
-    /**
-     * Language detection configuration (None = no language detection)
-     */
+    /** Language detection configuration (None = no language detection) */
     val languageDetection: LanguageDetectionConfig?,
-    /**
-     * Page extraction configuration (None = no page tracking)
-     */
+    /** Page extraction configuration (None = no page tracking) */
     val pages: PageConfig?,
-    /**
-     * Keyword extraction configuration (None = no keyword extraction)
-     */
+    /** Keyword extraction configuration (None = no keyword extraction) */
     val keywords: KeywordConfig?,
-    /**
-     * Post-processor configuration (None = use defaults)
-     */
+    /** Post-processor configuration (None = use defaults) */
     val postprocessor: PostProcessorConfig?,
     /**
      * HTML to Markdown conversion options (None = use defaults)

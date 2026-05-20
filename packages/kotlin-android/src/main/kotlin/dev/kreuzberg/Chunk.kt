@@ -29,9 +29,7 @@ package dev.kreuzberg
  * is configured), and metadata about its position in the document.
  */
 data class Chunk(
-    /**
-     * The text content of this chunk.
-     */
+    /** The text content of this chunk. */
     val content: String,
     /**
      * Semantic structural classification of this chunk.
@@ -47,8 +45,6 @@ data class Chunk(
      * The dimensionality depends on the chosen embedding model.
      */
     val embedding: List<Float>?,
-    /**
-     * Metadata about this chunk's position and properties.
-     */
+    /** Metadata about this chunk's position and properties. */
     val metadata: ChunkMetadata
 )

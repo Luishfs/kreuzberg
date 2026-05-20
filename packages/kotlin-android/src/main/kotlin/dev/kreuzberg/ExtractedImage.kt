@@ -39,37 +39,21 @@ data class ExtractedImage(
      * Uses Cow<'static, str> to avoid allocation for static literals.
      */
     val format: String,
-    /**
-     * Zero-indexed position of this image in the document/page
-     */
+    /** Zero-indexed position of this image in the document/page */
     val imageIndex: Int,
-    /**
-     * Page/slide number where image was found (1-indexed)
-     */
+    /** Page/slide number where image was found (1-indexed) */
     val pageNumber: Int?,
-    /**
-     * Image width in pixels
-     */
+    /** Image width in pixels */
     val width: Int?,
-    /**
-     * Image height in pixels
-     */
+    /** Image height in pixels */
     val height: Int?,
-    /**
-     * Colorspace information (e.g., "RGB", "CMYK", "Gray")
-     */
+    /** Colorspace information (e.g., "RGB", "CMYK", "Gray") */
     val colorspace: String?,
-    /**
-     * Bits per color component (e.g., 8, 16)
-     */
+    /** Bits per color component (e.g., 8, 16) */
     val bitsPerComponent: Int?,
-    /**
-     * Whether this image is a mask image
-     */
+    /** Whether this image is a mask image */
     val isMask: Boolean,
-    /**
-     * Optional description of the image
-     */
+    /** Optional description of the image */
     val description: String?,
     /**
      * Nested OCR extraction result (if image was OCRed)
@@ -93,9 +77,7 @@ data class ExtractedImage(
      * `null` if classification was disabled or inconclusive.
      */
     val imageKind: ImageKind?,
-    /**
-     * Confidence score for `image_kind`, in the range 0.0 to 1.0.
-     */
+    /** Confidence score for `image_kind`, in the range 0.0 to 1.0. */
     val kindConfidence: Float?,
     /**
      * Identifier shared across images that form a single logical figure

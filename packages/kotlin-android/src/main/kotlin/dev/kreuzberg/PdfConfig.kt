@@ -21,13 +21,9 @@
 
 package dev.kreuzberg
 
-/**
- * PDF-specific configuration.
- */
+/** PDF-specific configuration. */
 data class PdfConfig(
-    /**
-     * Extract images from PDF
-     */
+    /** Extract images from PDF */
     val extractImages: Boolean,
     /**
      * Extract tables from PDF.
@@ -38,17 +34,11 @@ data class PdfConfig(
      * both passes — `tables` will then be empty in the result.
      */
     val extractTables: Boolean,
-    /**
-     * List of passwords to try when opening encrypted PDFs
-     */
+    /** List of passwords to try when opening encrypted PDFs */
     val passwords: List<String>?,
-    /**
-     * Extract PDF metadata
-     */
+    /** Extract PDF metadata */
     val extractMetadata: Boolean,
-    /**
-     * Hierarchy extraction configuration (None = hierarchy extraction disabled)
-     */
+    /** Hierarchy extraction configuration (None = hierarchy extraction disabled) */
     val hierarchy: HierarchyConfig?,
     /**
      * Extract PDF annotations (text notes, highlights, links, stamps).

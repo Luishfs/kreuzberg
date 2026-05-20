@@ -30,12 +30,8 @@ import java.nio.file.Path
  * to represent a single file in a batch extraction job.
  */
 data class BatchFileItem(
-    /**
-     * Path to the file to extract from
-     */
+    /** Path to the file to extract from */
     val path: Path,
-    /**
-     * Per-file configuration overrides (None uses batch-level defaults)
-     */
+    /** Per-file configuration overrides (None uses batch-level defaults) */
     val config: FileExtractionConfig?
 )
