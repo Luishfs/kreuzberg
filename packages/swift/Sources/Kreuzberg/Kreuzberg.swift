@@ -201,6 +201,11 @@ internal extension EmailConfig {
 /// ```
 public typealias ExtractionConfig = RustBridge.ExtractionConfig
 
+/// A Rust-managed vector, re-exported for e2e test convenience.
+///
+/// Used in generated tests to construct byte/string vectors for batch operations.
+public typealias RustVec = RustBridge.RustVec
+
 /// Per-file extraction configuration overrides for batch processing.
 ///
 /// All fields are `Option<T>` — `None` means "use the batch-level default."
@@ -7077,22 +7082,4 @@ public func unregisterDocumentExtractor(_ name: String) throws {
 /// Remove every registered `DocumentExtractor` plugin. Typically used in test teardown.
 public func clearDocumentExtractors() throws {
     try RustBridge.clearDocumentExtractors()
-}
-
-/// Register an inbound `Renderer` plugin implementation. The Swift
-/// host wraps a `Renderer` conformer in a `SwiftRendererBox` adapter
-/// (see `Sources/RustBridge/Plugins.swift`); pass the wrapped instance to
-/// register the plugin in the global registry.
-public func registerRenderer(_ swiftBox: SwiftRendererBox) throws {
-    try RustBridge.registerRenderer(swiftBox)
-}
-
-/// Unregister a previously-registered `Renderer` plugin by name.
-public func unregisterRenderer(_ name: String) throws {
-    try RustBridge.unregisterRenderer(name)
-}
-
-/// Remove every registered `Renderer` plugin. Typically used in test teardown.
-public func clearRenderers() throws {
-    try RustBridge.clearRenderers()
 }
