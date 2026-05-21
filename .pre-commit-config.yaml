@@ -1,30 +1,26 @@
 default_install_hook_types:
   - pre-commit
   - commit-msg
+default_stages:
+  - pre-commit
 exclude: ^docs/snippets/|vendor/|node_modules/|target/|invalid*|dist/|artifacts/|test_documents/|scripts/ci/|^e2e/|^packages/|^crates/kreuzberg-(py|node|ffi|php|wasm)/|^docs/reference/api-|\.cache/|\.venv/|rust-vendor/
-
 repos:
-  # AI-Rulez: auto-generate AI assistant configuration files
   - repo: https://github.com/Goldziher/ai-rulez
-    rev: v4.1.6
+    rev: v4.2.1
     hooks:
       - id: ai-rulez-generate
-
-  # Commit message linting
   - repo: https://github.com/Goldziher/gitfluff
     rev: v0.8.0
     hooks:
       - id: gitfluff-lint
-        args: ["--write"]
-        stages: [commit-msg]
-
-  # Keep GitHub Actions pins current
+        args:
+          - --write
+        stages:
+          - commit-msg
   - repo: https://github.com/Goldziher/gh-actions-updater
     rev: v0.1.3
     hooks:
       - id: gh-actions-updater
-
-  # General file checks
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -36,97 +32,93 @@ repos:
       - id: detect-private-key
       - id: check-json
       - id: check-yaml
-        args: ["--allow-multiple-documents", "--unsafe"]
+        args:
+          - --allow-multiple-documents
+          - --unsafe
         exclude: ^charts/
       - id: check-toml
       - id: check-case-conflict
-
-  # TOML formatting
   - repo: https://github.com/tox-dev/pyproject-fmt
-    rev: "v2.21.2"
+    rev: v2.21.2
     hooks:
       - id: pyproject-fmt
-
-  # Markdown: linting
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.15.13
     hooks:
       - id: ruff
-        args: [--fix]
+        args:
+          - --fix
       - id: ruff-format
-
-  # Node/TS/WASM: oxlint
   - repo: https://github.com/kreuzberg-dev/pre-commit-hooks
-    rev: v1.1.12
+    rev: v1.1.13
     hooks:
       - id: cargo-sort
-        # `-w` (workspace) iterates ALL workspace members regardless of which Cargo.toml
-        # was passed by pre-commit, ignoring this hook's `exclude:` filter and rewriting
-        # alef-generated bindings (kreuzberg-{wasm,node,py,php,ffi}, packages/{dart,swift}/rust).
-        # That breaks the downstream alef-verify hash check. Run per-file (no -w) so
-        # `exclude:` actually filters correctly.
         exclude: ^(crates/kreuzberg-(wasm|node|py|php|ffi)|packages/(dart|swift)/rust)/Cargo\.toml$
       - id: cargo-fmt
-        args: ["--all"]
+        args:
+          - --all
       - id: cargo-check
         args:
-          [
-            "--workspace",
-            "--exclude=kreuzberg-ffi",
-            "--exclude=kreuzberg-py",
-            "--exclude=kreuzberg-node",
-            "--exclude=kreuzberg-php",
-            "--exclude=kreuzberg-wasm",
-            "--exclude=kreuzberg-dart",
-            "--exclude=kreuzberg-swift",
-            "--exclude=kreuzberg_nif",
-            "--all-features",
-            "--all-targets",
-          ]
+          - --workspace
+          - --exclude=kreuzberg-ffi
+          - --exclude=kreuzberg-py
+          - --exclude=kreuzberg-node
+          - --exclude=kreuzberg-php
+          - --exclude=kreuzberg-wasm
+          - --exclude=kreuzberg-dart
+          - --exclude=kreuzberg-swift
+          - --exclude=kreuzberg_nif
+          - --all-features
+          - --all-targets
       - id: cargo-clippy
         args:
-          [
-            "--fix",
-            "--allow-dirty",
-            "--allow-staged",
-            "--workspace",
-            "--exclude=kreuzberg-ffi",
-            "--exclude=kreuzberg-py",
-            "--exclude=kreuzberg-node",
-            "--exclude=kreuzberg-php",
-            "--exclude=kreuzberg-wasm",
-            "--exclude=kreuzberg-dart",
-            "--exclude=kreuzberg-swift",
-            "--exclude=kreuzberg_nif",
-            "--all-features",
-            "--all-targets",
-            "--",
-            "-D",
-            "warnings",
-          ]
+          - --fix
+          - --allow-dirty
+          - --allow-staged
+          - --workspace
+          - --exclude=kreuzberg-ffi
+          - --exclude=kreuzberg-py
+          - --exclude=kreuzberg-node
+          - --exclude=kreuzberg-php
+          - --exclude=kreuzberg-wasm
+          - --exclude=kreuzberg-dart
+          - --exclude=kreuzberg-swift
+          - --exclude=kreuzberg_nif
+          - --all-features
+          - --all-targets
+          - --
+          - -D
+          - warnings
       - id: cargo-machete
-        args: ["crates/", "packages/", "tools/"]
+        args:
+          - crates/
+          - packages/
+          - tools/
         exclude: ^e2e/
       - id: alef-docs-fresh
       - id: cargo-deny
-        args: ["check"]
+        args:
+          - check
       - id: shfmt
-        args: ["-w", "-i", "2"]
+        args:
+          - -w
+          - -i
+          - '2'
       - id: shellcheck
-        args: ["-x"]
+        args:
+          - -x
       - id: clang-format
-        args: ["--style=file"]
+        args:
+          - --style=file
         files: ^crates/kreuzberg-ffi/tests/c/
       - id: clang-tidy
         files: ^crates/kreuzberg-ffi/tests/c/
       - id: checkstyle
         args:
-          [
-            "-c",
-            "packages/java/checkstyle.xml",
-            "-p",
-            "packages/java/checkstyle.properties",
-          ]
+          - -c
+          - packages/java/checkstyle.xml
+          - -p
+          - packages/java/checkstyle.properties
         exclude: ^(\.mvn/wrapper/|e2e/|tools/e2e-generator/e2e/|crates/kreuzberg-wasm/e2e/|packages/java/src/)
       - id: javadoc-lint
         files: ^packages/java/src/main/.*\.java$
@@ -134,7 +126,7 @@ repos:
         files: ^packages/java/
       - id: mypy
         files: ^(lib|src|kreuzberg|tools)/.*\.py$
-        exclude: "e2e/|tests/|scripts/"
+        exclude: e2e/|tests/|scripts/
       - id: pydocstyle
         files: ^packages/python/.*\.py$
         exclude: ^packages/python/(tests/|.*_native\.py$)
@@ -175,10 +167,12 @@ repos:
       - id: lintr
         files: ^packages/r/.*\.[Rr]$
       - id: ktfmt
-        args: ["--kotlinlang-style"]
+        args:
+          - --kotlinlang-style
         files: ^packages/kotlin-android/.*\.kts?$
       - id: detekt
-        args: ["--build-upon-default-config"]
+        args:
+          - --build-upon-default-config
         files: ^packages/kotlin-android/.*\.kts?$
       - id: ktlint
         files: ^packages/kotlin-android/.*\.kts?$
@@ -200,36 +194,36 @@ repos:
       - id: helm-lint
         files: ^charts/.*/(Chart\.yaml|templates/.+\.ya?ml)$
       - id: kubeconform
-        args: ["-strict", "-summary"]
+        args:
+          - -strict
+          - -summary
         files: ^charts/.*/templates/.+\.ya?ml$
         exclude: ^charts/.*/(values|Chart)\.ya?ml$
       - id: textlint
         files: ^docs/.*\.md$
         exclude: ^docs/(reference/|api-|snippets/|migration/)
-        args: ["--fix", "--config", ".textlintrc.json"]
-
+        args:
+          - --fix
+          - --config
+          - .textlintrc.json
       - id: oxlint
       - id: oxfmt
       - id: cppcheck
       - id: rumdl-fmt
-        exclude: ^templates/ # Handlebars {{}} syntax confuses rumdl-fmt
+        exclude: ^templates/
       - id: cpd
-  # Alef: verify bindings and sync versions
   - repo: https://github.com/kreuzberg-dev/alef
-    rev: v0.17.14
+    rev: v0.17.15
     hooks:
       - id: alef-verify
       - id: alef-sync-versions
-
-  # GitHub Actions: linting
   - repo: https://github.com/rhysd/actionlint
     rev: v1.7.12
     hooks:
       - id: actionlint
-
-  # Spelling: fast Rust-based spell checker (last — runs after all formatters)
   - repo: https://github.com/crate-ci/typos
     rev: v1.46.2
     hooks:
       - id: typos
-        args: [--force-exclude]
+        args:
+          - --force-exclude

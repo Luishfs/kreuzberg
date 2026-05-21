@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Page extraction and tracking configuration.
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * when page boundaries are available and chunking is configured.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PageConfig.Builder.class)
 public record PageConfig(
     /**
      * Extract pages as separate array (ExtractionResult.pages)
@@ -32,6 +35,52 @@ public record PageConfig(
      */
     @JsonProperty("marker_format") String markerFormat
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("extract_pages")
+        private boolean extractPages = false;
+        @JsonProperty("insert_page_markers")
+        private boolean insertPageMarkers = false;
+        @JsonProperty("marker_format")
+        private String markerFormat = "\n\n<!-- PAGE {page_num} -->\n\n";
+
+        /** Sets the extractPages field. */
+        @JsonProperty("extract_pages")
+        public Builder withExtractPages(final boolean value) {
+            this.extractPages = value;
+            return this;
+        }
+
+        /** Sets the insertPageMarkers field. */
+        @JsonProperty("insert_page_markers")
+        public Builder withInsertPageMarkers(final boolean value) {
+            this.insertPageMarkers = value;
+            return this;
+        }
+
+        /** Sets the markerFormat field. */
+        @JsonProperty("marker_format")
+        public Builder withMarkerFormat(final String value) {
+            this.markerFormat = value;
+            return this;
+        }
+
+        /** Builds the PageConfig instance. */
+        public PageConfig build() {
+            return new PageConfig(
+                extractPages,
+                insertPageMarkers,
+                markerFormat
+            );
+        }
+    }
+    // CPD-ON
     public static PageConfig defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

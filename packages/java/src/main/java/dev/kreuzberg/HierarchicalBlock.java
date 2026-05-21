@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * font size clustering and hierarchical analysis.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = HierarchicalBlock.Builder.class)
 public record HierarchicalBlock(
     /**
      * The text content of this block
@@ -45,4 +49,60 @@ public record HierarchicalBlock(
      */
     @Nullable List<Float> bbox
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("text")
+        private String text = "";
+        @JsonProperty("font_size")
+        private float fontSize = 0.0f;
+        @JsonProperty("level")
+        private String level = "";
+        @JsonProperty("bbox")
+        private Optional<List<Float>> bbox = Optional.empty();
+
+        /** Sets the text field. */
+        @JsonProperty("text")
+        public Builder withText(final String value) {
+            this.text = value;
+            return this;
+        }
+
+        /** Sets the fontSize field. */
+        @JsonProperty("font_size")
+        public Builder withFontSize(final float value) {
+            this.fontSize = value;
+            return this;
+        }
+
+        /** Sets the level field. */
+        @JsonProperty("level")
+        public Builder withLevel(final String value) {
+            this.level = value;
+            return this;
+        }
+
+        /** Sets the bbox field. */
+        @JsonProperty("bbox")
+        public Builder withBbox(final @Nullable List<Float> value) {
+            this.bbox = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the HierarchicalBlock instance. */
+        public HierarchicalBlock build() {
+            return new HierarchicalBlock(
+                text,
+                fontSize,
+                level,
+                bbox.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

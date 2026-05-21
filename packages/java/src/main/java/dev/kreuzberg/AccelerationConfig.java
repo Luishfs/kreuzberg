@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Hardware acceleration configuration for ONNX Runtime models.
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * for inference in layout detection and embedding generation.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = AccelerationConfig.Builder.class)
 public record AccelerationConfig(
     /**
      * Execution provider to use for ONNX inference.
@@ -24,4 +27,40 @@ public record AccelerationConfig(
      */
     @JsonProperty("device_id") int deviceId
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("provider")
+        private ExecutionProviderType provider = null;
+        @JsonProperty("device_id")
+        private int deviceId = 0;
+
+        /** Sets the provider field. */
+        @JsonProperty("provider")
+        public Builder withProvider(final ExecutionProviderType value) {
+            this.provider = value;
+            return this;
+        }
+
+        /** Sets the deviceId field. */
+        @JsonProperty("device_id")
+        public Builder withDeviceId(final int value) {
+            this.deviceId = value;
+            return this;
+        }
+
+        /** Builds the AccelerationConfig instance. */
+        public AccelerationConfig build() {
+            return new AccelerationConfig(
+                provider,
+                deviceId
+            );
+        }
+    }
+    // CPD-ON
 }

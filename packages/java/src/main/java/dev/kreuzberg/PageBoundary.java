@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Byte offset boundary for a page.
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * at valid UTF-8 character boundaries when using standard String methods (push_str, push, etc.).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PageBoundary.Builder.class)
 public record PageBoundary(
     /**
      * Byte offset where this page starts in the content string (UTF-8 valid boundary, inclusive)
@@ -29,4 +32,50 @@ public record PageBoundary(
      */
     @JsonProperty("page_number") int pageNumber
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("byte_start")
+        private long byteStart = 0;
+        @JsonProperty("byte_end")
+        private long byteEnd = 0;
+        @JsonProperty("page_number")
+        private int pageNumber = 0;
+
+        /** Sets the byteStart field. */
+        @JsonProperty("byte_start")
+        public Builder withByteStart(final long value) {
+            this.byteStart = value;
+            return this;
+        }
+
+        /** Sets the byteEnd field. */
+        @JsonProperty("byte_end")
+        public Builder withByteEnd(final long value) {
+            this.byteEnd = value;
+            return this;
+        }
+
+        /** Sets the pageNumber field. */
+        @JsonProperty("page_number")
+        public Builder withPageNumber(final int value) {
+            this.pageNumber = value;
+            return this;
+        }
+
+        /** Builds the PageBoundary instance. */
+        public PageBoundary build() {
+            return new PageBoundary(
+                byteStart,
+                byteEnd,
+                pageNumber
+            );
+        }
+    }
+    // CPD-ON
 }

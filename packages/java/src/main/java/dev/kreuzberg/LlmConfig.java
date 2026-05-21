@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -15,6 +18,7 @@ import org.jspecify.annotations.Nullable;
  * its own {@code LlmConfig}, allowing different providers per feature.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LlmConfig.Builder.class)
 public record LlmConfig(
     /**
      * Provider/model string using liter-llm routing format.
@@ -49,4 +53,90 @@ public record LlmConfig(
      */
     @Nullable @JsonProperty("max_tokens") Long maxTokens
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("model")
+        private String model = "";
+        @JsonProperty("api_key")
+        private Optional<String> apiKey = Optional.empty();
+        @JsonProperty("base_url")
+        private Optional<String> baseUrl = Optional.empty();
+        @JsonProperty("timeout_secs")
+        private Optional<Long> timeoutSecs = Optional.empty();
+        @JsonProperty("max_retries")
+        private Optional<Integer> maxRetries = Optional.empty();
+        @JsonProperty("temperature")
+        private Optional<Double> temperature = Optional.empty();
+        @JsonProperty("max_tokens")
+        private Optional<Long> maxTokens = Optional.empty();
+
+        /** Sets the model field. */
+        @JsonProperty("model")
+        public Builder withModel(final String value) {
+            this.model = value;
+            return this;
+        }
+
+        /** Sets the apiKey field. */
+        @JsonProperty("api_key")
+        public Builder withApiKey(final @Nullable String value) {
+            this.apiKey = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the baseUrl field. */
+        @JsonProperty("base_url")
+        public Builder withBaseUrl(final @Nullable String value) {
+            this.baseUrl = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the timeoutSecs field. */
+        @JsonProperty("timeout_secs")
+        public Builder withTimeoutSecs(final @Nullable Long value) {
+            this.timeoutSecs = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the maxRetries field. */
+        @JsonProperty("max_retries")
+        public Builder withMaxRetries(final @Nullable Integer value) {
+            this.maxRetries = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the temperature field. */
+        @JsonProperty("temperature")
+        public Builder withTemperature(final @Nullable Double value) {
+            this.temperature = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the maxTokens field. */
+        @JsonProperty("max_tokens")
+        public Builder withMaxTokens(final @Nullable Long value) {
+            this.maxTokens = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the LlmConfig instance. */
+        public LlmConfig build() {
+            return new LlmConfig(
+                model,
+                apiKey.orElse(null),
+                baseUrl.orElse(null),
+                timeoutSecs.orElse(null),
+                maxRetries.orElse(null),
+                temperature.orElse(null),
+                maxTokens.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

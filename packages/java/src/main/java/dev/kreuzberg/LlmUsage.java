@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * within one extraction (e.g. VLM OCR + structured extraction).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LlmUsage.Builder.class)
 public record LlmUsage(
     /**
      * The LLM model identifier (e.g. "openai/gpt-4o", "anthropic/claude-sonnet-4-20250514").
@@ -47,4 +51,90 @@ public record LlmUsage(
      */
     @Nullable @JsonProperty("finish_reason") String finishReason
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("model")
+        private String model = "";
+        @JsonProperty("source")
+        private String source = "";
+        @JsonProperty("input_tokens")
+        private Optional<Long> inputTokens = Optional.empty();
+        @JsonProperty("output_tokens")
+        private Optional<Long> outputTokens = Optional.empty();
+        @JsonProperty("total_tokens")
+        private Optional<Long> totalTokens = Optional.empty();
+        @JsonProperty("estimated_cost")
+        private Optional<Double> estimatedCost = Optional.empty();
+        @JsonProperty("finish_reason")
+        private Optional<String> finishReason = Optional.empty();
+
+        /** Sets the model field. */
+        @JsonProperty("model")
+        public Builder withModel(final String value) {
+            this.model = value;
+            return this;
+        }
+
+        /** Sets the source field. */
+        @JsonProperty("source")
+        public Builder withSource(final String value) {
+            this.source = value;
+            return this;
+        }
+
+        /** Sets the inputTokens field. */
+        @JsonProperty("input_tokens")
+        public Builder withInputTokens(final @Nullable Long value) {
+            this.inputTokens = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the outputTokens field. */
+        @JsonProperty("output_tokens")
+        public Builder withOutputTokens(final @Nullable Long value) {
+            this.outputTokens = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the totalTokens field. */
+        @JsonProperty("total_tokens")
+        public Builder withTotalTokens(final @Nullable Long value) {
+            this.totalTokens = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the estimatedCost field. */
+        @JsonProperty("estimated_cost")
+        public Builder withEstimatedCost(final @Nullable Double value) {
+            this.estimatedCost = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the finishReason field. */
+        @JsonProperty("finish_reason")
+        public Builder withFinishReason(final @Nullable String value) {
+            this.finishReason = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the LlmUsage instance. */
+        public LlmUsage build() {
+            return new LlmUsage(
+                model,
+                source,
+                inputTokens.orElse(null),
+                outputTokens.orElse(null),
+                totalTokens.orElse(null),
+                estimatedCost.orElse(null),
+                finishReason.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

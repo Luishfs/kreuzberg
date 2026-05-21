@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Configuration for OCR element extraction.
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Controls how OCR elements are extracted and filtered.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrElementConfig.Builder.class)
 public record OcrElementConfig(
     /**
      * Whether to include OCR elements in the extraction result.
@@ -40,4 +43,60 @@ public record OcrElementConfig(
      */
     @JsonProperty("build_hierarchy") boolean buildHierarchy
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("include_elements")
+        private boolean includeElements = false;
+        @JsonProperty("min_level")
+        private OcrElementLevel minLevel = null;
+        @JsonProperty("min_confidence")
+        private double minConfidence = 0.0;
+        @JsonProperty("build_hierarchy")
+        private boolean buildHierarchy = false;
+
+        /** Sets the includeElements field. */
+        @JsonProperty("include_elements")
+        public Builder withIncludeElements(final boolean value) {
+            this.includeElements = value;
+            return this;
+        }
+
+        /** Sets the minLevel field. */
+        @JsonProperty("min_level")
+        public Builder withMinLevel(final OcrElementLevel value) {
+            this.minLevel = value;
+            return this;
+        }
+
+        /** Sets the minConfidence field. */
+        @JsonProperty("min_confidence")
+        public Builder withMinConfidence(final double value) {
+            this.minConfidence = value;
+            return this;
+        }
+
+        /** Sets the buildHierarchy field. */
+        @JsonProperty("build_hierarchy")
+        public Builder withBuildHierarchy(final boolean value) {
+            this.buildHierarchy = value;
+            return this;
+        }
+
+        /** Builds the OcrElementConfig instance. */
+        public OcrElementConfig build() {
+            return new OcrElementConfig(
+                includeElements,
+                minLevel,
+                minConfidence,
+                buildHierarchy
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -6,8 +6,11 @@ package dev.kreuzberg;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * Contains extracted slide content, metadata, and embedded images/tables.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PptxExtractionResult.Builder.class)
 public record PptxExtractionResult(
     /**
      * Extracted text content from all slides
@@ -65,4 +69,130 @@ public record PptxExtractionResult(
      */
     @JsonProperty("office_metadata") Map<String, String> officeMetadata
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("metadata")
+        private PptxMetadata metadata = null;
+        @JsonProperty("slide_count")
+        private long slideCount = 0;
+        @JsonProperty("image_count")
+        private long imageCount = 0;
+        @JsonProperty("table_count")
+        private long tableCount = 0;
+        @JsonProperty("images")
+        private List<ExtractedImage> images = List.of();
+        @JsonProperty("page_structure")
+        private Optional<PageStructure> pageStructure = Optional.empty();
+        @JsonProperty("page_contents")
+        private Optional<List<PageContent>> pageContents = Optional.empty();
+        @JsonProperty("document")
+        private Optional<DocumentStructure> document = Optional.empty();
+        @JsonProperty("hyperlinks")
+        private List<String> hyperlinks = List.of();
+        @JsonProperty("office_metadata")
+        private Map<String, String> officeMetadata = Map.of();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final PptxMetadata value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Sets the slideCount field. */
+        @JsonProperty("slide_count")
+        public Builder withSlideCount(final long value) {
+            this.slideCount = value;
+            return this;
+        }
+
+        /** Sets the imageCount field. */
+        @JsonProperty("image_count")
+        public Builder withImageCount(final long value) {
+            this.imageCount = value;
+            return this;
+        }
+
+        /** Sets the tableCount field. */
+        @JsonProperty("table_count")
+        public Builder withTableCount(final long value) {
+            this.tableCount = value;
+            return this;
+        }
+
+        /** Sets the images field. */
+        @JsonProperty("images")
+        public Builder withImages(final List<ExtractedImage> value) {
+            this.images = value;
+            return this;
+        }
+
+        /** Sets the pageStructure field. */
+        @JsonProperty("page_structure")
+        public Builder withPageStructure(final @Nullable PageStructure value) {
+            this.pageStructure = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the pageContents field. */
+        @JsonProperty("page_contents")
+        public Builder withPageContents(final @Nullable List<PageContent> value) {
+            this.pageContents = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the document field. */
+        @JsonProperty("document")
+        public Builder withDocument(final @Nullable DocumentStructure value) {
+            this.document = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the hyperlinks field. */
+        @JsonProperty("hyperlinks")
+        public Builder withHyperlinks(final List<String> value) {
+            this.hyperlinks = value;
+            return this;
+        }
+
+        /** Sets the officeMetadata field. */
+        @JsonProperty("office_metadata")
+        public Builder withOfficeMetadata(final Map<String, String> value) {
+            this.officeMetadata = value;
+            return this;
+        }
+
+        /** Builds the PptxExtractionResult instance. */
+        public PptxExtractionResult build() {
+            return new PptxExtractionResult(
+                content,
+                metadata,
+                slideCount,
+                imageCount,
+                tableCount,
+                images,
+                pageStructure.orElse(null),
+                pageContents.orElse(null),
+                document.orElse(null),
+                hyperlinks,
+                officeMetadata
+            );
+        }
+    }
+    // CPD-ON
 }

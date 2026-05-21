@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -14,6 +17,7 @@ import org.jspecify.annotations.Nullable;
  * Contains metadata and optionally the content of an email attachment.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = EmailAttachment.Builder.class)
 public record EmailAttachment(
     /**
      * Attachment name (from Content-Disposition header)
@@ -41,4 +45,80 @@ public record EmailAttachment(
      */
     @Nullable byte[] data
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("name")
+        private Optional<String> name = Optional.empty();
+        @JsonProperty("filename")
+        private Optional<String> filename = Optional.empty();
+        @JsonProperty("mime_type")
+        private Optional<String> mimeType = Optional.empty();
+        @JsonProperty("size")
+        private Optional<Long> size = Optional.empty();
+        @JsonProperty("is_image")
+        private boolean isImage = false;
+        @JsonProperty("data")
+        private Optional<byte[]> data = Optional.empty();
+
+        /** Sets the name field. */
+        @JsonProperty("name")
+        public Builder withName(final @Nullable String value) {
+            this.name = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the filename field. */
+        @JsonProperty("filename")
+        public Builder withFilename(final @Nullable String value) {
+            this.filename = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final @Nullable String value) {
+            this.mimeType = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the size field. */
+        @JsonProperty("size")
+        public Builder withSize(final @Nullable Long value) {
+            this.size = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the isImage field. */
+        @JsonProperty("is_image")
+        public Builder withIsImage(final boolean value) {
+            this.isImage = value;
+            return this;
+        }
+
+        /** Sets the data field. */
+        @JsonProperty("data")
+        public Builder withData(final @Nullable byte[] value) {
+            this.data = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the EmailAttachment instance. */
+        public EmailAttachment build() {
+            return new EmailAttachment(
+                name.orElse(null),
+                filename.orElse(null),
+                mimeType.orElse(null),
+                size.orElse(null),
+                isImage,
+                data.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

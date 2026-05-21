@@ -2775,18 +2775,6 @@ Replaces separate body/furniture arrays with per-node granularity.
 
 ---
 
-##### DrawingType
-
-Whether the drawing is inline or anchored.
-
-
-| Variant | Description |
-|---------|-------------|
-| `Inline` | Inline |
-| `Anchored` | Anchored — Fields: `_0`: `String` |
-
----
-
 ##### ElementType
 
 Semantic element type classification.

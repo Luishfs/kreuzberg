@@ -6,8 +6,11 @@ package dev.kreuzberg;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -17,6 +20,7 @@ import org.jspecify.annotations.Nullable;
  * including recognized text and detected tables.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrExtractionResult.Builder.class)
 public record OcrExtractionResult(
     /**
      * Recognized text content
@@ -46,4 +50,80 @@ public record OcrExtractionResult(
      */
     @Nullable @JsonProperty("internal_document") String internalDocument
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("mime_type")
+        private String mimeType = "";
+        @JsonProperty("metadata")
+        private Map<String, Object> metadata = Map.of();
+        @JsonProperty("tables")
+        private List<OcrTable> tables = List.of();
+        @JsonProperty("ocr_elements")
+        private Optional<List<OcrElement>> ocrElements = Optional.empty();
+        @JsonProperty("internal_document")
+        private Optional<String> internalDocument = Optional.empty();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final String value) {
+            this.mimeType = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final Map<String, Object> value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Sets the tables field. */
+        @JsonProperty("tables")
+        public Builder withTables(final List<OcrTable> value) {
+            this.tables = value;
+            return this;
+        }
+
+        /** Sets the ocrElements field. */
+        @JsonProperty("ocr_elements")
+        public Builder withOcrElements(final @Nullable List<OcrElement> value) {
+            this.ocrElements = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the internalDocument field. */
+        @JsonProperty("internal_document")
+        public Builder withInternalDocument(final @Nullable String value) {
+            this.internalDocument = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the OcrExtractionResult instance. */
+        public OcrExtractionResult build() {
+            return new OcrExtractionResult(
+                content,
+                mimeType,
+                metadata,
+                tables,
+                ocrElements.orElse(null),
+                internalDocument.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

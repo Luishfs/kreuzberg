@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * including DPI normalization, resizing, and resampling.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ImagePreprocessingMetadata.Builder.class)
 public record ImagePreprocessingMetadata(
     /**
      * Original image dimensions (width, height) in pixels
@@ -66,4 +70,140 @@ public record ImagePreprocessingMetadata(
      */
     @Nullable @JsonProperty("resize_error") String resizeError
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("original_dimensions")
+        private List<Long> originalDimensions = List.of();
+        @JsonProperty("original_dpi")
+        private List<Double> originalDpi = List.of();
+        @JsonProperty("target_dpi")
+        private int targetDpi = 0;
+        @JsonProperty("scale_factor")
+        private double scaleFactor = 0.0;
+        @JsonProperty("auto_adjusted")
+        private boolean autoAdjusted = false;
+        @JsonProperty("final_dpi")
+        private int finalDpi = 0;
+        @JsonProperty("new_dimensions")
+        private Optional<List<Long>> newDimensions = Optional.empty();
+        @JsonProperty("resample_method")
+        private String resampleMethod = "";
+        @JsonProperty("dimension_clamped")
+        private boolean dimensionClamped = false;
+        @JsonProperty("calculated_dpi")
+        private Optional<Integer> calculatedDpi = Optional.empty();
+        @JsonProperty("skipped_resize")
+        private boolean skippedResize = false;
+        @JsonProperty("resize_error")
+        private Optional<String> resizeError = Optional.empty();
+
+        /** Sets the originalDimensions field. */
+        @JsonProperty("original_dimensions")
+        public Builder withOriginalDimensions(final List<Long> value) {
+            this.originalDimensions = value;
+            return this;
+        }
+
+        /** Sets the originalDpi field. */
+        @JsonProperty("original_dpi")
+        public Builder withOriginalDpi(final List<Double> value) {
+            this.originalDpi = value;
+            return this;
+        }
+
+        /** Sets the targetDpi field. */
+        @JsonProperty("target_dpi")
+        public Builder withTargetDpi(final int value) {
+            this.targetDpi = value;
+            return this;
+        }
+
+        /** Sets the scaleFactor field. */
+        @JsonProperty("scale_factor")
+        public Builder withScaleFactor(final double value) {
+            this.scaleFactor = value;
+            return this;
+        }
+
+        /** Sets the autoAdjusted field. */
+        @JsonProperty("auto_adjusted")
+        public Builder withAutoAdjusted(final boolean value) {
+            this.autoAdjusted = value;
+            return this;
+        }
+
+        /** Sets the finalDpi field. */
+        @JsonProperty("final_dpi")
+        public Builder withFinalDpi(final int value) {
+            this.finalDpi = value;
+            return this;
+        }
+
+        /** Sets the newDimensions field. */
+        @JsonProperty("new_dimensions")
+        public Builder withNewDimensions(final @Nullable List<Long> value) {
+            this.newDimensions = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the resampleMethod field. */
+        @JsonProperty("resample_method")
+        public Builder withResampleMethod(final String value) {
+            this.resampleMethod = value;
+            return this;
+        }
+
+        /** Sets the dimensionClamped field. */
+        @JsonProperty("dimension_clamped")
+        public Builder withDimensionClamped(final boolean value) {
+            this.dimensionClamped = value;
+            return this;
+        }
+
+        /** Sets the calculatedDpi field. */
+        @JsonProperty("calculated_dpi")
+        public Builder withCalculatedDpi(final @Nullable Integer value) {
+            this.calculatedDpi = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the skippedResize field. */
+        @JsonProperty("skipped_resize")
+        public Builder withSkippedResize(final boolean value) {
+            this.skippedResize = value;
+            return this;
+        }
+
+        /** Sets the resizeError field. */
+        @JsonProperty("resize_error")
+        public Builder withResizeError(final @Nullable String value) {
+            this.resizeError = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the ImagePreprocessingMetadata instance. */
+        public ImagePreprocessingMetadata build() {
+            return new ImagePreprocessingMetadata(
+                originalDimensions,
+                originalDpi,
+                targetDpi,
+                scaleFactor,
+                autoAdjusted,
+                finalDpi,
+                newDimensions.orElse(null),
+                resampleMethod,
+                dimensionClamped,
+                calculatedDpi.orElse(null),
+                skippedResize,
+                resizeError.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

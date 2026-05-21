@@ -5,16 +5,67 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * FictionBook (FB2) metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = FictionBookMetadata.Builder.class)
 public record FictionBookMetadata(
     List<String> genres,
     List<String> sequences,
     @Nullable String annotation
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("genres")
+        private List<String> genres = List.of();
+        @JsonProperty("sequences")
+        private List<String> sequences = List.of();
+        @JsonProperty("annotation")
+        private Optional<String> annotation = Optional.empty();
+
+        /** Sets the genres field. */
+        @JsonProperty("genres")
+        public Builder withGenres(final List<String> value) {
+            this.genres = value;
+            return this;
+        }
+
+        /** Sets the sequences field. */
+        @JsonProperty("sequences")
+        public Builder withSequences(final List<String> value) {
+            this.sequences = value;
+            return this;
+        }
+
+        /** Sets the annotation field. */
+        @JsonProperty("annotation")
+        public Builder withAnnotation(final @Nullable String value) {
+            this.annotation = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the FictionBookMetadata instance. */
+        public FictionBookMetadata build() {
+            return new FictionBookMetadata(
+                genres,
+                sequences,
+                annotation.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

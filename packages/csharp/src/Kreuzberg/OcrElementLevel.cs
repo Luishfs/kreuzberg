@@ -12,23 +12,21 @@ namespace Kreuzberg;
 /// Maps to Tesseract's page segmentation hierarchy and provides
 /// equivalent semantics for PaddleOCR.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OcrElementLevel
 {    /// <summary>
-     /// Individual word
-     /// </summary>
+    /// Individual word
+    /// </summary>
     [JsonPropertyName("word")]
     Word,    /// <summary>
-             /// Line of text (default for PaddleOCR)
-             /// </summary>
+    /// Line of text (default for PaddleOCR)
+    /// </summary>
     [JsonPropertyName("line")]
     Line,    /// <summary>
-             /// Paragraph or text block
-             /// </summary>
+    /// Paragraph or text block
+    /// </summary>
     [JsonPropertyName("block")]
     Block,    /// <summary>
-              /// Page-level element
-              /// </summary>
+    /// Page-level element
+    /// </summary>
     [JsonPropertyName("page")]
-    Page,
-}
+    Page,}

@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -17,6 +20,7 @@ import org.jspecify.annotations.Nullable;
  * is configured), and metadata about its position in the document.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = Chunk.Builder.class)
 public record Chunk(
     /**
      * The text content of this chunk.
@@ -41,4 +45,60 @@ public record Chunk(
      */
     ChunkMetadata metadata
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("chunk_type")
+        private ChunkType chunkType = null;
+        @JsonProperty("embedding")
+        private Optional<List<Float>> embedding = Optional.empty();
+        @JsonProperty("metadata")
+        private ChunkMetadata metadata = null;
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the chunkType field. */
+        @JsonProperty("chunk_type")
+        public Builder withChunkType(final ChunkType value) {
+            this.chunkType = value;
+            return this;
+        }
+
+        /** Sets the embedding field. */
+        @JsonProperty("embedding")
+        public Builder withEmbedding(final @Nullable List<Float> value) {
+            this.embedding = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final ChunkMetadata value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Builds the Chunk instance. */
+        public Chunk build() {
+            return new Chunk(
+                content,
+                chunkType,
+                embedding.orElse(null),
+                metadata
+            );
+        }
+    }
+    // CPD-ON
 }

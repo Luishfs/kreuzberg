@@ -6,10 +6,49 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Error metadata (for batch operations).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ErrorMetadata.Builder.class)
 public record ErrorMetadata(@JsonProperty("error_type") String errorType, String message) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("error_type")
+        private String errorType = "";
+        @JsonProperty("message")
+        private String message = "";
+
+        /** Sets the errorType field. */
+        @JsonProperty("error_type")
+        public Builder withErrorType(final String value) {
+            this.errorType = value;
+            return this;
+        }
+
+        /** Sets the message field. */
+        @JsonProperty("message")
+        public Builder withMessage(final String value) {
+            this.message = value;
+            return this;
+        }
+
+        /** Builds the ErrorMetadata instance. */
+        public ErrorMetadata build() {
+            return new ErrorMetadata(
+                errorType,
+                message
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -4,11 +4,51 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Document orientation detection result.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OrientationResult.Builder.class)
 public record OrientationResult(int degrees, float confidence) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("degrees")
+        private int degrees = 0;
+        @JsonProperty("confidence")
+        private float confidence = 0.0f;
+
+        /** Sets the degrees field. */
+        @JsonProperty("degrees")
+        public Builder withDegrees(final int value) {
+            this.degrees = value;
+            return this;
+        }
+
+        /** Sets the confidence field. */
+        @JsonProperty("confidence")
+        public Builder withConfidence(final float value) {
+            this.confidence = value;
+            return this;
+        }
+
+        /** Builds the OrientationResult instance. */
+        public OrientationResult build() {
+            return new OrientationResult(
+                degrees,
+                confidence
+            );
+        }
+    }
+    // CPD-ON
 }

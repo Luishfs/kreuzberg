@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * and visibility state (for presentations).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PageInfo.Builder.class)
 public record PageInfo(
     /**
      * Page number (1-indexed)
@@ -63,4 +67,100 @@ public record PageInfo(
      */
     @JsonProperty("has_vector_graphics") boolean hasVectorGraphics
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("number")
+        private int number = 0;
+        @JsonProperty("title")
+        private Optional<String> title = Optional.empty();
+        @JsonProperty("dimensions")
+        private Optional<List<Double>> dimensions = Optional.empty();
+        @JsonProperty("image_count")
+        private Optional<Integer> imageCount = Optional.empty();
+        @JsonProperty("table_count")
+        private Optional<Integer> tableCount = Optional.empty();
+        @JsonProperty("hidden")
+        private Optional<Boolean> hidden = Optional.empty();
+        @JsonProperty("is_blank")
+        private Optional<Boolean> isBlank = Optional.empty();
+        @JsonProperty("has_vector_graphics")
+        private boolean hasVectorGraphics = false;
+
+        /** Sets the number field. */
+        @JsonProperty("number")
+        public Builder withNumber(final int value) {
+            this.number = value;
+            return this;
+        }
+
+        /** Sets the title field. */
+        @JsonProperty("title")
+        public Builder withTitle(final @Nullable String value) {
+            this.title = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the dimensions field. */
+        @JsonProperty("dimensions")
+        public Builder withDimensions(final @Nullable List<Double> value) {
+            this.dimensions = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the imageCount field. */
+        @JsonProperty("image_count")
+        public Builder withImageCount(final @Nullable Integer value) {
+            this.imageCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the tableCount field. */
+        @JsonProperty("table_count")
+        public Builder withTableCount(final @Nullable Integer value) {
+            this.tableCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the hidden field. */
+        @JsonProperty("hidden")
+        public Builder withHidden(final @Nullable Boolean value) {
+            this.hidden = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the isBlank field. */
+        @JsonProperty("is_blank")
+        public Builder withIsBlank(final @Nullable Boolean value) {
+            this.isBlank = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the hasVectorGraphics field. */
+        @JsonProperty("has_vector_graphics")
+        public Builder withHasVectorGraphics(final boolean value) {
+            this.hasVectorGraphics = value;
+            return this;
+        }
+
+        /** Builds the PageInfo instance. */
+        public PageInfo build() {
+            return new PageInfo(
+                number,
+                title.orElse(null),
+                dimensions.orElse(null),
+                imageCount.orElse(null),
+                tableCount.orElse(null),
+                hidden.orElse(null),
+                isBlank.orElse(null),
+                hasVectorGraphics
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -4,11 +4,61 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A resolved relationship between two nodes in the document tree.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DocumentRelationship.Builder.class)
 public record DocumentRelationship(int source, int target, RelationshipKind kind) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("source")
+        private int source = 0;
+        @JsonProperty("target")
+        private int target = 0;
+        @JsonProperty("kind")
+        private RelationshipKind kind = null;
+
+        /** Sets the source field. */
+        @JsonProperty("source")
+        public Builder withSource(final int value) {
+            this.source = value;
+            return this;
+        }
+
+        /** Sets the target field. */
+        @JsonProperty("target")
+        public Builder withTarget(final int value) {
+            this.target = value;
+            return this;
+        }
+
+        /** Sets the kind field. */
+        @JsonProperty("kind")
+        public Builder withKind(final RelationshipKind value) {
+            this.kind = value;
+            return this;
+        }
+
+        /** Builds the DocumentRelationship instance. */
+        public DocumentRelationship build() {
+            return new DocumentRelationship(
+                source,
+                target,
+                kind
+            );
+        }
+    }
+    // CPD-ON
 }

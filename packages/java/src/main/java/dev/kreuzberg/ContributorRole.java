@@ -4,12 +4,53 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * JATS contributor with role.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ContributorRole.Builder.class)
 public record ContributorRole(String name, @Nullable String role) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("name")
+        private String name = "";
+        @JsonProperty("role")
+        private Optional<String> role = Optional.empty();
+
+        /** Sets the name field. */
+        @JsonProperty("name")
+        public Builder withName(final String value) {
+            this.name = value;
+            return this;
+        }
+
+        /** Sets the role field. */
+        @JsonProperty("role")
+        public Builder withRole(final @Nullable String value) {
+            this.role = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the ContributorRole instance. */
+        public ContributorRole build() {
+            return new ContributorRole(
+                name,
+                role.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

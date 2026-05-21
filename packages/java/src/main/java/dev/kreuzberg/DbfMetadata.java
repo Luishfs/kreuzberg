@@ -7,14 +7,63 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * dBASE (DBF) file metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DbfMetadata.Builder.class)
 public record DbfMetadata(
     @JsonProperty("record_count") long recordCount,
     @JsonProperty("field_count") long fieldCount,
     List<DbfFieldInfo> fields
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("record_count")
+        private long recordCount = 0;
+        @JsonProperty("field_count")
+        private long fieldCount = 0;
+        @JsonProperty("fields")
+        private List<DbfFieldInfo> fields = List.of();
+
+        /** Sets the recordCount field. */
+        @JsonProperty("record_count")
+        public Builder withRecordCount(final long value) {
+            this.recordCount = value;
+            return this;
+        }
+
+        /** Sets the fieldCount field. */
+        @JsonProperty("field_count")
+        public Builder withFieldCount(final long value) {
+            this.fieldCount = value;
+            return this;
+        }
+
+        /** Sets the fields field. */
+        @JsonProperty("fields")
+        public Builder withFields(final List<DbfFieldInfo> value) {
+            this.fields = value;
+            return this;
+        }
+
+        /** Builds the DbfMetadata instance. */
+        public DbfMetadata build() {
+            return new DbfMetadata(
+                recordCount,
+                fieldCount,
+                fields
+            );
+        }
+    }
+    // CPD-ON
 }

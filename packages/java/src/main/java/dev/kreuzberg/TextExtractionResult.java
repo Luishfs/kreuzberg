@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * for Markdown files, structural elements like headers and links.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = TextExtractionResult.Builder.class)
 public record TextExtractionResult(
     /**
      * Extracted text content
@@ -46,4 +50,90 @@ public record TextExtractionResult(
      */
     @Nullable @JsonProperty("code_blocks") List<String> codeBlocks
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("line_count")
+        private long lineCount = 0;
+        @JsonProperty("word_count")
+        private long wordCount = 0;
+        @JsonProperty("character_count")
+        private long characterCount = 0;
+        @JsonProperty("headers")
+        private Optional<List<String>> headers = Optional.empty();
+        @JsonProperty("links")
+        private Optional<List<String>> links = Optional.empty();
+        @JsonProperty("code_blocks")
+        private Optional<List<String>> codeBlocks = Optional.empty();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the lineCount field. */
+        @JsonProperty("line_count")
+        public Builder withLineCount(final long value) {
+            this.lineCount = value;
+            return this;
+        }
+
+        /** Sets the wordCount field. */
+        @JsonProperty("word_count")
+        public Builder withWordCount(final long value) {
+            this.wordCount = value;
+            return this;
+        }
+
+        /** Sets the characterCount field. */
+        @JsonProperty("character_count")
+        public Builder withCharacterCount(final long value) {
+            this.characterCount = value;
+            return this;
+        }
+
+        /** Sets the headers field. */
+        @JsonProperty("headers")
+        public Builder withHeaders(final @Nullable List<String> value) {
+            this.headers = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the links field. */
+        @JsonProperty("links")
+        public Builder withLinks(final @Nullable List<String> value) {
+            this.links = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the codeBlocks field. */
+        @JsonProperty("code_blocks")
+        public Builder withCodeBlocks(final @Nullable List<String> value) {
+            this.codeBlocks = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the TextExtractionResult instance. */
+        public TextExtractionResult build() {
+            return new TextExtractionResult(
+                content,
+                lineCount,
+                wordCount,
+                characterCount,
+                headers.orElse(null),
+                links.orElse(null),
+                codeBlocks.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

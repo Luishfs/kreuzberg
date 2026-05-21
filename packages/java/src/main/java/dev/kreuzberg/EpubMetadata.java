@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * EPUB metadata (Dublin Core extensions).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = EpubMetadata.Builder.class)
 public record EpubMetadata(
     @Nullable String coverage,
     @Nullable @JsonProperty("dc_format") String dcFormat,
@@ -20,4 +24,80 @@ public record EpubMetadata(
     @Nullable @JsonProperty("dc_type") String dcType,
     @Nullable @JsonProperty("cover_image") String coverImage
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("coverage")
+        private Optional<String> coverage = Optional.empty();
+        @JsonProperty("dc_format")
+        private Optional<String> dcFormat = Optional.empty();
+        @JsonProperty("relation")
+        private Optional<String> relation = Optional.empty();
+        @JsonProperty("source")
+        private Optional<String> source = Optional.empty();
+        @JsonProperty("dc_type")
+        private Optional<String> dcType = Optional.empty();
+        @JsonProperty("cover_image")
+        private Optional<String> coverImage = Optional.empty();
+
+        /** Sets the coverage field. */
+        @JsonProperty("coverage")
+        public Builder withCoverage(final @Nullable String value) {
+            this.coverage = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the dcFormat field. */
+        @JsonProperty("dc_format")
+        public Builder withDcFormat(final @Nullable String value) {
+            this.dcFormat = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the relation field. */
+        @JsonProperty("relation")
+        public Builder withRelation(final @Nullable String value) {
+            this.relation = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the source field. */
+        @JsonProperty("source")
+        public Builder withSource(final @Nullable String value) {
+            this.source = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the dcType field. */
+        @JsonProperty("dc_type")
+        public Builder withDcType(final @Nullable String value) {
+            this.dcType = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the coverImage field. */
+        @JsonProperty("cover_image")
+        public Builder withCoverImage(final @Nullable String value) {
+            this.coverImage = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the EpubMetadata instance. */
+        public EpubMetadata build() {
+            return new EpubMetadata(
+                coverage.orElse(null),
+                dcFormat.orElse(null),
+                relation.orElse(null),
+                source.orElse(null),
+                dcType.orElse(null),
+                coverImage.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

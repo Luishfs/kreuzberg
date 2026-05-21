@@ -5,14 +5,18 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Metadata about a chunk's position in the original document.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ChunkMetadata.Builder.class)
 public record ChunkMetadata(
     /**
      * Byte offset where this chunk starts in the original text (UTF-8 valid boundary).
@@ -64,4 +68,110 @@ public record ChunkMetadata(
      */
     @JsonProperty("image_indices") List<Integer> imageIndices
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("byte_start")
+        private long byteStart = 0;
+        @JsonProperty("byte_end")
+        private long byteEnd = 0;
+        @JsonProperty("token_count")
+        private Optional<Long> tokenCount = Optional.empty();
+        @JsonProperty("chunk_index")
+        private long chunkIndex = 0;
+        @JsonProperty("total_chunks")
+        private long totalChunks = 0;
+        @JsonProperty("first_page")
+        private Optional<Integer> firstPage = Optional.empty();
+        @JsonProperty("last_page")
+        private Optional<Integer> lastPage = Optional.empty();
+        @JsonProperty("heading_context")
+        private Optional<HeadingContext> headingContext = Optional.empty();
+        @JsonProperty("image_indices")
+        private List<Integer> imageIndices = List.of();
+
+        /** Sets the byteStart field. */
+        @JsonProperty("byte_start")
+        public Builder withByteStart(final long value) {
+            this.byteStart = value;
+            return this;
+        }
+
+        /** Sets the byteEnd field. */
+        @JsonProperty("byte_end")
+        public Builder withByteEnd(final long value) {
+            this.byteEnd = value;
+            return this;
+        }
+
+        /** Sets the tokenCount field. */
+        @JsonProperty("token_count")
+        public Builder withTokenCount(final @Nullable Long value) {
+            this.tokenCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the chunkIndex field. */
+        @JsonProperty("chunk_index")
+        public Builder withChunkIndex(final long value) {
+            this.chunkIndex = value;
+            return this;
+        }
+
+        /** Sets the totalChunks field. */
+        @JsonProperty("total_chunks")
+        public Builder withTotalChunks(final long value) {
+            this.totalChunks = value;
+            return this;
+        }
+
+        /** Sets the firstPage field. */
+        @JsonProperty("first_page")
+        public Builder withFirstPage(final @Nullable Integer value) {
+            this.firstPage = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the lastPage field. */
+        @JsonProperty("last_page")
+        public Builder withLastPage(final @Nullable Integer value) {
+            this.lastPage = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the headingContext field. */
+        @JsonProperty("heading_context")
+        public Builder withHeadingContext(final @Nullable HeadingContext value) {
+            this.headingContext = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the imageIndices field. */
+        @JsonProperty("image_indices")
+        public Builder withImageIndices(final List<Integer> value) {
+            this.imageIndices = value;
+            return this;
+        }
+
+        /** Builds the ChunkMetadata instance. */
+        public ChunkMetadata build() {
+            return new ChunkMetadata(
+                byteStart,
+                byteEnd,
+                tokenCount.orElse(null),
+                chunkIndex,
+                totalChunks,
+                firstPage.orElse(null),
+                lastPage.orElse(null),
+                headingContext.orElse(null),
+                imageIndices
+            );
+        }
+    }
+    // CPD-ON
 }

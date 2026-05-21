@@ -131,26 +131,32 @@ public sealed record PaddleOcrConfig
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
+    /// <summary>Options for serializing config/input objects to FFI (no default-skipping).</summary>
+    private static readonly JsonSerializerOptions JsonSerializationOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
+    };
+
     /// <summary>
     /// Sets a custom cache directory for model files.
     /// </summary>
     public PaddleOcrConfig WithCacheDir(string path)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithCacheDir(selfHandle, path);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -158,21 +164,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithTableDetection(bool enable)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithTableDetection(selfHandle, enable);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -180,21 +186,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithAngleCls(bool enable)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithAngleCls(selfHandle, enable);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -202,21 +208,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithDetDbThresh(float threshold)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithDetDbThresh(selfHandle, threshold);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -224,21 +230,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithDetDbBoxThresh(float threshold)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithDetDbBoxThresh(selfHandle, threshold);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -246,21 +252,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithDetDbUnclipRatio(float ratio)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithDetDbUnclipRatio(selfHandle, ratio);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -268,21 +274,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithDetLimitSideLen(uint length)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithDetLimitSideLen(selfHandle, length);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -290,21 +296,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithRecBatchNum(uint batchSize)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithRecBatchNum(selfHandle, batchSize);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -312,21 +318,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithDropScore(float score)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithDropScore(selfHandle, score);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -334,21 +340,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithPadding(uint padding)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithPadding(selfHandle, padding);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>
@@ -356,21 +362,21 @@ public sealed record PaddleOcrConfig
     /// </summary>
     public PaddleOcrConfig WithModelTier(string tier)
     {
-        var selfJson = JsonSerializer.Serialize(this, JsonOptions);
-        var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
+        var selfJson = JsonSerializer.Serialize(this, JsonSerializationOptions);
+var selfHandle = NativeMethods.PaddleOcrConfigFromJson(selfJson);
         try
         {
             var nativeResult = NativeMethods.PaddleOcrConfigWithModelTier(selfHandle, tier);
-            var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
-            NativeMethods.FreeString(jsonPtr);
-            NativeMethods.PaddleOcrConfigFree(nativeResult);
-            return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
-        }
-        finally
+var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
+var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
+NativeMethods.FreeString(jsonPtr);
+NativeMethods.PaddleOcrConfigFree(nativeResult);
+return JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
+}
+finally
         {
             NativeMethods.PaddleOcrConfigFree(selfHandle);
-        }
+}
     }
 
     /// <summary>

@@ -6,11 +6,14 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Combined paths to all models needed for OCR (backward compatibility).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ModelPaths.Builder.class)
 public record ModelPaths(
     /**
      * Path to the detection model directory.
@@ -29,4 +32,60 @@ public record ModelPaths(
      */
     @JsonProperty("dict_file") java.nio.file.Path dictFile
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("det_model")
+        private java.nio.file.Path detModel = "";
+        @JsonProperty("cls_model")
+        private java.nio.file.Path clsModel = "";
+        @JsonProperty("rec_model")
+        private java.nio.file.Path recModel = "";
+        @JsonProperty("dict_file")
+        private java.nio.file.Path dictFile = "";
+
+        /** Sets the detModel field. */
+        @JsonProperty("det_model")
+        public Builder withDetModel(final java.nio.file.Path value) {
+            this.detModel = value;
+            return this;
+        }
+
+        /** Sets the clsModel field. */
+        @JsonProperty("cls_model")
+        public Builder withClsModel(final java.nio.file.Path value) {
+            this.clsModel = value;
+            return this;
+        }
+
+        /** Sets the recModel field. */
+        @JsonProperty("rec_model")
+        public Builder withRecModel(final java.nio.file.Path value) {
+            this.recModel = value;
+            return this;
+        }
+
+        /** Sets the dictFile field. */
+        @JsonProperty("dict_file")
+        public Builder withDictFile(final java.nio.file.Path value) {
+            this.dictFile = value;
+            return this;
+        }
+
+        /** Builds the ModelPaths instance. */
+        public ModelPaths build() {
+            return new ModelPaths(
+                detModel,
+                clsModel,
+                recModel,
+                dictFile
+            );
+        }
+    }
+    // CPD-ON
 }

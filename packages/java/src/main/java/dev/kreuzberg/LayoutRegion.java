@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A detected layout region on a page.
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * with confidence scores and spatial positions.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LayoutRegion.Builder.class)
 public record LayoutRegion(
     /**
      * Layout class name (e.g. "picture", "table", "text", "section_header").
@@ -33,4 +36,60 @@ public record LayoutRegion(
      */
     @JsonProperty("area_fraction") double areaFraction
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("class_name")
+        private String className = "";
+        @JsonProperty("confidence")
+        private double confidence = 0.0;
+        @JsonProperty("bounding_box")
+        private String boundingBox = "";
+        @JsonProperty("area_fraction")
+        private double areaFraction = 0.0;
+
+        /** Sets the className field. */
+        @JsonProperty("class_name")
+        public Builder withClassName(final String value) {
+            this.className = value;
+            return this;
+        }
+
+        /** Sets the confidence field. */
+        @JsonProperty("confidence")
+        public Builder withConfidence(final double value) {
+            this.confidence = value;
+            return this;
+        }
+
+        /** Sets the boundingBox field. */
+        @JsonProperty("bounding_box")
+        public Builder withBoundingBox(final String value) {
+            this.boundingBox = value;
+            return this;
+        }
+
+        /** Sets the areaFraction field. */
+        @JsonProperty("area_fraction")
+        public Builder withAreaFraction(final double value) {
+            this.areaFraction = value;
+            return this;
+        }
+
+        /** Builds the LayoutRegion instance. */
+        public LayoutRegion build() {
+            return new LayoutRegion(
+                className,
+                confidence,
+                boundingBox,
+                areaFraction
+            );
+        }
+    }
+    // CPD-ON
 }

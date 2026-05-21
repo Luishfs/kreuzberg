@@ -5,7 +5,10 @@
 package dev.kreuzberg;
 
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Image metadata extracted from image files.
@@ -13,5 +16,62 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Includes dimensions, format, and EXIF data.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ImageMetadata.Builder.class)
 public record ImageMetadata(int width, int height, String format, Map<String, String> exif) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("width")
+        private int width = 0;
+        @JsonProperty("height")
+        private int height = 0;
+        @JsonProperty("format")
+        private String format = "";
+        @JsonProperty("exif")
+        private Map<String, String> exif = Map.of();
+
+        /** Sets the width field. */
+        @JsonProperty("width")
+        public Builder withWidth(final int value) {
+            this.width = value;
+            return this;
+        }
+
+        /** Sets the height field. */
+        @JsonProperty("height")
+        public Builder withHeight(final int value) {
+            this.height = value;
+            return this;
+        }
+
+        /** Sets the format field. */
+        @JsonProperty("format")
+        public Builder withFormat(final String value) {
+            this.format = value;
+            return this;
+        }
+
+        /** Sets the exif field. */
+        @JsonProperty("exif")
+        public Builder withExif(final Map<String, String> value) {
+            this.exif = value;
+            return this;
+        }
+
+        /** Builds the ImageMetadata instance. */
+        public ImageMetadata build() {
+            return new ImageMetadata(
+                width,
+                height,
+                format,
+                exif
+            );
+        }
+    }
+    // CPD-ON
 }

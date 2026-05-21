@@ -5,11 +5,51 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Footnote in Djot.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = Footnote.Builder.class)
 public record Footnote(String label, List<FormattedBlock> content) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("label")
+        private String label = "";
+        @JsonProperty("content")
+        private List<FormattedBlock> content = List.of();
+
+        /** Sets the label field. */
+        @JsonProperty("label")
+        public Builder withLabel(final String value) {
+            this.label = value;
+            return this;
+        }
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final List<FormattedBlock> value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Builds the Footnote instance. */
+        public Footnote build() {
+            return new Footnote(
+                label,
+                content
+            );
+        }
+    }
+    // CPD-ON
 }

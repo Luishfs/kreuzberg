@@ -8,12 +8,71 @@ import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = StructuredDataResult.Builder.class)
 public record StructuredDataResult(
     String content,
     String format,
     Map<String, String> metadata,
     @JsonProperty("text_fields") List<String> textFields
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("format")
+        private String format = "";
+        @JsonProperty("metadata")
+        private Map<String, String> metadata = Map.of();
+        @JsonProperty("text_fields")
+        private List<String> textFields = List.of();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the format field. */
+        @JsonProperty("format")
+        public Builder withFormat(final String value) {
+            this.format = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final Map<String, String> value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Sets the textFields field. */
+        @JsonProperty("text_fields")
+        public Builder withTextFields(final List<String> value) {
+            this.textFields = value;
+            return this;
+        }
+
+        /** Builds the StructuredDataResult instance. */
+        public StructuredDataResult build() {
+            return new StructuredDataResult(
+                content,
+                format,
+                metadata,
+                textFields
+            );
+        }
+    }
+    // CPD-ON
 }

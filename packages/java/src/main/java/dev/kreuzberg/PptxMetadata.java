@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -15,6 +18,7 @@ import org.jspecify.annotations.Nullable;
  * Extracted from PPTX files containing slide counts and presentation details.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PptxMetadata.Builder.class)
 public record PptxMetadata(
     /**
      * Total number of slides in the presentation
@@ -33,4 +37,60 @@ public record PptxMetadata(
      */
     @Nullable @JsonProperty("table_count") Integer tableCount
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("slide_count")
+        private int slideCount = 0;
+        @JsonProperty("slide_names")
+        private List<String> slideNames = List.of();
+        @JsonProperty("image_count")
+        private Optional<Integer> imageCount = Optional.empty();
+        @JsonProperty("table_count")
+        private Optional<Integer> tableCount = Optional.empty();
+
+        /** Sets the slideCount field. */
+        @JsonProperty("slide_count")
+        public Builder withSlideCount(final int value) {
+            this.slideCount = value;
+            return this;
+        }
+
+        /** Sets the slideNames field. */
+        @JsonProperty("slide_names")
+        public Builder withSlideNames(final List<String> value) {
+            this.slideNames = value;
+            return this;
+        }
+
+        /** Sets the imageCount field. */
+        @JsonProperty("image_count")
+        public Builder withImageCount(final @Nullable Integer value) {
+            this.imageCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the tableCount field. */
+        @JsonProperty("table_count")
+        public Builder withTableCount(final @Nullable Integer value) {
+            this.tableCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the PptxMetadata instance. */
+        public PptxMetadata build() {
+            return new PptxMetadata(
+                slideCount,
+                slideNames,
+                imageCount.orElse(null),
+                tableCount.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

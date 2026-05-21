@@ -6,11 +6,14 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Language detection configuration.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LanguageDetectionConfig.Builder.class)
 public record LanguageDetectionConfig(
     /**
      * Enable language detection
@@ -25,6 +28,52 @@ public record LanguageDetectionConfig(
      */
     @JsonProperty("detect_multiple") boolean detectMultiple
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("enabled")
+        private boolean enabled = true;
+        @JsonProperty("min_confidence")
+        private double minConfidence = 0.0;
+        @JsonProperty("detect_multiple")
+        private boolean detectMultiple = false;
+
+        /** Sets the enabled field. */
+        @JsonProperty("enabled")
+        public Builder withEnabled(final boolean value) {
+            this.enabled = value;
+            return this;
+        }
+
+        /** Sets the minConfidence field. */
+        @JsonProperty("min_confidence")
+        public Builder withMinConfidence(final double value) {
+            this.minConfidence = value;
+            return this;
+        }
+
+        /** Sets the detectMultiple field. */
+        @JsonProperty("detect_multiple")
+        public Builder withDetectMultiple(final boolean value) {
+            this.detectMultiple = value;
+            return this;
+        }
+
+        /** Builds the LanguageDetectionConfig instance. */
+        public LanguageDetectionConfig build() {
+            return new LanguageDetectionConfig(
+                enabled,
+                minConfidence,
+                detectMultiple
+            );
+        }
+    }
+    // CPD-ON
     public static LanguageDetectionConfig defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

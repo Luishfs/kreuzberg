@@ -273,18 +273,24 @@ public sealed record ExtractionResult
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
+    /// <summary>Options for serializing config/input objects to FFI (no default-skipping).</summary>
+    private static readonly JsonSerializerOptions JsonSerializationOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
+    };
+
     /// <summary>
     /// Convert from an OCR result.
     /// </summary>
     public static ExtractionResult FromOcr(OcrExtractionResult ocr)
     {
-        var ocrJson = JsonSerializer.Serialize(ocr, JsonOptions);
+        var ocrJson = JsonSerializer.Serialize(ocr, JsonSerializationOptions);
         var ocrHandle = NativeMethods.OcrExtractionResultFromJson(ocrJson);
         if (ocrHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "OcrExtractionResultFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "OcrExtractionResultFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         try

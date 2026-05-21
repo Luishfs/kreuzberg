@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -15,6 +18,7 @@ import org.jspecify.annotations.Nullable;
  * Represents structural elements like headings, paragraphs, lists, code blocks, etc.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = FormattedBlock.Builder.class)
 public record FormattedBlock(
     /**
      * Type of block element
@@ -45,4 +49,90 @@ public record FormattedBlock(
      */
     List<FormattedBlock> children
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("block_type")
+        private BlockType blockType = null;
+        @JsonProperty("level")
+        private Optional<Long> level = Optional.empty();
+        @JsonProperty("inline_content")
+        private List<InlineElement> inlineContent = List.of();
+        @JsonProperty("attributes")
+        private Optional<String> attributes = Optional.empty();
+        @JsonProperty("language")
+        private Optional<String> language = Optional.empty();
+        @JsonProperty("code")
+        private Optional<String> code = Optional.empty();
+        @JsonProperty("children")
+        private List<FormattedBlock> children = List.of();
+
+        /** Sets the blockType field. */
+        @JsonProperty("block_type")
+        public Builder withBlockType(final BlockType value) {
+            this.blockType = value;
+            return this;
+        }
+
+        /** Sets the level field. */
+        @JsonProperty("level")
+        public Builder withLevel(final @Nullable Long value) {
+            this.level = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the inlineContent field. */
+        @JsonProperty("inline_content")
+        public Builder withInlineContent(final List<InlineElement> value) {
+            this.inlineContent = value;
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final @Nullable String value) {
+            this.attributes = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the language field. */
+        @JsonProperty("language")
+        public Builder withLanguage(final @Nullable String value) {
+            this.language = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the code field. */
+        @JsonProperty("code")
+        public Builder withCode(final @Nullable String value) {
+            this.code = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the children field. */
+        @JsonProperty("children")
+        public Builder withChildren(final List<FormattedBlock> value) {
+            this.children = value;
+            return this;
+        }
+
+        /** Builds the FormattedBlock instance. */
+        public FormattedBlock build() {
+            return new FormattedBlock(
+                blockType,
+                level.orElse(null),
+                inlineContent,
+                attributes.orElse(null),
+                language.orElse(null),
+                code.orElse(null),
+                children
+            );
+        }
+    }
+    // CPD-ON
 }

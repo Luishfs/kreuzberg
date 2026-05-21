@@ -4,7 +4,10 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A non-fatal warning from a processing pipeline stage.
@@ -13,5 +16,42 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * but may indicate degraded results.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ProcessingWarning.Builder.class)
 public record ProcessingWarning(String source, String message) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("source")
+        private String source = "";
+        @JsonProperty("message")
+        private String message = "";
+
+        /** Sets the source field. */
+        @JsonProperty("source")
+        public Builder withSource(final String value) {
+            this.source = value;
+            return this;
+        }
+
+        /** Sets the message field. */
+        @JsonProperty("message")
+        public Builder withMessage(final String value) {
+            this.message = value;
+            return this;
+        }
+
+        /** Builds the ProcessingWarning instance. */
+        public ProcessingWarning build() {
+            return new ProcessingWarning(
+                source,
+                message
+            );
+        }
+    }
+    // CPD-ON
 }

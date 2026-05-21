@@ -9,19 +9,16 @@ namespace Kreuzberg;
 /// <summary>
 /// Page Segmentation Mode for Tesseract OCR
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PSMMode
-{
-    [JsonPropertyName("osdonly")]
-    OsdOnly, [JsonPropertyName("autoosd")]
-    AutoOsd, [JsonPropertyName("autoonly")]
-    AutoOnly, [JsonPropertyName("auto")]
-    Auto, [JsonPropertyName("singlecolumn")]
-    SingleColumn, [JsonPropertyName("singleblockvertical")]
-    SingleBlockVertical, [JsonPropertyName("singleblock")]
-    SingleBlock, [JsonPropertyName("singleline")]
-    SingleLine, [JsonPropertyName("singleword")]
-    SingleWord, [JsonPropertyName("circleword")]
-    CircleWord, [JsonPropertyName("singlechar")]
-    SingleChar,
-}
+{    [JsonPropertyName("osdonly")]
+    OsdOnly,    [JsonPropertyName("autoosd")]
+    AutoOsd,    [JsonPropertyName("autoonly")]
+    AutoOnly,    [JsonPropertyName("auto")]
+    Auto,    [JsonPropertyName("singlecolumn")]
+    SingleColumn,    [JsonPropertyName("singleblockvertical")]
+    SingleBlockVertical,    [JsonPropertyName("singleblock")]
+    SingleBlock,    [JsonPropertyName("singleline")]
+    SingleLine,    [JsonPropertyName("singleword")]
+    SingleWord,    [JsonPropertyName("circleword")]
+    CircleWord,    [JsonPropertyName("singlechar")]
+    SingleChar,}

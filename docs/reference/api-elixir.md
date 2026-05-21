@@ -4652,18 +4652,6 @@ Type of list detection.
 
 ---
 
-#### DrawingType
-
-Whether the drawing is inline or anchored.
-
-| Value | Description |
-|-------|-------------|
-| `inline` | Inline |
-| `anchored` | Anchored — Fields: `0`: `String.t()` |
-
-
----
-
 #### FracType
 
 | Value | Description |

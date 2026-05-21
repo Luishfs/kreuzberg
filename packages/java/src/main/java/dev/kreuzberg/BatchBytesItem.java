@@ -4,9 +4,12 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * to represent a single item in a batch extraction job.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = BatchBytesItem.Builder.class)
 public record BatchBytesItem(
     /**
      * The content bytes to extract from
@@ -30,4 +34,50 @@ public record BatchBytesItem(
      */
     @Nullable FileExtractionConfig config
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private byte[] content = new byte[0];
+        @JsonProperty("mime_type")
+        private String mimeType = "";
+        @JsonProperty("config")
+        private Optional<FileExtractionConfig> config = Optional.empty();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final byte[] value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final String value) {
+            this.mimeType = value;
+            return this;
+        }
+
+        /** Sets the config field. */
+        @JsonProperty("config")
+        public Builder withConfig(final @Nullable FileExtractionConfig value) {
+            this.config = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the BatchBytesItem instance. */
+        public BatchBytesItem build() {
+            return new BatchBytesItem(
+                content,
+                mimeType,
+                config.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

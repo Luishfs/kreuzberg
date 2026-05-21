@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Image preprocessing configuration for OCR.
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * for different document types.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ImagePreprocessingConfig.Builder.class)
 public record ImagePreprocessingConfig(
     /**
      * Target DPI for the image (300 is standard, 600 for small text).
@@ -45,9 +48,95 @@ public record ImagePreprocessingConfig(
      */
     @JsonProperty("invert_colors") boolean invertColors
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
     public ImagePreprocessingConfig{
         if (targetDpi == 0) targetDpi = 300;
     }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("target_dpi")
+        private int targetDpi = 0;
+        @JsonProperty("auto_rotate")
+        private boolean autoRotate = true;
+        @JsonProperty("deskew")
+        private boolean deskew = true;
+        @JsonProperty("denoise")
+        private boolean denoise = false;
+        @JsonProperty("contrast_enhance")
+        private boolean contrastEnhance = false;
+        @JsonProperty("binarization_method")
+        private String binarizationMethod = "otsu";
+        @JsonProperty("invert_colors")
+        private boolean invertColors = false;
+
+        /** Sets the targetDpi field. */
+        @JsonProperty("target_dpi")
+        public Builder withTargetDpi(final int value) {
+            this.targetDpi = value;
+            return this;
+        }
+
+        /** Sets the autoRotate field. */
+        @JsonProperty("auto_rotate")
+        public Builder withAutoRotate(final boolean value) {
+            this.autoRotate = value;
+            return this;
+        }
+
+        /** Sets the deskew field. */
+        @JsonProperty("deskew")
+        public Builder withDeskew(final boolean value) {
+            this.deskew = value;
+            return this;
+        }
+
+        /** Sets the denoise field. */
+        @JsonProperty("denoise")
+        public Builder withDenoise(final boolean value) {
+            this.denoise = value;
+            return this;
+        }
+
+        /** Sets the contrastEnhance field. */
+        @JsonProperty("contrast_enhance")
+        public Builder withContrastEnhance(final boolean value) {
+            this.contrastEnhance = value;
+            return this;
+        }
+
+        /** Sets the binarizationMethod field. */
+        @JsonProperty("binarization_method")
+        public Builder withBinarizationMethod(final String value) {
+            this.binarizationMethod = value;
+            return this;
+        }
+
+        /** Sets the invertColors field. */
+        @JsonProperty("invert_colors")
+        public Builder withInvertColors(final boolean value) {
+            this.invertColors = value;
+            return this;
+        }
+
+        /** Builds the ImagePreprocessingConfig instance. */
+        public ImagePreprocessingConfig build() {
+            return new ImagePreprocessingConfig(
+                targetDpi,
+                autoRotate,
+                deskew,
+                denoise,
+                contrastEnhance,
+                binarizationMethod,
+                invertColors
+            );
+        }
+    }
+    // CPD-ON
     public static ImagePreprocessingConfig defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

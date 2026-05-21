@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Semantic element extracted from document.
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * unique identifier, and metadata for tracking origin and position.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = Element.Builder.class)
 public record Element(
     /**
      * Unique element identifier
@@ -32,4 +35,60 @@ public record Element(
      */
     ElementMetadata metadata
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("element_id")
+        private String elementId = "";
+        @JsonProperty("element_type")
+        private ElementType elementType = null;
+        @JsonProperty("text")
+        private String text = "";
+        @JsonProperty("metadata")
+        private ElementMetadata metadata = null;
+
+        /** Sets the elementId field. */
+        @JsonProperty("element_id")
+        public Builder withElementId(final String value) {
+            this.elementId = value;
+            return this;
+        }
+
+        /** Sets the elementType field. */
+        @JsonProperty("element_type")
+        public Builder withElementType(final ElementType value) {
+            this.elementType = value;
+            return this;
+        }
+
+        /** Sets the text field. */
+        @JsonProperty("text")
+        public Builder withText(final String value) {
+            this.text = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final ElementMetadata value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Builds the Element instance. */
+        public Element build() {
+            return new Element(
+                elementId,
+                elementType,
+                text,
+                metadata
+            );
+        }
+    }
+    // CPD-ON
 }

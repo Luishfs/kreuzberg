@@ -6,8 +6,11 @@ package dev.kreuzberg;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -17,6 +20,7 @@ import org.jspecify.annotations.Nullable;
  * including headers, body content, and attachments.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = EmailExtractionResult.Builder.class)
 public record EmailExtractionResult(
     /**
      * Email subject line
@@ -67,4 +71,140 @@ public record EmailExtractionResult(
      */
     Map<String, String> metadata
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("subject")
+        private Optional<String> subject = Optional.empty();
+        @JsonProperty("from_email")
+        private Optional<String> fromEmail = Optional.empty();
+        @JsonProperty("to_emails")
+        private List<String> toEmails = List.of();
+        @JsonProperty("cc_emails")
+        private List<String> ccEmails = List.of();
+        @JsonProperty("bcc_emails")
+        private List<String> bccEmails = List.of();
+        @JsonProperty("date")
+        private Optional<String> date = Optional.empty();
+        @JsonProperty("message_id")
+        private Optional<String> messageId = Optional.empty();
+        @JsonProperty("plain_text")
+        private Optional<String> plainText = Optional.empty();
+        @JsonProperty("html_content")
+        private Optional<String> htmlContent = Optional.empty();
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("attachments")
+        private List<EmailAttachment> attachments = List.of();
+        @JsonProperty("metadata")
+        private Map<String, String> metadata = Map.of();
+
+        /** Sets the subject field. */
+        @JsonProperty("subject")
+        public Builder withSubject(final @Nullable String value) {
+            this.subject = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the fromEmail field. */
+        @JsonProperty("from_email")
+        public Builder withFromEmail(final @Nullable String value) {
+            this.fromEmail = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the toEmails field. */
+        @JsonProperty("to_emails")
+        public Builder withToEmails(final List<String> value) {
+            this.toEmails = value;
+            return this;
+        }
+
+        /** Sets the ccEmails field. */
+        @JsonProperty("cc_emails")
+        public Builder withCcEmails(final List<String> value) {
+            this.ccEmails = value;
+            return this;
+        }
+
+        /** Sets the bccEmails field. */
+        @JsonProperty("bcc_emails")
+        public Builder withBccEmails(final List<String> value) {
+            this.bccEmails = value;
+            return this;
+        }
+
+        /** Sets the date field. */
+        @JsonProperty("date")
+        public Builder withDate(final @Nullable String value) {
+            this.date = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the messageId field. */
+        @JsonProperty("message_id")
+        public Builder withMessageId(final @Nullable String value) {
+            this.messageId = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the plainText field. */
+        @JsonProperty("plain_text")
+        public Builder withPlainText(final @Nullable String value) {
+            this.plainText = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the htmlContent field. */
+        @JsonProperty("html_content")
+        public Builder withHtmlContent(final @Nullable String value) {
+            this.htmlContent = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the attachments field. */
+        @JsonProperty("attachments")
+        public Builder withAttachments(final List<EmailAttachment> value) {
+            this.attachments = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final Map<String, String> value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Builds the EmailExtractionResult instance. */
+        public EmailExtractionResult build() {
+            return new EmailExtractionResult(
+                subject.orElse(null),
+                fromEmail.orElse(null),
+                toEmails,
+                ccEmails,
+                bccEmails,
+                date.orElse(null),
+                messageId.orElse(null),
+                plainText.orElse(null),
+                htmlContent.orElse(null),
+                content,
+                attachments,
+                metadata
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * converted to Markdown format and dimensional statistics.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ExcelSheet.Builder.class)
 public record ExcelSheet(
     /**
      * Sheet name as it appears in Excel
@@ -44,4 +48,80 @@ public record ExcelSheet(
      */
     @Nullable @JsonProperty("table_cells") List<List<String>> tableCells
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("name")
+        private String name = "";
+        @JsonProperty("markdown")
+        private String markdown = "";
+        @JsonProperty("row_count")
+        private long rowCount = 0;
+        @JsonProperty("col_count")
+        private long colCount = 0;
+        @JsonProperty("cell_count")
+        private long cellCount = 0;
+        @JsonProperty("table_cells")
+        private Optional<List<List<String>>> tableCells = Optional.empty();
+
+        /** Sets the name field. */
+        @JsonProperty("name")
+        public Builder withName(final String value) {
+            this.name = value;
+            return this;
+        }
+
+        /** Sets the markdown field. */
+        @JsonProperty("markdown")
+        public Builder withMarkdown(final String value) {
+            this.markdown = value;
+            return this;
+        }
+
+        /** Sets the rowCount field. */
+        @JsonProperty("row_count")
+        public Builder withRowCount(final long value) {
+            this.rowCount = value;
+            return this;
+        }
+
+        /** Sets the colCount field. */
+        @JsonProperty("col_count")
+        public Builder withColCount(final long value) {
+            this.colCount = value;
+            return this;
+        }
+
+        /** Sets the cellCount field. */
+        @JsonProperty("cell_count")
+        public Builder withCellCount(final long value) {
+            this.cellCount = value;
+            return this;
+        }
+
+        /** Sets the tableCells field. */
+        @JsonProperty("table_cells")
+        public Builder withTableCells(final @Nullable List<List<String>> value) {
+            this.tableCells = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the ExcelSheet instance. */
+        public ExcelSheet build() {
+            return new ExcelSheet(
+                name,
+                markdown,
+                rowCount,
+                colCount,
+                cellCount,
+                tableCells.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -89,6 +89,12 @@ public sealed record ServerConfig
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
+    /// <summary>Options for serializing config/input objects to FFI (no default-skipping).</summary>
+    private static readonly JsonSerializerOptions JsonSerializationOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
+    };
+
     public static ServerConfig Default()
     {
         var nativeResult = NativeMethods.ServerConfigDefault();

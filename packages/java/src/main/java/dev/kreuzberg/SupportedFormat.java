@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A supported document format entry.
@@ -13,5 +15,42 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Represents a file extension and its corresponding MIME type that Kreuzberg can process.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = SupportedFormat.Builder.class)
 public record SupportedFormat(String extension, @JsonProperty("mime_type") String mimeType) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("extension")
+        private String extension = "";
+        @JsonProperty("mime_type")
+        private String mimeType = "";
+
+        /** Sets the extension field. */
+        @JsonProperty("extension")
+        public Builder withExtension(final String value) {
+            this.extension = value;
+            return this;
+        }
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final String value) {
+            this.mimeType = value;
+            return this;
+        }
+
+        /** Builds the SupportedFormat instance. */
+        public SupportedFormat build() {
+            return new SupportedFormat(
+                extension,
+                mimeType
+            );
+        }
+    }
+    // CPD-ON
 }

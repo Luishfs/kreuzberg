@@ -5,13 +5,18 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Extracted keyword with metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = Keyword.Builder.class)
 public record Keyword(
     /**
      * The keyword text.
@@ -30,4 +35,60 @@ public record Keyword(
      */
     @Nullable List<Long> positions
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("text")
+        private String text = "";
+        @JsonProperty("score")
+        private float score = 0.0f;
+        @JsonProperty("algorithm")
+        private KeywordAlgorithm algorithm = null;
+        @JsonProperty("positions")
+        private Optional<List<Long>> positions = Optional.empty();
+
+        /** Sets the text field. */
+        @JsonProperty("text")
+        public Builder withText(final String value) {
+            this.text = value;
+            return this;
+        }
+
+        /** Sets the score field. */
+        @JsonProperty("score")
+        public Builder withScore(final float value) {
+            this.score = value;
+            return this;
+        }
+
+        /** Sets the algorithm field. */
+        @JsonProperty("algorithm")
+        public Builder withAlgorithm(final KeywordAlgorithm value) {
+            this.algorithm = value;
+            return this;
+        }
+
+        /** Sets the positions field. */
+        @JsonProperty("positions")
+        public Builder withPositions(final @Nullable List<Long> value) {
+            this.positions = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the Keyword instance. */
+        public Keyword build() {
+            return new Keyword(
+                text,
+                score,
+                algorithm,
+                positions.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -22,12 +22,9 @@ namespace Kreuzberg;
 ///   `max_characters` (default 1000). `topic_threshold` has no effect in the
 ///   fallback path. For best results, pair with an embedding model.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ChunkerType
-{
-    [JsonPropertyName("text")]
-    Text, [JsonPropertyName("markdown")]
-    Markdown, [JsonPropertyName("yaml")]
-    Yaml, [JsonPropertyName("semantic")]
-    Semantic,
-}
+{    [JsonPropertyName("text")]
+    Text,    [JsonPropertyName("markdown")]
+    Markdown,    [JsonPropertyName("yaml")]
+    Yaml,    [JsonPropertyName("semantic")]
+    Semantic,}

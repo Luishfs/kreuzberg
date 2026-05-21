@@ -64,4 +64,10 @@ public sealed record TextAnnotation
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
+
+    /// <summary>Options for serializing config/input objects to FFI (no default-skipping).</summary>
+    private static readonly JsonSerializerOptions JsonSerializationOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
+    };
 }

@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Cross-extractor content filtering configuration.
@@ -19,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * default behavior unchanged.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ContentFilterConfig.Builder.class)
 public record ContentFilterConfig(
     /**
      * Include running headers in extraction output.
@@ -71,6 +74,62 @@ public record ContentFilterConfig(
      */
     @JsonProperty("include_watermarks") boolean includeWatermarks
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("include_headers")
+        private boolean includeHeaders = false;
+        @JsonProperty("include_footers")
+        private boolean includeFooters = false;
+        @JsonProperty("strip_repeating_text")
+        private boolean stripRepeatingText = true;
+        @JsonProperty("include_watermarks")
+        private boolean includeWatermarks = false;
+
+        /** Sets the includeHeaders field. */
+        @JsonProperty("include_headers")
+        public Builder withIncludeHeaders(final boolean value) {
+            this.includeHeaders = value;
+            return this;
+        }
+
+        /** Sets the includeFooters field. */
+        @JsonProperty("include_footers")
+        public Builder withIncludeFooters(final boolean value) {
+            this.includeFooters = value;
+            return this;
+        }
+
+        /** Sets the stripRepeatingText field. */
+        @JsonProperty("strip_repeating_text")
+        public Builder withStripRepeatingText(final boolean value) {
+            this.stripRepeatingText = value;
+            return this;
+        }
+
+        /** Sets the includeWatermarks field. */
+        @JsonProperty("include_watermarks")
+        public Builder withIncludeWatermarks(final boolean value) {
+            this.includeWatermarks = value;
+            return this;
+        }
+
+        /** Builds the ContentFilterConfig instance. */
+        public ContentFilterConfig build() {
+            return new ContentFilterConfig(
+                includeHeaders,
+                includeFooters,
+                stripRepeatingText,
+                includeWatermarks
+            );
+        }
+    }
+    // CPD-ON
     public static ContentFilterConfig defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

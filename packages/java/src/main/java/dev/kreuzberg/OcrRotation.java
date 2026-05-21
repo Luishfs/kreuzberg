@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Rotation information for an OCR element.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrRotation.Builder.class)
 public record OcrRotation(
     /**
      * Rotation angle in degrees (0, 90, 180, 270 for PaddleOCR).
@@ -22,4 +26,40 @@ public record OcrRotation(
      */
     @Nullable Double confidence
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("angle_degrees")
+        private double angleDegrees = 0.0;
+        @JsonProperty("confidence")
+        private Optional<Double> confidence = Optional.empty();
+
+        /** Sets the angleDegrees field. */
+        @JsonProperty("angle_degrees")
+        public Builder withAngleDegrees(final double value) {
+            this.angleDegrees = value;
+            return this;
+        }
+
+        /** Sets the confidence field. */
+        @JsonProperty("confidence")
+        public Builder withConfidence(final @Nullable Double value) {
+            this.confidence = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the OcrRotation instance. */
+        public OcrRotation build() {
+            return new OcrRotation(
+                angleDegrees,
+                confidence.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

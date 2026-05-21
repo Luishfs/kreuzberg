@@ -7,14 +7,63 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Page-level detection result containing all detections and page metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DetectionResult.Builder.class)
 public record DetectionResult(
     @JsonProperty("page_width") int pageWidth,
     @JsonProperty("page_height") int pageHeight,
     List<LayoutDetection> detections
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("page_width")
+        private int pageWidth = 0;
+        @JsonProperty("page_height")
+        private int pageHeight = 0;
+        @JsonProperty("detections")
+        private List<LayoutDetection> detections = List.of();
+
+        /** Sets the pageWidth field. */
+        @JsonProperty("page_width")
+        public Builder withPageWidth(final int value) {
+            this.pageWidth = value;
+            return this;
+        }
+
+        /** Sets the pageHeight field. */
+        @JsonProperty("page_height")
+        public Builder withPageHeight(final int value) {
+            this.pageHeight = value;
+            return this;
+        }
+
+        /** Sets the detections field. */
+        @JsonProperty("detections")
+        public Builder withDetections(final List<LayoutDetection> value) {
+            this.detections = value;
+            return this;
+        }
+
+        /** Builds the DetectionResult instance. */
+        public DetectionResult build() {
+            return new DetectionResult(
+                pageWidth,
+                pageHeight,
+                detections
+            );
+        }
+    }
+    // CPD-ON
 }

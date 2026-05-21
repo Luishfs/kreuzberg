@@ -6,13 +6,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Kreuzberg;
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum FracType
-{
-    [JsonPropertyName("bar")]
-    Bar, [JsonPropertyName("nobar")]
-    NoBar, [JsonPropertyName("linear")]
-    Linear, [JsonPropertyName("skewed")]
-    Skewed,
-}
+{    [JsonPropertyName("bar")]
+    Bar,    [JsonPropertyName("nobar")]
+    NoBar,    [JsonPropertyName("linear")]
+    Linear,    [JsonPropertyName("skewed")]
+    Skewed,}

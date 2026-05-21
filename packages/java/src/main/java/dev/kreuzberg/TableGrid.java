@@ -5,7 +5,10 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Structured table grid with cell-level metadata.
@@ -13,5 +16,52 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Stores row/column dimensions and a flat list of cells with position info.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = TableGrid.Builder.class)
 public record TableGrid(int rows, int cols, List<GridCell> cells) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("rows")
+        private int rows = 0;
+        @JsonProperty("cols")
+        private int cols = 0;
+        @JsonProperty("cells")
+        private List<GridCell> cells = List.of();
+
+        /** Sets the rows field. */
+        @JsonProperty("rows")
+        public Builder withRows(final int value) {
+            this.rows = value;
+            return this;
+        }
+
+        /** Sets the cols field. */
+        @JsonProperty("cols")
+        public Builder withCols(final int value) {
+            this.cols = value;
+            return this;
+        }
+
+        /** Sets the cells field. */
+        @JsonProperty("cells")
+        public Builder withCells(final List<GridCell> value) {
+            this.cells = value;
+            return this;
+        }
+
+        /** Builds the TableGrid instance. */
+        public TableGrid build() {
+            return new TableGrid(
+                rows,
+                cols,
+                cells
+            );
+        }
+    }
+    // CPD-ON
 }

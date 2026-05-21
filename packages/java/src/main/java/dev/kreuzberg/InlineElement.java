@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -15,6 +18,7 @@ import org.jspecify.annotations.Nullable;
  * Represents text with formatting, links, images, etc.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = InlineElement.Builder.class)
 public record InlineElement(
     /**
      * Type of inline element
@@ -33,4 +37,60 @@ public record InlineElement(
      */
     @Nullable Map<String, String> metadata
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("element_type")
+        private InlineType elementType = null;
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("attributes")
+        private Optional<String> attributes = Optional.empty();
+        @JsonProperty("metadata")
+        private Optional<Map<String, String>> metadata = Optional.empty();
+
+        /** Sets the elementType field. */
+        @JsonProperty("element_type")
+        public Builder withElementType(final InlineType value) {
+            this.elementType = value;
+            return this;
+        }
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final @Nullable String value) {
+            this.attributes = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final @Nullable Map<String, String> value) {
+            this.metadata = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the InlineElement instance. */
+        public InlineElement build() {
+            return new InlineElement(
+                elementType,
+                content,
+                attributes.orElse(null),
+                metadata.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

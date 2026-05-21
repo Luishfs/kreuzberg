@@ -11,19 +11,17 @@ namespace Kreuzberg;
 ///
 /// Distinguishes between different types of "pages" (PDF pages, presentation slides, spreadsheet sheets).
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PageUnitType
 {    /// <summary>
-     /// Standard document pages (PDF, DOCX, images)
-     /// </summary>
+    /// Standard document pages (PDF, DOCX, images)
+    /// </summary>
     [JsonPropertyName("page")]
     Page,    /// <summary>
-             /// Presentation slides (PPTX, ODP)
-             /// </summary>
+    /// Presentation slides (PPTX, ODP)
+    /// </summary>
     [JsonPropertyName("slide")]
     Slide,    /// <summary>
-              /// Spreadsheet sheets (XLSX, ODS)
-              /// </summary>
+    /// Spreadsheet sheets (XLSX, ODS)
+    /// </summary>
     [JsonPropertyName("sheet")]
-    Sheet,
-}
+    Sheet,}

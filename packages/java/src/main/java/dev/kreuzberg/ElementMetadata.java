@@ -5,14 +5,18 @@
 package dev.kreuzberg;
 
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Metadata for a semantic element.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ElementMetadata.Builder.class)
 public record ElementMetadata(
     /**
      * Page number (1-indexed)
@@ -35,4 +39,70 @@ public record ElementMetadata(
      */
     Map<String, String> additional
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("page_number")
+        private Optional<Integer> pageNumber = Optional.empty();
+        @JsonProperty("filename")
+        private Optional<String> filename = Optional.empty();
+        @JsonProperty("coordinates")
+        private Optional<String> coordinates = Optional.empty();
+        @JsonProperty("element_index")
+        private Optional<Long> elementIndex = Optional.empty();
+        @JsonProperty("additional")
+        private Map<String, String> additional = Map.of();
+
+        /** Sets the pageNumber field. */
+        @JsonProperty("page_number")
+        public Builder withPageNumber(final @Nullable Integer value) {
+            this.pageNumber = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the filename field. */
+        @JsonProperty("filename")
+        public Builder withFilename(final @Nullable String value) {
+            this.filename = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the coordinates field. */
+        @JsonProperty("coordinates")
+        public Builder withCoordinates(final @Nullable String value) {
+            this.coordinates = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the elementIndex field. */
+        @JsonProperty("element_index")
+        public Builder withElementIndex(final @Nullable Long value) {
+            this.elementIndex = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the additional field. */
+        @JsonProperty("additional")
+        public Builder withAdditional(final Map<String, String> value) {
+            this.additional = value;
+            return this;
+        }
+
+        /** Builds the ElementMetadata instance. */
+        public ElementMetadata build() {
+            return new ElementMetadata(
+                pageNumber.orElse(null),
+                filename.orElse(null),
+                coordinates.orElse(null),
+                elementIndex.orElse(null),
+                additional
+            );
+        }
+    }
+    // CPD-ON
 }

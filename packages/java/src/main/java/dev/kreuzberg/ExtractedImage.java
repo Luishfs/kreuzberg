@@ -4,9 +4,12 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -17,6 +20,7 @@ import org.jspecify.annotations.Nullable;
  * PIL.Image (Python), Sharp (Node.js), or other formats as needed.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ExtractedImage.Builder.class)
 public record ExtractedImage(
     /**
      * Raw image data (PNG, JPEG, WebP, etc. bytes).
@@ -92,4 +96,180 @@ public record ExtractedImage(
      */
     @Nullable @JsonProperty("cluster_id") Integer clusterId
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("data")
+        private byte[] data = new byte[0];
+        @JsonProperty("format")
+        private String format = "";
+        @JsonProperty("image_index")
+        private int imageIndex = 0;
+        @JsonProperty("page_number")
+        private Optional<Integer> pageNumber = Optional.empty();
+        @JsonProperty("width")
+        private Optional<Integer> width = Optional.empty();
+        @JsonProperty("height")
+        private Optional<Integer> height = Optional.empty();
+        @JsonProperty("colorspace")
+        private Optional<String> colorspace = Optional.empty();
+        @JsonProperty("bits_per_component")
+        private Optional<Integer> bitsPerComponent = Optional.empty();
+        @JsonProperty("is_mask")
+        private boolean isMask = false;
+        @JsonProperty("description")
+        private Optional<String> description = Optional.empty();
+        @JsonProperty("ocr_result")
+        private Optional<ExtractionResult> ocrResult = Optional.empty();
+        @JsonProperty("bounding_box")
+        private Optional<String> boundingBox = Optional.empty();
+        @JsonProperty("source_path")
+        private Optional<String> sourcePath = Optional.empty();
+        @JsonProperty("image_kind")
+        private Optional<ImageKind> imageKind = Optional.empty();
+        @JsonProperty("kind_confidence")
+        private Optional<Float> kindConfidence = Optional.empty();
+        @JsonProperty("cluster_id")
+        private Optional<Integer> clusterId = Optional.empty();
+
+        /** Sets the data field. */
+        @JsonProperty("data")
+        public Builder withData(final byte[] value) {
+            this.data = value;
+            return this;
+        }
+
+        /** Sets the format field. */
+        @JsonProperty("format")
+        public Builder withFormat(final String value) {
+            this.format = value;
+            return this;
+        }
+
+        /** Sets the imageIndex field. */
+        @JsonProperty("image_index")
+        public Builder withImageIndex(final int value) {
+            this.imageIndex = value;
+            return this;
+        }
+
+        /** Sets the pageNumber field. */
+        @JsonProperty("page_number")
+        public Builder withPageNumber(final @Nullable Integer value) {
+            this.pageNumber = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the width field. */
+        @JsonProperty("width")
+        public Builder withWidth(final @Nullable Integer value) {
+            this.width = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the height field. */
+        @JsonProperty("height")
+        public Builder withHeight(final @Nullable Integer value) {
+            this.height = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the colorspace field. */
+        @JsonProperty("colorspace")
+        public Builder withColorspace(final @Nullable String value) {
+            this.colorspace = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the bitsPerComponent field. */
+        @JsonProperty("bits_per_component")
+        public Builder withBitsPerComponent(final @Nullable Integer value) {
+            this.bitsPerComponent = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the isMask field. */
+        @JsonProperty("is_mask")
+        public Builder withIsMask(final boolean value) {
+            this.isMask = value;
+            return this;
+        }
+
+        /** Sets the description field. */
+        @JsonProperty("description")
+        public Builder withDescription(final @Nullable String value) {
+            this.description = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the ocrResult field. */
+        @JsonProperty("ocr_result")
+        public Builder withOcrResult(final @Nullable ExtractionResult value) {
+            this.ocrResult = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the boundingBox field. */
+        @JsonProperty("bounding_box")
+        public Builder withBoundingBox(final @Nullable String value) {
+            this.boundingBox = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the sourcePath field. */
+        @JsonProperty("source_path")
+        public Builder withSourcePath(final @Nullable String value) {
+            this.sourcePath = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the imageKind field. */
+        @JsonProperty("image_kind")
+        public Builder withImageKind(final @Nullable ImageKind value) {
+            this.imageKind = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the kindConfidence field. */
+        @JsonProperty("kind_confidence")
+        public Builder withKindConfidence(final @Nullable Float value) {
+            this.kindConfidence = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the clusterId field. */
+        @JsonProperty("cluster_id")
+        public Builder withClusterId(final @Nullable Integer value) {
+            this.clusterId = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the ExtractedImage instance. */
+        public ExtractedImage build() {
+            return new ExtractedImage(
+                data,
+                format,
+                imageIndex,
+                pageNumber.orElse(null),
+                width.orElse(null),
+                height.orElse(null),
+                colorspace.orElse(null),
+                bitsPerComponent.orElse(null),
+                isMask,
+                description.orElse(null),
+                ocrResult.orElse(null),
+                boundingBox.orElse(null),
+                sourcePath.orElse(null),
+                imageKind.orElse(null),
+                kindConfidence.orElse(null),
+                clusterId.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -7,6 +7,8 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Page hierarchy structure containing heading levels and block information.
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * blocks with heading levels (H1-H6) for semantic document structure.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PageHierarchy.Builder.class)
 public record PageHierarchy(
     /**
      * Number of hierarchy blocks on this page
@@ -25,4 +28,40 @@ public record PageHierarchy(
      */
     List<HierarchicalBlock> blocks
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("block_count")
+        private int blockCount = 0;
+        @JsonProperty("blocks")
+        private List<HierarchicalBlock> blocks = List.of();
+
+        /** Sets the blockCount field. */
+        @JsonProperty("block_count")
+        public Builder withBlockCount(final int value) {
+            this.blockCount = value;
+            return this;
+        }
+
+        /** Sets the blocks field. */
+        @JsonProperty("blocks")
+        public Builder withBlocks(final List<HierarchicalBlock> value) {
+            this.blocks = value;
+            return this;
+        }
+
+        /** Builds the PageHierarchy instance. */
+        public PageHierarchy build() {
+            return new PageHierarchy(
+                blockCount,
+                blocks
+            );
+        }
+    }
+    // CPD-ON
 }

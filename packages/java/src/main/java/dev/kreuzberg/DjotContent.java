@@ -7,6 +7,8 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Comprehensive Djot document structure with semantic preservation.
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Available when the {@code djot} feature is enabled.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DjotContent.Builder.class)
 public record DjotContent(
     /**
      * Plain text representation for backwards compatibility
@@ -56,4 +59,100 @@ public record DjotContent(
      */
     List<String> attributes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("plain_text")
+        private String plainText = "";
+        @JsonProperty("blocks")
+        private List<FormattedBlock> blocks = List.of();
+        @JsonProperty("metadata")
+        private Metadata metadata = null;
+        @JsonProperty("tables")
+        private List<Table> tables = List.of();
+        @JsonProperty("images")
+        private List<DjotImage> images = List.of();
+        @JsonProperty("links")
+        private List<DjotLink> links = List.of();
+        @JsonProperty("footnotes")
+        private List<Footnote> footnotes = List.of();
+        @JsonProperty("attributes")
+        private List<String> attributes = List.of();
+
+        /** Sets the plainText field. */
+        @JsonProperty("plain_text")
+        public Builder withPlainText(final String value) {
+            this.plainText = value;
+            return this;
+        }
+
+        /** Sets the blocks field. */
+        @JsonProperty("blocks")
+        public Builder withBlocks(final List<FormattedBlock> value) {
+            this.blocks = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final Metadata value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Sets the tables field. */
+        @JsonProperty("tables")
+        public Builder withTables(final List<Table> value) {
+            this.tables = value;
+            return this;
+        }
+
+        /** Sets the images field. */
+        @JsonProperty("images")
+        public Builder withImages(final List<DjotImage> value) {
+            this.images = value;
+            return this;
+        }
+
+        /** Sets the links field. */
+        @JsonProperty("links")
+        public Builder withLinks(final List<DjotLink> value) {
+            this.links = value;
+            return this;
+        }
+
+        /** Sets the footnotes field. */
+        @JsonProperty("footnotes")
+        public Builder withFootnotes(final List<Footnote> value) {
+            this.footnotes = value;
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final List<String> value) {
+            this.attributes = value;
+            return this;
+        }
+
+        /** Builds the DjotContent instance. */
+        public DjotContent build() {
+            return new DjotContent(
+                plainText,
+                blocks,
+                metadata,
+                tables,
+                images,
+                links,
+                footnotes,
+                attributes
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -6,11 +6,14 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Token reduction configuration.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = TokenReductionOptions.Builder.class)
 public record TokenReductionOptions(
     /**
      * Reduction mode: "off", "light", "moderate", "aggressive", "maximum"
@@ -21,6 +24,42 @@ public record TokenReductionOptions(
      */
     @JsonProperty("preserve_important_words") boolean preserveImportantWords
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("mode")
+        private String mode = "";
+        @JsonProperty("preserve_important_words")
+        private boolean preserveImportantWords = true;
+
+        /** Sets the mode field. */
+        @JsonProperty("mode")
+        public Builder withMode(final String value) {
+            this.mode = value;
+            return this;
+        }
+
+        /** Sets the preserveImportantWords field. */
+        @JsonProperty("preserve_important_words")
+        public Builder withPreserveImportantWords(final boolean value) {
+            this.preserveImportantWords = value;
+            return this;
+        }
+
+        /** Builds the TokenReductionOptions instance. */
+        public TokenReductionOptions build() {
+            return new TokenReductionOptions(
+                mode,
+                preserveImportantWords
+            );
+        }
+    }
+    // CPD-ON
     public static TokenReductionOptions defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

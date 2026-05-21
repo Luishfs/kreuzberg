@@ -9,15 +9,13 @@ namespace Kreuzberg;
 /// <summary>
 /// Keyword algorithm selection.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum KeywordAlgorithm
 {    /// <summary>
-     /// YAKE (Yet Another Keyword Extractor) - statistical approach
-     /// </summary>
+    /// YAKE (Yet Another Keyword Extractor) - statistical approach
+    /// </summary>
     [JsonPropertyName("yake")]
     Yake,    /// <summary>
-             /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
-             /// </summary>
+    /// RAKE (Rapid Automatic Keyword Extraction) - co-occurrence based
+    /// </summary>
     [JsonPropertyName("rake")]
-    Rake,
-}
+    Rake,}

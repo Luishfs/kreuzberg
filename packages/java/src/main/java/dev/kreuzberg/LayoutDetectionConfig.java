@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * is enabled for PDF extraction.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LayoutDetectionConfig.Builder.class)
 public record LayoutDetectionConfig(
     /**
      * Confidence threshold override (null = use model default).
@@ -40,6 +44,62 @@ public record LayoutDetectionConfig(
      */
     @Nullable AccelerationConfig acceleration
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("confidence_threshold")
+        private Optional<Float> confidenceThreshold = Optional.empty();
+        @JsonProperty("apply_heuristics")
+        private boolean applyHeuristics = true;
+        @JsonProperty("table_model")
+        private TableModel tableModel = null;
+        @JsonProperty("acceleration")
+        private Optional<AccelerationConfig> acceleration = Optional.empty();
+
+        /** Sets the confidenceThreshold field. */
+        @JsonProperty("confidence_threshold")
+        public Builder withConfidenceThreshold(final @Nullable Float value) {
+            this.confidenceThreshold = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the applyHeuristics field. */
+        @JsonProperty("apply_heuristics")
+        public Builder withApplyHeuristics(final boolean value) {
+            this.applyHeuristics = value;
+            return this;
+        }
+
+        /** Sets the tableModel field. */
+        @JsonProperty("table_model")
+        public Builder withTableModel(final TableModel value) {
+            this.tableModel = value;
+            return this;
+        }
+
+        /** Sets the acceleration field. */
+        @JsonProperty("acceleration")
+        public Builder withAcceleration(final @Nullable AccelerationConfig value) {
+            this.acceleration = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the LayoutDetectionConfig instance. */
+        public LayoutDetectionConfig build() {
+            return new LayoutDetectionConfig(
+                confidenceThreshold.orElse(null),
+                applyHeuristics,
+                tableModel,
+                acceleration.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
     public static LayoutDetectionConfig defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

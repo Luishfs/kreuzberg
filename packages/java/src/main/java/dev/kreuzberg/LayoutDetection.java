@@ -6,14 +6,63 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A single layout detection result.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LayoutDetection.Builder.class)
 public record LayoutDetection(
     @JsonProperty("class_name") LayoutClass className,
     float confidence,
     BBox bbox
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("class_name")
+        private LayoutClass className = null;
+        @JsonProperty("confidence")
+        private float confidence = 0.0f;
+        @JsonProperty("bbox")
+        private BBox bbox = null;
+
+        /** Sets the className field. */
+        @JsonProperty("class_name")
+        public Builder withClassName(final LayoutClass value) {
+            this.className = value;
+            return this;
+        }
+
+        /** Sets the confidence field. */
+        @JsonProperty("confidence")
+        public Builder withConfidence(final float value) {
+            this.confidence = value;
+            return this;
+        }
+
+        /** Sets the bbox field. */
+        @JsonProperty("bbox")
+        public Builder withBbox(final BBox value) {
+            this.bbox = value;
+            return this;
+        }
+
+        /** Builds the LayoutDetection instance. */
+        public LayoutDetection build() {
+            return new LayoutDetection(
+                className,
+                confidence,
+                bbox
+            );
+        }
+    }
+    // CPD-ON
 }

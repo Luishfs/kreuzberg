@@ -5,14 +5,18 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Link element metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = LinkMetadata.Builder.class)
 public record LinkMetadata(
     /**
      * The href URL value
@@ -39,4 +43,80 @@ public record LinkMetadata(
      */
     List<String> attributes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("href")
+        private String href = "";
+        @JsonProperty("text")
+        private String text = "";
+        @JsonProperty("title")
+        private Optional<String> title = Optional.empty();
+        @JsonProperty("link_type")
+        private LinkType linkType = null;
+        @JsonProperty("rel")
+        private List<String> rel = List.of();
+        @JsonProperty("attributes")
+        private List<String> attributes = List.of();
+
+        /** Sets the href field. */
+        @JsonProperty("href")
+        public Builder withHref(final String value) {
+            this.href = value;
+            return this;
+        }
+
+        /** Sets the text field. */
+        @JsonProperty("text")
+        public Builder withText(final String value) {
+            this.text = value;
+            return this;
+        }
+
+        /** Sets the title field. */
+        @JsonProperty("title")
+        public Builder withTitle(final @Nullable String value) {
+            this.title = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the linkType field. */
+        @JsonProperty("link_type")
+        public Builder withLinkType(final LinkType value) {
+            this.linkType = value;
+            return this;
+        }
+
+        /** Sets the rel field. */
+        @JsonProperty("rel")
+        public Builder withRel(final List<String> value) {
+            this.rel = value;
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final List<String> value) {
+            this.attributes = value;
+            return this;
+        }
+
+        /** Builds the LinkMetadata instance. */
+        public LinkMetadata build() {
+            return new LinkMetadata(
+                href,
+                text,
+                title.orElse(null),
+                linkType,
+                rel,
+                attributes
+            );
+        }
+    }
+    // CPD-ON
 }

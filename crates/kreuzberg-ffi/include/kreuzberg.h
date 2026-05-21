@@ -318,10 +318,6 @@ typedef struct KREUZBERGDocxAppProperties KREUZBERGDocxAppProperties;
  */
 typedef struct KREUZBERGDocxMetadata KREUZBERGDocxMetadata;
 /**
- * Whether the drawing is inline or anchored.
- */
-typedef struct KREUZBERGDrawingType KREUZBERGDrawingType;
-/**
  * Semantic element extracted from document.
  *
  * Represents a logical unit of content with semantic classification,
@@ -11093,21 +11089,6 @@ int32_t kreuzberg_list_type_from_i32(int32_t value);
  * Caller must ensure `ptr` is a valid pointer to a `c_char` or null.
  */
 int32_t kreuzberg_list_type_from_str(const char *name);
-
-/**
- * Convert an integer to a `DrawingType` variant. Returns -1 on invalid input.
- * # Safety
- * Caller must ensure all pointer arguments are valid or null.
- * Returned pointers must be freed with the appropriate free function.
- */
-int32_t kreuzberg_drawing_type_from_i32(int32_t value);
-
-/**
- * Convert a `DrawingType` variant name (C string) to its integer value. Returns -1 on invalid input.
- * # Safety
- * Caller must ensure `ptr` is a valid pointer to a `c_char` or null.
- */
-int32_t kreuzberg_drawing_type_from_str(const char *name);
 
 /**
  * Convert an integer to a `FracType` variant. Returns -1 on invalid input.

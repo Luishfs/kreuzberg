@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * with character offset boundaries for chunk-to-page mapping.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PageStructure.Builder.class)
 public record PageStructure(
     /**
      * Total number of pages/slides/sheets
@@ -37,4 +41,60 @@ public record PageStructure(
      */
     @Nullable List<PageInfo> pages
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("total_count")
+        private int totalCount = 0;
+        @JsonProperty("unit_type")
+        private PageUnitType unitType = null;
+        @JsonProperty("boundaries")
+        private Optional<List<PageBoundary>> boundaries = Optional.empty();
+        @JsonProperty("pages")
+        private Optional<List<PageInfo>> pages = Optional.empty();
+
+        /** Sets the totalCount field. */
+        @JsonProperty("total_count")
+        public Builder withTotalCount(final int value) {
+            this.totalCount = value;
+            return this;
+        }
+
+        /** Sets the unitType field. */
+        @JsonProperty("unit_type")
+        public Builder withUnitType(final PageUnitType value) {
+            this.unitType = value;
+            return this;
+        }
+
+        /** Sets the boundaries field. */
+        @JsonProperty("boundaries")
+        public Builder withBoundaries(final @Nullable List<PageBoundary> value) {
+            this.boundaries = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the pages field. */
+        @JsonProperty("pages")
+        public Builder withPages(final @Nullable List<PageInfo> value) {
+            this.pages = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the PageStructure instance. */
+        public PageStructure build() {
+            return new PageStructure(
+                totalCount,
+                unitType,
+                boundaries.orElse(null),
+                pages.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

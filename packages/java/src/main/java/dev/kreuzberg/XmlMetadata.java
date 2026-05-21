@@ -7,6 +7,8 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * XML metadata extracted during XML parsing.
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Provides statistics about XML document structure.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = XmlMetadata.Builder.class)
 public record XmlMetadata(
     /**
      * Total number of XML elements processed
@@ -24,4 +27,40 @@ public record XmlMetadata(
      */
     @JsonProperty("unique_elements") List<String> uniqueElements
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("element_count")
+        private int elementCount = 0;
+        @JsonProperty("unique_elements")
+        private List<String> uniqueElements = List.of();
+
+        /** Sets the elementCount field. */
+        @JsonProperty("element_count")
+        public Builder withElementCount(final int value) {
+            this.elementCount = value;
+            return this;
+        }
+
+        /** Sets the uniqueElements field. */
+        @JsonProperty("unique_elements")
+        public Builder withUniqueElements(final List<String> value) {
+            this.uniqueElements = value;
+            return this;
+        }
+
+        /** Builds the XmlMetadata instance. */
+        public XmlMetadata build() {
+            return new XmlMetadata(
+                elementCount,
+                uniqueElements
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -7,6 +7,8 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Multi-backend OCR pipeline with quality-based fallback.
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * the result is accepted. Otherwise the next backend is tried.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrPipelineConfig.Builder.class)
 public record OcrPipelineConfig(
     /**
      * Ordered list of backends to try. Sorted by priority (descending) at runtime.
@@ -26,4 +29,40 @@ public record OcrPipelineConfig(
      */
     @JsonProperty("quality_thresholds") OcrQualityThresholds qualityThresholds
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("stages")
+        private List<OcrPipelineStage> stages = List.of();
+        @JsonProperty("quality_thresholds")
+        private OcrQualityThresholds qualityThresholds = null;
+
+        /** Sets the stages field. */
+        @JsonProperty("stages")
+        public Builder withStages(final List<OcrPipelineStage> value) {
+            this.stages = value;
+            return this;
+        }
+
+        /** Sets the qualityThresholds field. */
+        @JsonProperty("quality_thresholds")
+        public Builder withQualityThresholds(final OcrQualityThresholds value) {
+            this.qualityThresholds = value;
+            return this;
+        }
+
+        /** Builds the OcrPipelineConfig instance. */
+        public OcrPipelineConfig build() {
+            return new OcrPipelineConfig(
+                stages,
+                qualityThresholds
+            );
+        }
+    }
+    // CPD-ON
 }

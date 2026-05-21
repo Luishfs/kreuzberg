@@ -5,8 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+using System.Text.Json.Serialization;using System.Threading.Tasks;
 namespace Kreuzberg;
 
 public static class KreuzbergLib
@@ -15,6 +14,11 @@ public static class KreuzbergLib
     {
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+    };
+
+    private static readonly JsonSerializerOptions JsonSerializationOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.SnakeCaseLower) },
     };
 
     /// <summary>
@@ -45,13 +49,13 @@ public static class KreuzbergLib
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(mimeType);
         var contentHandle = GCHandle.Alloc(content, GCHandleType.Pinned);
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         return await Task.Run(() =>
@@ -67,7 +71,7 @@ public static class KreuzbergLib
                 throw GetLastError();
             }
             var jsonPtr = NativeMethods.ExtractionResultToJson(nativeResult);
-            var json = Marshal.PtrToStringUTF8(jsonPtr);
+            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
             NativeMethods.FreeString(jsonPtr);
             NativeMethods.ExtractionResultFree(nativeResult);
             var returnValue = JsonSerializer.Deserialize<ExtractionResult>(json ?? "null", JsonOptions)!;
@@ -103,13 +107,13 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static async Task<ExtractionResult> ExtractFileAsync(string path, string? mimeType, ExtractionConfig? config)
     {
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         return await Task.Run(() =>
@@ -124,7 +128,7 @@ public static class KreuzbergLib
                 throw GetLastError();
             }
             var jsonPtr = NativeMethods.ExtractionResultToJson(nativeResult);
-            var json = Marshal.PtrToStringUTF8(jsonPtr);
+            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
             NativeMethods.FreeString(jsonPtr);
             NativeMethods.ExtractionResultFree(nativeResult);
             var returnValue = JsonSerializer.Deserialize<ExtractionResult>(json ?? "null", JsonOptions)!;
@@ -150,13 +154,13 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static ExtractionResult ExtractFileSync(string path, string? mimeType, ExtractionConfig? config)
     {
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         var nativeResult = NativeMethods.ExtractFileSync(
@@ -169,7 +173,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.ExtractionResultToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.ExtractionResultFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<ExtractionResult>(json ?? "null", JsonOptions)!;
@@ -194,13 +198,13 @@ public static class KreuzbergLib
         ArgumentNullException.ThrowIfNull(content);
         ArgumentNullException.ThrowIfNull(mimeType);
         var contentHandle = GCHandle.Alloc(content, GCHandleType.Pinned);
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         var nativeResult = NativeMethods.ExtractBytesSync(
@@ -214,7 +218,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.ExtractionResultToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.ExtractionResultFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<ExtractionResult>(json ?? "null", JsonOptions)!;
@@ -233,15 +237,15 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static List<ExtractionResult> BatchExtractFilesSync(List<BatchFileItem> items, ExtractionConfig? config)
     {
-        var itemsJson = JsonSerializer.Serialize(items, JsonOptions);
-        var itemsHandle = Marshal.StringToHGlobalAnsi(itemsJson);
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var itemsJson = JsonSerializer.Serialize(items, JsonSerializationOptions);
+        var itemsHandle = global::System.Runtime.InteropServices.Marshal.StringToHGlobalAnsi(itemsJson);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         var nativeResult = NativeMethods.BatchExtractFilesSync(
@@ -252,10 +256,10 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<ExtractionResult>>(json ?? "null", JsonOptions)!;
-        Marshal.FreeHGlobal(itemsHandle);
+        global::System.Runtime.InteropServices.Marshal.FreeHGlobal(itemsHandle);
         NativeMethods.ExtractionConfigFree(configHandle);
         return returnValue;
     }
@@ -272,15 +276,15 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static List<ExtractionResult> BatchExtractBytesSync(List<BatchBytesItem> items, ExtractionConfig? config)
     {
-        var itemsJson = JsonSerializer.Serialize(items, JsonOptions);
-        var itemsHandle = Marshal.StringToHGlobalAnsi(itemsJson);
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var itemsJson = JsonSerializer.Serialize(items, JsonSerializationOptions);
+        var itemsHandle = global::System.Runtime.InteropServices.Marshal.StringToHGlobalAnsi(itemsJson);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         var nativeResult = NativeMethods.BatchExtractBytesSync(
@@ -291,10 +295,10 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<ExtractionResult>>(json ?? "null", JsonOptions)!;
-        Marshal.FreeHGlobal(itemsHandle);
+        global::System.Runtime.InteropServices.Marshal.FreeHGlobal(itemsHandle);
         NativeMethods.ExtractionConfigFree(configHandle);
         return returnValue;
     }
@@ -324,15 +328,15 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static async Task<List<ExtractionResult>> BatchExtractFilesAsync(List<BatchFileItem> items, ExtractionConfig? config)
     {
-        var itemsJson = JsonSerializer.Serialize(items, JsonOptions);
-        var itemsHandle = Marshal.StringToHGlobalAnsi(itemsJson);
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var itemsJson = JsonSerializer.Serialize(items, JsonSerializationOptions);
+        var itemsHandle = global::System.Runtime.InteropServices.Marshal.StringToHGlobalAnsi(itemsJson);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         return await Task.Run(() =>
@@ -345,10 +349,10 @@ public static class KreuzbergLib
             {
                 throw GetLastError();
             }
-            var json = Marshal.PtrToStringUTF8(nativeResult);
+            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
             NativeMethods.FreeString(nativeResult);
             var returnValue = JsonSerializer.Deserialize<List<ExtractionResult>>(json ?? "null", JsonOptions)!;
-            Marshal.FreeHGlobal(itemsHandle);
+            global::System.Runtime.InteropServices.Marshal.FreeHGlobal(itemsHandle);
             NativeMethods.ExtractionConfigFree(configHandle);
             return returnValue;
         });
@@ -375,15 +379,15 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static async Task<List<ExtractionResult>> BatchExtractBytesAsync(List<BatchBytesItem> items, ExtractionConfig? config)
     {
-        var itemsJson = JsonSerializer.Serialize(items, JsonOptions);
-        var itemsHandle = Marshal.StringToHGlobalAnsi(itemsJson);
-        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonOptions);
+        var itemsJson = JsonSerializer.Serialize(items, JsonSerializationOptions);
+        var itemsHandle = global::System.Runtime.InteropServices.Marshal.StringToHGlobalAnsi(itemsJson);
+        var configJson = JsonSerializer.Serialize((config ?? new ExtractionConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.ExtractionConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "ExtractionConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         return await Task.Run(() =>
@@ -396,10 +400,10 @@ public static class KreuzbergLib
             {
                 throw GetLastError();
             }
-            var json = Marshal.PtrToStringUTF8(nativeResult);
+            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
             NativeMethods.FreeString(nativeResult);
             var returnValue = JsonSerializer.Deserialize<List<ExtractionResult>>(json ?? "null", JsonOptions)!;
-            Marshal.FreeHGlobal(itemsHandle);
+            global::System.Runtime.InteropServices.Marshal.FreeHGlobal(itemsHandle);
             NativeMethods.ExtractionConfigFree(configHandle);
             return returnValue;
         });
@@ -432,7 +436,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var returnValue = Marshal.PtrToStringUTF8(nativeResult) ?? string.Empty;
+        var returnValue = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult) ?? string.Empty;
         NativeMethods.FreeString(nativeResult);
         contentHandle.Free();
         return returnValue;
@@ -457,7 +461,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -492,7 +496,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -508,7 +512,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -543,7 +547,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -580,7 +584,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -609,7 +613,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -642,7 +646,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -680,15 +684,15 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static async Task<List<List<float>>> EmbedTextsAsync(List<string> texts, EmbeddingConfig? config)
     {
-        var textsJson = JsonSerializer.Serialize(texts, JsonOptions);
-        var textsHandle = Marshal.StringToHGlobalAnsi(textsJson);
-        var configJson = JsonSerializer.Serialize((config ?? new EmbeddingConfig()), JsonOptions);
+        var textsJson = JsonSerializer.Serialize(texts, JsonSerializationOptions);
+        var textsHandle = global::System.Runtime.InteropServices.Marshal.StringToHGlobalAnsi(textsJson);
+        var configJson = JsonSerializer.Serialize((config ?? new EmbeddingConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.EmbeddingConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "EmbeddingConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "EmbeddingConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         return await Task.Run(() =>
@@ -701,10 +705,10 @@ public static class KreuzbergLib
             {
                 throw GetLastError();
             }
-            var json = Marshal.PtrToStringUTF8(nativeResult);
+            var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
             NativeMethods.FreeString(nativeResult);
             var returnValue = JsonSerializer.Deserialize<List<List<float>>>(json ?? "null", JsonOptions)!;
-            Marshal.FreeHGlobal(textsHandle);
+            global::System.Runtime.InteropServices.Marshal.FreeHGlobal(textsHandle);
             NativeMethods.EmbeddingConfigFree(configHandle);
             return returnValue;
         });
@@ -751,7 +755,7 @@ public static class KreuzbergLib
                 throw GetLastError();
             }
             var result = new byte[(int)outLen];
-            Marshal.Copy(outPtr, result, 0, (int)outLen);
+            global::System.Runtime.InteropServices.Marshal.Copy(outPtr, result, 0, (int)outLen);
             NativeMethods.FreeBytes(outPtr, outLen, outCap);
             return result;
         }
@@ -780,7 +784,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var returnValue = Marshal.PtrToStringUTF8(nativeResult) ?? string.Empty;
+        var returnValue = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult) ?? string.Empty;
         NativeMethods.FreeString(nativeResult);
         return returnValue;
     }
@@ -794,15 +798,15 @@ public static class KreuzbergLib
     /// <param name="config"></param>
     public static List<List<float>> EmbedTexts(List<string> texts, EmbeddingConfig? config)
     {
-        var textsJson = JsonSerializer.Serialize(texts, JsonOptions);
-        var textsHandle = Marshal.StringToHGlobalAnsi(textsJson);
-        var configJson = JsonSerializer.Serialize((config ?? new EmbeddingConfig()), JsonOptions);
+        var textsJson = JsonSerializer.Serialize(texts, JsonSerializationOptions);
+        var textsHandle = global::System.Runtime.InteropServices.Marshal.StringToHGlobalAnsi(textsJson);
+        var configJson = JsonSerializer.Serialize((config ?? new EmbeddingConfig()), JsonSerializationOptions);
         var configHandle = NativeMethods.EmbeddingConfigFromJson(configJson);
         if (configHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "EmbeddingConfigFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "EmbeddingConfigFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         var nativeResult = NativeMethods.EmbedTexts(
@@ -813,10 +817,10 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<List<float>>>(json ?? "null", JsonOptions)!;
-        Marshal.FreeHGlobal(textsHandle);
+        global::System.Runtime.InteropServices.Marshal.FreeHGlobal(textsHandle);
         NativeMethods.EmbeddingConfigFree(configHandle);
         return returnValue;
     }
@@ -839,7 +843,7 @@ public static class KreuzbergLib
             return null;
         }
         var jsonPtr = NativeMethods.EmbeddingPresetToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.EmbeddingPresetFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<EmbeddingPreset?>(json ?? "null", JsonOptions)!;
@@ -858,7 +862,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var json = Marshal.PtrToStringUTF8(nativeResult);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult);
         NativeMethods.FreeString(nativeResult);
         var returnValue = JsonSerializer.Deserialize<List<string>>(json ?? "null", JsonOptions)!;
         return returnValue;
@@ -896,7 +900,7 @@ public static class KreuzbergLib
         {
             throw GetLastError();
         }
-        var returnValue = Marshal.PtrToStringUTF8(nativeResult) ?? string.Empty;
+        var returnValue = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(nativeResult) ?? string.Empty;
         NativeMethods.FreeString(nativeResult);
         return returnValue;
     }
@@ -989,13 +993,13 @@ public static class KreuzbergLib
     public static ExtractionResult ExtractionResultFromOcr(OcrExtractionResult ocr)
     {
         ArgumentNullException.ThrowIfNull(ocr);
-        var ocrJson = JsonSerializer.Serialize(ocr, JsonOptions);
+        var ocrJson = JsonSerializer.Serialize(ocr, JsonSerializationOptions);
         var ocrHandle = NativeMethods.OcrExtractionResultFromJson(ocrJson);
         if (ocrHandle == IntPtr.Zero)
         {
             var ec = NativeMethods.LastErrorCode();
             var ctxPtr = NativeMethods.LastErrorContext();
-            var msg = Marshal.PtrToStringUTF8(ctxPtr) ?? "OcrExtractionResultFromJson failed";
+            var msg = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "OcrExtractionResultFromJson failed";
             throw new KreuzbergException(ec, msg);
         }
         var nativeResult = NativeMethods.ExtractionResultFromOcr(
@@ -1006,7 +1010,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.ExtractionResultToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.ExtractionResultFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<ExtractionResult>(json ?? "null", JsonOptions)!;
@@ -1043,7 +1047,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1066,7 +1070,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1089,7 +1093,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1112,7 +1116,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1135,7 +1139,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1158,7 +1162,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1181,7 +1185,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1204,7 +1208,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1227,7 +1231,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1250,7 +1254,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1274,7 +1278,7 @@ public static class KreuzbergLib
             throw GetLastError();
         }
         var jsonPtr = NativeMethods.PaddleOcrConfigToJson(nativeResult);
-        var json = Marshal.PtrToStringUTF8(jsonPtr);
+        var json = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(jsonPtr);
         NativeMethods.FreeString(jsonPtr);
         NativeMethods.PaddleOcrConfigFree(nativeResult);
         var returnValue = JsonSerializer.Deserialize<PaddleOcrConfig>(json ?? "null", JsonOptions)!;
@@ -1285,6 +1289,6 @@ public static class KreuzbergLib
     {
         var code = NativeMethods.LastErrorCode();
         var ctxPtr = NativeMethods.LastErrorContext();
-        var message = Marshal.PtrToStringUTF8(ctxPtr) ?? "Unknown error"; if (message.StartsWith("Extraction timed out after")) return new TimeoutException(message); if (message.StartsWith("Image processing error:")) return new ImageProcessingException(message); if (message.StartsWith("Serialization error:")) return new SerializationException(message); if (message.StartsWith("Extraction cancelled")) return new CancelledException(message); if (message.StartsWith("Missing dependency:")) return new MissingDependencyException(message); if (message.StartsWith("Unsupported format:")) return new UnsupportedFormatException(message); if (message.StartsWith("Security violation:")) return new SecurityException(message); if (message.StartsWith("Validation error:")) return new ValidationException(message); if (message.StartsWith("Plugin error in '")) return new PluginException(message); if (message.StartsWith("Embedding error:")) return new EmbeddingException(message); if (message.StartsWith("Parsing error:")) return new ParsingException(message); if (message.StartsWith("Lock poisoned:")) return new LockPoisonedException(message); if (message.StartsWith("Cache error:")) return new CacheException(message); if (message.StartsWith("OCR error:")) return new OcrException(message); if (message.StartsWith("IO error:")) return new IoException(message); if (code == 2) return new KreuzbergErrorException(message); return new KreuzbergException(code, message);
+        var message = global::System.Runtime.InteropServices.Marshal.PtrToStringUTF8(ctxPtr) ?? "Unknown error";        if (message.StartsWith("Extraction timed out after")) return new TimeoutException(message);        if (message.StartsWith("Image processing error:")) return new ImageProcessingException(message);        if (message.StartsWith("Serialization error:")) return new SerializationException(message);        if (message.StartsWith("Extraction cancelled")) return new CancelledException(message);        if (message.StartsWith("Missing dependency:")) return new MissingDependencyException(message);        if (message.StartsWith("Unsupported format:")) return new UnsupportedFormatException(message);        if (message.StartsWith("Security violation:")) return new SecurityException(message);        if (message.StartsWith("Validation error:")) return new ValidationException(message);        if (message.StartsWith("Plugin error in '")) return new PluginException(message);        if (message.StartsWith("Embedding error:")) return new EmbeddingException(message);        if (message.StartsWith("Parsing error:")) return new ParsingException(message);        if (message.StartsWith("Lock poisoned:")) return new LockPoisonedException(message);        if (message.StartsWith("Cache error:")) return new CacheException(message);        if (message.StartsWith("OCR error:")) return new OcrException(message);        if (message.StartsWith("IO error:")) return new IoException(message);        if (code == 2) return new KreuzbergErrorException(message);        return new KreuzbergException(code, message);
     }
 }

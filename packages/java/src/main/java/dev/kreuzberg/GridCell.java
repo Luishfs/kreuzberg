@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Individual grid cell with position and span metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = GridCell.Builder.class)
 public record GridCell(
     /**
      * Cell text content.
@@ -42,4 +46,90 @@ public record GridCell(
      */
     @Nullable String bbox
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("row")
+        private int row = 0;
+        @JsonProperty("col")
+        private int col = 0;
+        @JsonProperty("row_span")
+        private int rowSpan = 0;
+        @JsonProperty("col_span")
+        private int colSpan = 0;
+        @JsonProperty("is_header")
+        private boolean isHeader = false;
+        @JsonProperty("bbox")
+        private Optional<String> bbox = Optional.empty();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the row field. */
+        @JsonProperty("row")
+        public Builder withRow(final int value) {
+            this.row = value;
+            return this;
+        }
+
+        /** Sets the col field. */
+        @JsonProperty("col")
+        public Builder withCol(final int value) {
+            this.col = value;
+            return this;
+        }
+
+        /** Sets the rowSpan field. */
+        @JsonProperty("row_span")
+        public Builder withRowSpan(final int value) {
+            this.rowSpan = value;
+            return this;
+        }
+
+        /** Sets the colSpan field. */
+        @JsonProperty("col_span")
+        public Builder withColSpan(final int value) {
+            this.colSpan = value;
+            return this;
+        }
+
+        /** Sets the isHeader field. */
+        @JsonProperty("is_header")
+        public Builder withIsHeader(final boolean value) {
+            this.isHeader = value;
+            return this;
+        }
+
+        /** Sets the bbox field. */
+        @JsonProperty("bbox")
+        public Builder withBbox(final @Nullable String value) {
+            this.bbox = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the GridCell instance. */
+        public GridCell build() {
+            return new GridCell(
+                content,
+                row,
+                col,
+                rowSpan,
+                colSpan,
+                isHeader,
+                bbox.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

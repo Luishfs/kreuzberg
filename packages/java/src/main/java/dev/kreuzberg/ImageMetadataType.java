@@ -5,14 +5,18 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Image element metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ImageMetadataType.Builder.class)
 public record ImageMetadataType(
     /**
      * Image source (URL, data URI, or SVG content)
@@ -39,4 +43,80 @@ public record ImageMetadataType(
      */
     List<String> attributes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("src")
+        private String src = "";
+        @JsonProperty("alt")
+        private Optional<String> alt = Optional.empty();
+        @JsonProperty("title")
+        private Optional<String> title = Optional.empty();
+        @JsonProperty("dimensions")
+        private Optional<List<Integer>> dimensions = Optional.empty();
+        @JsonProperty("image_type")
+        private ImageType imageType = null;
+        @JsonProperty("attributes")
+        private List<String> attributes = List.of();
+
+        /** Sets the src field. */
+        @JsonProperty("src")
+        public Builder withSrc(final String value) {
+            this.src = value;
+            return this;
+        }
+
+        /** Sets the alt field. */
+        @JsonProperty("alt")
+        public Builder withAlt(final @Nullable String value) {
+            this.alt = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the title field. */
+        @JsonProperty("title")
+        public Builder withTitle(final @Nullable String value) {
+            this.title = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the dimensions field. */
+        @JsonProperty("dimensions")
+        public Builder withDimensions(final @Nullable List<Integer> value) {
+            this.dimensions = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the imageType field. */
+        @JsonProperty("image_type")
+        public Builder withImageType(final ImageType value) {
+            this.imageType = value;
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final List<String> value) {
+            this.attributes = value;
+            return this;
+        }
+
+        /** Builds the ImageMetadataType instance. */
+        public ImageMetadataType build() {
+            return new ImageMetadataType(
+                src,
+                alt.orElse(null),
+                title.orElse(null),
+                dimensions.orElse(null),
+                imageType,
+                attributes
+            );
+        }
+    }
+    // CPD-ON
 }

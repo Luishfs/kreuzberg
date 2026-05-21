@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * A PDF annotation extracted from a document page.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PdfAnnotation.Builder.class)
 public record PdfAnnotation(
     /**
      * The type of annotation.
@@ -30,4 +34,60 @@ public record PdfAnnotation(
      */
     @Nullable @JsonProperty("bounding_box") String boundingBox
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("annotation_type")
+        private PdfAnnotationType annotationType = null;
+        @JsonProperty("content")
+        private Optional<String> content = Optional.empty();
+        @JsonProperty("page_number")
+        private int pageNumber = 0;
+        @JsonProperty("bounding_box")
+        private Optional<String> boundingBox = Optional.empty();
+
+        /** Sets the annotationType field. */
+        @JsonProperty("annotation_type")
+        public Builder withAnnotationType(final PdfAnnotationType value) {
+            this.annotationType = value;
+            return this;
+        }
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final @Nullable String value) {
+            this.content = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the pageNumber field. */
+        @JsonProperty("page_number")
+        public Builder withPageNumber(final int value) {
+            this.pageNumber = value;
+            return this;
+        }
+
+        /** Sets the boundingBox field. */
+        @JsonProperty("bounding_box")
+        public Builder withBoundingBox(final @Nullable String value) {
+            this.boundingBox = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the PdfAnnotation instance. */
+        public PdfAnnotation build() {
+            return new PdfAnnotation(
+                annotationType,
+                content.orElse(null),
+                pageNumber,
+                boundingBox.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

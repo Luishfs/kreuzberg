@@ -4,7 +4,10 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Inline text annotation — byte-range based formatting and links.
@@ -13,5 +16,52 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * enabling precise identification of formatted regions.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = TextAnnotation.Builder.class)
 public record TextAnnotation(int start, int end, AnnotationKind kind) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("start")
+        private int start = 0;
+        @JsonProperty("end")
+        private int end = 0;
+        @JsonProperty("kind")
+        private AnnotationKind kind = null;
+
+        /** Sets the start field. */
+        @JsonProperty("start")
+        public Builder withStart(final int value) {
+            this.start = value;
+            return this;
+        }
+
+        /** Sets the end field. */
+        @JsonProperty("end")
+        public Builder withEnd(final int value) {
+            this.end = value;
+            return this;
+        }
+
+        /** Sets the kind field. */
+        @JsonProperty("kind")
+        public Builder withKind(final AnnotationKind value) {
+            this.kind = value;
+            return this;
+        }
+
+        /** Builds the TextAnnotation instance. */
+        public TextAnnotation build() {
+            return new TextAnnotation(
+                start,
+                end,
+                kind
+            );
+        }
+    }
+    // CPD-ON
 }

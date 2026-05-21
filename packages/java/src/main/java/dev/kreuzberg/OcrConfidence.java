@@ -4,7 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -14,5 +18,42 @@ import org.jspecify.annotations.Nullable;
  * from recognition confidence (how confident about the actual text content).
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrConfidence.Builder.class)
 public record OcrConfidence(@Nullable Double detection, double recognition) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("detection")
+        private Optional<Double> detection = Optional.empty();
+        @JsonProperty("recognition")
+        private double recognition = 0.0;
+
+        /** Sets the detection field. */
+        @JsonProperty("detection")
+        public Builder withDetection(final @Nullable Double value) {
+            this.detection = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the recognition field. */
+        @JsonProperty("recognition")
+        public Builder withRecognition(final double value) {
+            this.recognition = value;
+            return this;
+        }
+
+        /** Builds the OcrConfidence instance. */
+        public OcrConfidence build() {
+            return new OcrConfidence(
+                detection.orElse(null),
+                recognition
+            );
+        }
+    }
+    // CPD-ON
 }

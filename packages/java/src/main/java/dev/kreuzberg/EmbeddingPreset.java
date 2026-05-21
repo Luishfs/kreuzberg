@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Preset configurations for common RAG use cases.
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * are safe to clone and pass across language boundaries.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = EmbeddingPreset.Builder.class)
 public record EmbeddingPreset(
     String name,
     @JsonProperty("chunk_size") long chunkSize,
@@ -36,4 +39,100 @@ public record EmbeddingPreset(
     long dimensions,
     String description
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("name")
+        private String name = "";
+        @JsonProperty("chunk_size")
+        private long chunkSize = 0;
+        @JsonProperty("overlap")
+        private long overlap = 0;
+        @JsonProperty("model_repo")
+        private String modelRepo = "";
+        @JsonProperty("pooling")
+        private String pooling = "";
+        @JsonProperty("model_file")
+        private String modelFile = "";
+        @JsonProperty("dimensions")
+        private long dimensions = 0;
+        @JsonProperty("description")
+        private String description = "";
+
+        /** Sets the name field. */
+        @JsonProperty("name")
+        public Builder withName(final String value) {
+            this.name = value;
+            return this;
+        }
+
+        /** Sets the chunkSize field. */
+        @JsonProperty("chunk_size")
+        public Builder withChunkSize(final long value) {
+            this.chunkSize = value;
+            return this;
+        }
+
+        /** Sets the overlap field. */
+        @JsonProperty("overlap")
+        public Builder withOverlap(final long value) {
+            this.overlap = value;
+            return this;
+        }
+
+        /** Sets the modelRepo field. */
+        @JsonProperty("model_repo")
+        public Builder withModelRepo(final String value) {
+            this.modelRepo = value;
+            return this;
+        }
+
+        /** Sets the pooling field. */
+        @JsonProperty("pooling")
+        public Builder withPooling(final String value) {
+            this.pooling = value;
+            return this;
+        }
+
+        /** Sets the modelFile field. */
+        @JsonProperty("model_file")
+        public Builder withModelFile(final String value) {
+            this.modelFile = value;
+            return this;
+        }
+
+        /** Sets the dimensions field. */
+        @JsonProperty("dimensions")
+        public Builder withDimensions(final long value) {
+            this.dimensions = value;
+            return this;
+        }
+
+        /** Sets the description field. */
+        @JsonProperty("description")
+        public Builder withDescription(final String value) {
+            this.description = value;
+            return this;
+        }
+
+        /** Builds the EmbeddingPreset instance. */
+        public EmbeddingPreset build() {
+            return new EmbeddingPreset(
+                name,
+                chunkSize,
+                overlap,
+                modelRepo,
+                pooling,
+                modelFile,
+                dimensions,
+                description
+            );
+        }
+    }
+    // CPD-ON
 }

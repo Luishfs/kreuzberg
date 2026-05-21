@@ -7,6 +7,8 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * XML extraction result.
@@ -15,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * structural statistics about the XML document.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = XmlExtractionResult.Builder.class)
 public record XmlExtractionResult(
     /**
      * Extracted text content (XML structure filtered out)
@@ -29,4 +32,50 @@ public record XmlExtractionResult(
      */
     @JsonProperty("unique_elements") List<String> uniqueElements
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("element_count")
+        private long elementCount = 0;
+        @JsonProperty("unique_elements")
+        private List<String> uniqueElements = List.of();
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the elementCount field. */
+        @JsonProperty("element_count")
+        public Builder withElementCount(final long value) {
+            this.elementCount = value;
+            return this;
+        }
+
+        /** Sets the uniqueElements field. */
+        @JsonProperty("unique_elements")
+        public Builder withUniqueElements(final List<String> value) {
+            this.uniqueElements = value;
+            return this;
+        }
+
+        /** Builds the XmlExtractionResult instance. */
+        public XmlExtractionResult build() {
+            return new XmlExtractionResult(
+                content,
+                elementCount,
+                uniqueElements
+            );
+        }
+    }
+    // CPD-ON
 }

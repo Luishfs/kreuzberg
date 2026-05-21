@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * A single backend stage in the OCR pipeline.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrPipelineStage.Builder.class)
 public record OcrPipelineStage(
     /**
      * Backend name: "tesseract", "paddleocr", "easyocr", or a custom registered name.
@@ -53,4 +57,90 @@ public record OcrPipelineStage(
      */
     @Nullable @JsonProperty("backend_options") Object backendOptions
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("backend")
+        private String backend = "";
+        @JsonProperty("priority")
+        private int priority = 0;
+        @JsonProperty("language")
+        private Optional<String> language = Optional.empty();
+        @JsonProperty("tesseract_config")
+        private Optional<TesseractConfig> tesseractConfig = Optional.empty();
+        @JsonProperty("paddle_ocr_config")
+        private Optional<Object> paddleOcrConfig = Optional.empty();
+        @JsonProperty("vlm_config")
+        private Optional<LlmConfig> vlmConfig = Optional.empty();
+        @JsonProperty("backend_options")
+        private Optional<Object> backendOptions = Optional.empty();
+
+        /** Sets the backend field. */
+        @JsonProperty("backend")
+        public Builder withBackend(final String value) {
+            this.backend = value;
+            return this;
+        }
+
+        /** Sets the priority field. */
+        @JsonProperty("priority")
+        public Builder withPriority(final int value) {
+            this.priority = value;
+            return this;
+        }
+
+        /** Sets the language field. */
+        @JsonProperty("language")
+        public Builder withLanguage(final @Nullable String value) {
+            this.language = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the tesseractConfig field. */
+        @JsonProperty("tesseract_config")
+        public Builder withTesseractConfig(final @Nullable TesseractConfig value) {
+            this.tesseractConfig = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the paddleOcrConfig field. */
+        @JsonProperty("paddle_ocr_config")
+        public Builder withPaddleOcrConfig(final @Nullable Object value) {
+            this.paddleOcrConfig = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the vlmConfig field. */
+        @JsonProperty("vlm_config")
+        public Builder withVlmConfig(final @Nullable LlmConfig value) {
+            this.vlmConfig = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the backendOptions field. */
+        @JsonProperty("backend_options")
+        public Builder withBackendOptions(final @Nullable Object value) {
+            this.backendOptions = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the OcrPipelineStage instance. */
+        public OcrPipelineStage build() {
+            return new OcrPipelineStage(
+                backend,
+                priority,
+                language.orElse(null),
+                tesseractConfig.orElse(null),
+                paddleOcrConfig.orElse(null),
+                vlmConfig.orElse(null),
+                backendOptions.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

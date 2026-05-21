@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * discriminant. Sheet count and sheet names are stored inside this struct.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ExcelMetadata.Builder.class)
 public record ExcelMetadata(
     /**
      * Number of sheets in the workbook.
@@ -26,4 +30,40 @@ public record ExcelMetadata(
      */
     @Nullable @JsonProperty("sheet_names") List<String> sheetNames
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("sheet_count")
+        private Optional<Integer> sheetCount = Optional.empty();
+        @JsonProperty("sheet_names")
+        private Optional<List<String>> sheetNames = Optional.empty();
+
+        /** Sets the sheetCount field. */
+        @JsonProperty("sheet_count")
+        public Builder withSheetCount(final @Nullable Integer value) {
+            this.sheetCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the sheetNames field. */
+        @JsonProperty("sheet_names")
+        public Builder withSheetNames(final @Nullable List<String> value) {
+            this.sheetNames = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the ExcelMetadata instance. */
+        public ExcelMetadata build() {
+            return new ExcelMetadata(
+                sheetCount.orElse(null),
+                sheetNames.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

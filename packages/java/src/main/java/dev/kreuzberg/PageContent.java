@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -26,6 +29,7 @@ import org.jspecify.annotations.Nullable;
  * by avoiding redundant copies during serialization.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PageContent.Builder.class)
 public record PageContent(
     /**
      * Page number (1-indexed)
@@ -71,4 +75,90 @@ public record PageContent(
      */
     @Nullable @JsonProperty("layout_regions") List<LayoutRegion> layoutRegions
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("page_number")
+        private int pageNumber = 0;
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("tables")
+        private List<Table> tables = List.of();
+        @JsonProperty("image_indices")
+        private List<Integer> imageIndices = List.of();
+        @JsonProperty("hierarchy")
+        private Optional<PageHierarchy> hierarchy = Optional.empty();
+        @JsonProperty("is_blank")
+        private Optional<Boolean> isBlank = Optional.empty();
+        @JsonProperty("layout_regions")
+        private Optional<List<LayoutRegion>> layoutRegions = Optional.empty();
+
+        /** Sets the pageNumber field. */
+        @JsonProperty("page_number")
+        public Builder withPageNumber(final int value) {
+            this.pageNumber = value;
+            return this;
+        }
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the tables field. */
+        @JsonProperty("tables")
+        public Builder withTables(final List<Table> value) {
+            this.tables = value;
+            return this;
+        }
+
+        /** Sets the imageIndices field. */
+        @JsonProperty("image_indices")
+        public Builder withImageIndices(final List<Integer> value) {
+            this.imageIndices = value;
+            return this;
+        }
+
+        /** Sets the hierarchy field. */
+        @JsonProperty("hierarchy")
+        public Builder withHierarchy(final @Nullable PageHierarchy value) {
+            this.hierarchy = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the isBlank field. */
+        @JsonProperty("is_blank")
+        public Builder withIsBlank(final @Nullable Boolean value) {
+            this.isBlank = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the layoutRegions field. */
+        @JsonProperty("layout_regions")
+        public Builder withLayoutRegions(final @Nullable List<LayoutRegion> value) {
+            this.layoutRegions = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the PageContent instance. */
+        public PageContent build() {
+            return new PageContent(
+                pageNumber,
+                content,
+                tables,
+                imageIndices,
+                hierarchy.orElse(null),
+                isBlank.orElse(null),
+                layoutRegions.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

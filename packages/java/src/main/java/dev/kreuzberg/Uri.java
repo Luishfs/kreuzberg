@@ -4,7 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -15,5 +19,62 @@ import org.jspecify.annotations.Nullable;
  * optional human-readable display text.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = Uri.Builder.class)
 public record Uri(String url, @Nullable String label, @Nullable Integer page, UriKind kind) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("url")
+        private String url = "";
+        @JsonProperty("label")
+        private Optional<String> label = Optional.empty();
+        @JsonProperty("page")
+        private Optional<Integer> page = Optional.empty();
+        @JsonProperty("kind")
+        private UriKind kind = null;
+
+        /** Sets the url field. */
+        @JsonProperty("url")
+        public Builder withUrl(final String value) {
+            this.url = value;
+            return this;
+        }
+
+        /** Sets the label field. */
+        @JsonProperty("label")
+        public Builder withLabel(final @Nullable String value) {
+            this.label = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the page field. */
+        @JsonProperty("page")
+        public Builder withPage(final @Nullable Integer value) {
+            this.page = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the kind field. */
+        @JsonProperty("kind")
+        public Builder withKind(final UriKind value) {
+            this.kind = value;
+            return this;
+        }
+
+        /** Builds the Uri instance. */
+        public Uri build() {
+            return new Uri(
+                url,
+                label.orElse(null),
+                page.orElse(null),
+                kind
+            );
+        }
+    }
+    // CPD-ON
 }

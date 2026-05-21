@@ -36,6 +36,11 @@ public struct AccelerationConfig: Codable, Sendable, Hashable {
         case provider = "provider"
         case deviceId = "device_id"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.provider = try container.decode(ExecutionProviderType.self, forKey: .provider)
+        self.deviceId = try container.decodeIfPresent(UInt32.self, forKey: .deviceId) ?? 0
+    }
 }
 
 // MARK: - Internal FFI conversions for AccelerationConfig
@@ -113,6 +118,13 @@ public struct ContentFilterConfig: Codable, Sendable, Hashable {
         case stripRepeatingText = "strip_repeating_text"
         case includeWatermarks = "include_watermarks"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.includeHeaders = try container.decodeIfPresent(Bool.self, forKey: .includeHeaders) ?? false
+        self.includeFooters = try container.decodeIfPresent(Bool.self, forKey: .includeFooters) ?? false
+        self.stripRepeatingText = try container.decodeIfPresent(Bool.self, forKey: .stripRepeatingText) ?? true
+        self.includeWatermarks = try container.decodeIfPresent(Bool.self, forKey: .includeWatermarks) ?? false
+    }
 }
 
 // MARK: - Internal FFI conversions for ContentFilterConfig
@@ -154,6 +166,10 @@ public struct EmailConfig: Codable, Sendable, Hashable {
     }
     private enum CodingKeys: String, CodingKey {
         case msgFallbackCodepage = "msg_fallback_codepage"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.msgFallbackCodepage = try container.decodeIfPresent(UInt32.self, forKey: .msgFallbackCodepage) ?? nil
     }
 }
 
@@ -280,6 +296,18 @@ public struct ImageExtractionConfig: Codable, Sendable, Hashable {
         case maxImagesPerPage = "max_images_per_page"
         case classify = "classify"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.extractImages = try container.decodeIfPresent(Bool.self, forKey: .extractImages) ?? true
+        self.targetDpi = try container.decodeIfPresent(Int32.self, forKey: .targetDpi) ?? 300
+        self.maxImageDimension = try container.decodeIfPresent(Int32.self, forKey: .maxImageDimension) ?? 4096
+        self.injectPlaceholders = try container.decodeIfPresent(Bool.self, forKey: .injectPlaceholders) ?? true
+        self.autoAdjustDpi = try container.decodeIfPresent(Bool.self, forKey: .autoAdjustDpi) ?? true
+        self.minDpi = try container.decodeIfPresent(Int32.self, forKey: .minDpi) ?? 72
+        self.maxDpi = try container.decodeIfPresent(Int32.self, forKey: .maxDpi) ?? 600
+        self.maxImagesPerPage = try container.decodeIfPresent(UInt32.self, forKey: .maxImagesPerPage) ?? nil
+        self.classify = try container.decodeIfPresent(Bool.self, forKey: .classify) ?? true
+    }
 }
 
 // MARK: - Internal FFI conversions for ImageExtractionConfig
@@ -314,6 +342,11 @@ public struct TokenReductionOptions: Codable, Sendable, Hashable {
         case mode = "mode"
         case preserveImportantWords = "preserve_important_words"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.mode = try container.decodeIfPresent(String.self, forKey: .mode) ?? ""
+        self.preserveImportantWords = try container.decodeIfPresent(Bool.self, forKey: .preserveImportantWords) ?? true
+    }
 }
 
 // MARK: - Internal FFI conversions for TokenReductionOptions
@@ -344,6 +377,12 @@ public struct LanguageDetectionConfig: Codable, Sendable, Hashable {
         case enabled = "enabled"
         case minConfidence = "min_confidence"
         case detectMultiple = "detect_multiple"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
+        self.minConfidence = try container.decodeIfPresent(Double.self, forKey: .minConfidence) ?? 0.8
+        self.detectMultiple = try container.decodeIfPresent(Bool.self, forKey: .detectMultiple) ?? false
     }
 }
 
@@ -411,6 +450,13 @@ public struct LayoutDetectionConfig: Codable, Sendable, Hashable {
         case tableModel = "table_model"
         case acceleration = "acceleration"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.confidenceThreshold = try container.decodeIfPresent(Float.self, forKey: .confidenceThreshold) ?? nil
+        self.applyHeuristics = try container.decodeIfPresent(Bool.self, forKey: .applyHeuristics) ?? true
+        self.tableModel = try container.decode(TableModel.self, forKey: .tableModel)
+        self.acceleration = try container.decodeIfPresent(AccelerationConfig.self, forKey: .acceleration) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for LayoutDetectionConfig
@@ -476,6 +522,16 @@ public struct LlmConfig: Codable, Sendable, Hashable {
         case maxRetries = "max_retries"
         case temperature = "temperature"
         case maxTokens = "max_tokens"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.model = try container.decodeIfPresent(String.self, forKey: .model) ?? ""
+        self.apiKey = try container.decodeIfPresent(String.self, forKey: .apiKey) ?? nil
+        self.baseUrl = try container.decodeIfPresent(String.self, forKey: .baseUrl) ?? nil
+        self.timeoutSecs = try container.decodeIfPresent(UInt64.self, forKey: .timeoutSecs) ?? nil
+        self.maxRetries = try container.decodeIfPresent(UInt32.self, forKey: .maxRetries) ?? nil
+        self.temperature = try container.decodeIfPresent(Double.self, forKey: .temperature) ?? nil
+        self.maxTokens = try container.decodeIfPresent(UInt64.self, forKey: .maxTokens) ?? nil
     }
 }
 
@@ -593,6 +649,25 @@ public struct OcrQualityThresholds: Codable, Sendable, Hashable {
         case alnumWsRatioThreshold = "alnum_ws_ratio_threshold"
         case pipelineMinQuality = "pipeline_min_quality"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.minTotalNonWhitespace = try container.decodeIfPresent(UInt.self, forKey: .minTotalNonWhitespace) ?? 64
+        self.minNonWhitespacePerPage = try container.decodeIfPresent(Double.self, forKey: .minNonWhitespacePerPage) ?? 32.0
+        self.minMeaningfulWordLen = try container.decodeIfPresent(UInt.self, forKey: .minMeaningfulWordLen) ?? 4
+        self.minMeaningfulWords = try container.decodeIfPresent(UInt.self, forKey: .minMeaningfulWords) ?? 3
+        self.minAlnumRatio = try container.decodeIfPresent(Double.self, forKey: .minAlnumRatio) ?? 0.3
+        self.minGarbageChars = try container.decodeIfPresent(UInt.self, forKey: .minGarbageChars) ?? 5
+        self.maxFragmentedWordRatio = try container.decodeIfPresent(Double.self, forKey: .maxFragmentedWordRatio) ?? 0.6
+        self.criticalFragmentedWordRatio = try container.decodeIfPresent(Double.self, forKey: .criticalFragmentedWordRatio) ?? 0.8
+        self.minAvgWordLength = try container.decodeIfPresent(Double.self, forKey: .minAvgWordLength) ?? 2.0
+        self.minWordsForAvgLengthCheck = try container.decodeIfPresent(UInt.self, forKey: .minWordsForAvgLengthCheck) ?? 50
+        self.minConsecutiveRepeatRatio = try container.decodeIfPresent(Double.self, forKey: .minConsecutiveRepeatRatio) ?? 0.08
+        self.minWordsForRepeatCheck = try container.decodeIfPresent(UInt.self, forKey: .minWordsForRepeatCheck) ?? 50
+        self.substantiveMinChars = try container.decodeIfPresent(UInt.self, forKey: .substantiveMinChars) ?? 100
+        self.nonTextMinChars = try container.decodeIfPresent(UInt.self, forKey: .nonTextMinChars) ?? 20
+        self.alnumWsRatioThreshold = try container.decodeIfPresent(Double.self, forKey: .alnumWsRatioThreshold) ?? 0.4
+        self.pipelineMinQuality = try container.decodeIfPresent(Double.self, forKey: .pipelineMinQuality) ?? 0.5
+    }
 }
 
 // MARK: - Internal FFI conversions for OcrQualityThresholds
@@ -657,6 +732,12 @@ public struct PageConfig: Codable, Sendable, Hashable {
         case extractPages = "extract_pages"
         case insertPageMarkers = "insert_page_markers"
         case markerFormat = "marker_format"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.extractPages = try container.decodeIfPresent(Bool.self, forKey: .extractPages) ?? false
+        self.insertPageMarkers = try container.decodeIfPresent(Bool.self, forKey: .insertPageMarkers) ?? false
+        self.markerFormat = try container.decodeIfPresent(String.self, forKey: .markerFormat) ?? "\n\n<!-- PAGE {page_num} -->\n\n"
     }
 }
 
@@ -737,6 +818,19 @@ public struct PdfConfig: Codable, Sendable, Hashable {
         case allowSingleColumnTables = "allow_single_column_tables"
         case ocrInlineImages = "ocr_inline_images"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.extractImages = try container.decodeIfPresent(Bool.self, forKey: .extractImages) ?? false
+        self.extractTables = try container.decodeIfPresent(Bool.self, forKey: .extractTables) ?? true
+        self.passwords = try container.decodeIfPresent([String].self, forKey: .passwords) ?? nil
+        self.extractMetadata = try container.decodeIfPresent(Bool.self, forKey: .extractMetadata) ?? true
+        self.hierarchy = try container.decodeIfPresent(HierarchyConfig.self, forKey: .hierarchy) ?? nil
+        self.extractAnnotations = try container.decodeIfPresent(Bool.self, forKey: .extractAnnotations) ?? false
+        self.topMarginFraction = try container.decodeIfPresent(Float.self, forKey: .topMarginFraction) ?? nil
+        self.bottomMarginFraction = try container.decodeIfPresent(Float.self, forKey: .bottomMarginFraction) ?? nil
+        self.allowSingleColumnTables = try container.decodeIfPresent(Bool.self, forKey: .allowSingleColumnTables) ?? false
+        self.ocrInlineImages = try container.decodeIfPresent(Bool.self, forKey: .ocrInlineImages) ?? false
+    }
 }
 
 // MARK: - Internal FFI conversions for PdfConfig
@@ -793,6 +887,13 @@ public struct HierarchyConfig: Codable, Sendable, Hashable {
         case includeBbox = "include_bbox"
         case ocrCoverageThreshold = "ocr_coverage_threshold"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
+        self.kClusters = try container.decodeIfPresent(UInt.self, forKey: .kClusters) ?? 3
+        self.includeBbox = try container.decodeIfPresent(Bool.self, forKey: .includeBbox) ?? true
+        self.ocrCoverageThreshold = try container.decodeIfPresent(Float.self, forKey: .ocrCoverageThreshold) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for HierarchyConfig
@@ -833,6 +934,14 @@ public struct PostProcessorConfig: Codable, Sendable, Hashable {
         case disabledProcessors = "disabled_processors"
         case enabledSet = "enabled_set"
         case disabledSet = "disabled_set"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.enabled = try container.decodeIfPresent(Bool.self, forKey: .enabled) ?? true
+        self.enabledProcessors = try container.decodeIfPresent([String].self, forKey: .enabledProcessors) ?? nil
+        self.disabledProcessors = try container.decodeIfPresent([String].self, forKey: .disabledProcessors) ?? nil
+        self.enabledSet = try container.decodeIfPresent([String].self, forKey: .enabledSet) ?? nil
+        self.disabledSet = try container.decodeIfPresent([String].self, forKey: .disabledSet) ?? nil
     }
 }
 
@@ -934,6 +1043,18 @@ public struct TreeSitterProcessConfig: Codable, Sendable, Hashable {
         case chunkMaxSize = "chunk_max_size"
         case contentMode = "content_mode"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.structure = try container.decodeIfPresent(Bool.self, forKey: .structure) ?? true
+        self.imports = try container.decodeIfPresent(Bool.self, forKey: .imports) ?? true
+        self.exports = try container.decodeIfPresent(Bool.self, forKey: .exports) ?? true
+        self.comments = try container.decodeIfPresent(Bool.self, forKey: .comments) ?? false
+        self.docstrings = try container.decodeIfPresent(Bool.self, forKey: .docstrings) ?? false
+        self.symbols = try container.decodeIfPresent(Bool.self, forKey: .symbols) ?? false
+        self.diagnostics = try container.decodeIfPresent(Bool.self, forKey: .diagnostics) ?? false
+        self.chunkMaxSize = try container.decodeIfPresent(UInt.self, forKey: .chunkMaxSize) ?? nil
+        self.contentMode = try container.decode(CodeContentMode.self, forKey: .contentMode)
+    }
 }
 
 // MARK: - Internal FFI conversions for TreeSitterProcessConfig
@@ -1025,6 +1146,14 @@ public struct ServerConfig: Codable, Sendable, Hashable {
         case corsOrigins = "cors_origins"
         case maxRequestBodyBytes = "max_request_body_bytes"
         case maxMultipartFieldBytes = "max_multipart_field_bytes"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.host = try container.decodeIfPresent(String.self, forKey: .host) ?? ""
+        self.port = try container.decodeIfPresent(UInt16.self, forKey: .port) ?? 0
+        self.corsOrigins = try container.decodeIfPresent([String].self, forKey: .corsOrigins) ?? []
+        self.maxRequestBodyBytes = try container.decodeIfPresent(UInt.self, forKey: .maxRequestBodyBytes) ?? 0
+        self.maxMultipartFieldBytes = try container.decodeIfPresent(UInt.self, forKey: .maxMultipartFieldBytes) ?? 0
     }
 }
 
@@ -1121,6 +1250,25 @@ public struct DocxAppProperties: Codable, Sendable, Hashable {
         case sharedDoc = "shared_doc"
         case hyperlinksChanged = "hyperlinks_changed"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.application = try container.decodeIfPresent(String.self, forKey: .application) ?? nil
+        self.appVersion = try container.decodeIfPresent(String.self, forKey: .appVersion) ?? nil
+        self.template = try container.decodeIfPresent(String.self, forKey: .template) ?? nil
+        self.totalTime = try container.decodeIfPresent(Int32.self, forKey: .totalTime) ?? nil
+        self.pages = try container.decodeIfPresent(Int32.self, forKey: .pages) ?? nil
+        self.words = try container.decodeIfPresent(Int32.self, forKey: .words) ?? nil
+        self.characters = try container.decodeIfPresent(Int32.self, forKey: .characters) ?? nil
+        self.charactersWithSpaces = try container.decodeIfPresent(Int32.self, forKey: .charactersWithSpaces) ?? nil
+        self.lines = try container.decodeIfPresent(Int32.self, forKey: .lines) ?? nil
+        self.paragraphs = try container.decodeIfPresent(Int32.self, forKey: .paragraphs) ?? nil
+        self.company = try container.decodeIfPresent(String.self, forKey: .company) ?? nil
+        self.docSecurity = try container.decodeIfPresent(Int32.self, forKey: .docSecurity) ?? nil
+        self.scaleCrop = try container.decodeIfPresent(Bool.self, forKey: .scaleCrop) ?? nil
+        self.linksUpToDate = try container.decodeIfPresent(Bool.self, forKey: .linksUpToDate) ?? nil
+        self.sharedDoc = try container.decodeIfPresent(Bool.self, forKey: .sharedDoc) ?? nil
+        self.hyperlinksChanged = try container.decodeIfPresent(Bool.self, forKey: .hyperlinksChanged) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for DocxAppProperties
@@ -1191,6 +1339,18 @@ public struct XlsxAppProperties: Codable, Sendable, Hashable {
         case hyperlinksChanged = "hyperlinks_changed"
         case company = "company"
         case worksheetNames = "worksheet_names"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.application = try container.decodeIfPresent(String.self, forKey: .application) ?? nil
+        self.appVersion = try container.decodeIfPresent(String.self, forKey: .appVersion) ?? nil
+        self.docSecurity = try container.decodeIfPresent(Int32.self, forKey: .docSecurity) ?? nil
+        self.scaleCrop = try container.decodeIfPresent(Bool.self, forKey: .scaleCrop) ?? nil
+        self.linksUpToDate = try container.decodeIfPresent(Bool.self, forKey: .linksUpToDate) ?? nil
+        self.sharedDoc = try container.decodeIfPresent(Bool.self, forKey: .sharedDoc) ?? nil
+        self.hyperlinksChanged = try container.decodeIfPresent(Bool.self, forKey: .hyperlinksChanged) ?? nil
+        self.company = try container.decodeIfPresent(String.self, forKey: .company) ?? nil
+        self.worksheetNames = try container.decodeIfPresent([String].self, forKey: .worksheetNames) ?? []
     }
 }
 
@@ -1281,6 +1441,24 @@ public struct PptxAppProperties: Codable, Sendable, Hashable {
         case multimediaClips = "multimedia_clips"
         case presentationFormat = "presentation_format"
         case slideTitles = "slide_titles"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.application = try container.decodeIfPresent(String.self, forKey: .application) ?? nil
+        self.appVersion = try container.decodeIfPresent(String.self, forKey: .appVersion) ?? nil
+        self.totalTime = try container.decodeIfPresent(Int32.self, forKey: .totalTime) ?? nil
+        self.company = try container.decodeIfPresent(String.self, forKey: .company) ?? nil
+        self.docSecurity = try container.decodeIfPresent(Int32.self, forKey: .docSecurity) ?? nil
+        self.scaleCrop = try container.decodeIfPresent(Bool.self, forKey: .scaleCrop) ?? nil
+        self.linksUpToDate = try container.decodeIfPresent(Bool.self, forKey: .linksUpToDate) ?? nil
+        self.sharedDoc = try container.decodeIfPresent(Bool.self, forKey: .sharedDoc) ?? nil
+        self.hyperlinksChanged = try container.decodeIfPresent(Bool.self, forKey: .hyperlinksChanged) ?? nil
+        self.slides = try container.decodeIfPresent(Int32.self, forKey: .slides) ?? nil
+        self.notes = try container.decodeIfPresent(Int32.self, forKey: .notes) ?? nil
+        self.hiddenSlides = try container.decodeIfPresent(Int32.self, forKey: .hiddenSlides) ?? nil
+        self.multimediaClips = try container.decodeIfPresent(Int32.self, forKey: .multimediaClips) ?? nil
+        self.presentationFormat = try container.decodeIfPresent(String.self, forKey: .presentationFormat) ?? nil
+        self.slideTitles = try container.decodeIfPresent([String].self, forKey: .slideTitles) ?? []
     }
 }
 
@@ -1379,6 +1557,24 @@ public struct CoreProperties: Codable, Sendable, Hashable {
         case version = "version"
         case lastPrinted = "last_printed"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.title = try container.decodeIfPresent(String.self, forKey: .title) ?? nil
+        self.subject = try container.decodeIfPresent(String.self, forKey: .subject) ?? nil
+        self.creator = try container.decodeIfPresent(String.self, forKey: .creator) ?? nil
+        self.keywords = try container.decodeIfPresent(String.self, forKey: .keywords) ?? nil
+        self.description = try container.decodeIfPresent(String.self, forKey: .description) ?? nil
+        self.lastModifiedBy = try container.decodeIfPresent(String.self, forKey: .lastModifiedBy) ?? nil
+        self.revision = try container.decodeIfPresent(String.self, forKey: .revision) ?? nil
+        self.created = try container.decodeIfPresent(String.self, forKey: .created) ?? nil
+        self.modified = try container.decodeIfPresent(String.self, forKey: .modified) ?? nil
+        self.category = try container.decodeIfPresent(String.self, forKey: .category) ?? nil
+        self.contentStatus = try container.decodeIfPresent(String.self, forKey: .contentStatus) ?? nil
+        self.language = try container.decodeIfPresent(String.self, forKey: .language) ?? nil
+        self.identifier = try container.decodeIfPresent(String.self, forKey: .identifier) ?? nil
+        self.version = try container.decodeIfPresent(String.self, forKey: .version) ?? nil
+        self.lastPrinted = try container.decodeIfPresent(String.self, forKey: .lastPrinted) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for CoreProperties
@@ -1453,6 +1649,18 @@ public struct SecurityLimits: Codable, Sendable, Hashable {
         case maxIterations = "max_iterations"
         case maxXmlDepth = "max_xml_depth"
         case maxTableCells = "max_table_cells"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.maxArchiveSize = try container.decodeIfPresent(UInt.self, forKey: .maxArchiveSize) ?? 524288000
+        self.maxCompressionRatio = try container.decodeIfPresent(UInt.self, forKey: .maxCompressionRatio) ?? 100
+        self.maxFilesInArchive = try container.decodeIfPresent(UInt.self, forKey: .maxFilesInArchive) ?? 10000
+        self.maxNestingDepth = try container.decodeIfPresent(UInt.self, forKey: .maxNestingDepth) ?? 1024
+        self.maxEntityLength = try container.decodeIfPresent(UInt.self, forKey: .maxEntityLength) ?? 1048576
+        self.maxContentSize = try container.decodeIfPresent(UInt.self, forKey: .maxContentSize) ?? 104857600
+        self.maxIterations = try container.decodeIfPresent(UInt.self, forKey: .maxIterations) ?? 10000000
+        self.maxXmlDepth = try container.decodeIfPresent(UInt.self, forKey: .maxXmlDepth) ?? 1024
+        self.maxTableCells = try container.decodeIfPresent(UInt.self, forKey: .maxTableCells) ?? 100000
     }
 }
 
@@ -1669,6 +1877,17 @@ public struct TableGrid: Codable, Sendable, Hashable {
         self.cols = cols
         self.cells = cells
     }
+    private enum CodingKeys: String, CodingKey {
+        case rows = "rows"
+        case cols = "cols"
+        case cells = "cells"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.rows = try container.decodeIfPresent(UInt32.self, forKey: .rows) ?? 0
+        self.cols = try container.decodeIfPresent(UInt32.self, forKey: .cols) ?? 0
+        self.cells = try container.decodeIfPresent([GridCell].self, forKey: .cells) ?? []
+    }
 }
 
 // MARK: - Internal FFI conversions for TableGrid
@@ -1823,6 +2042,16 @@ public struct LlmUsage: Codable, Sendable, Hashable {
         case totalTokens = "total_tokens"
         case estimatedCost = "estimated_cost"
         case finishReason = "finish_reason"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.model = try container.decodeIfPresent(String.self, forKey: .model) ?? ""
+        self.source = try container.decodeIfPresent(String.self, forKey: .source) ?? ""
+        self.inputTokens = try container.decodeIfPresent(UInt64.self, forKey: .inputTokens) ?? nil
+        self.outputTokens = try container.decodeIfPresent(UInt64.self, forKey: .outputTokens) ?? nil
+        self.totalTokens = try container.decodeIfPresent(UInt64.self, forKey: .totalTokens) ?? nil
+        self.estimatedCost = try container.decodeIfPresent(Double.self, forKey: .estimatedCost) ?? nil
+        self.finishReason = try container.decodeIfPresent(String.self, forKey: .finishReason) ?? nil
     }
 }
 
@@ -2319,6 +2548,16 @@ public struct ImagePreprocessingConfig: Codable, Sendable, Hashable {
         case binarizationMethod = "binarization_method"
         case invertColors = "invert_colors"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.targetDpi = try container.decodeIfPresent(Int32.self, forKey: .targetDpi) ?? 300
+        self.autoRotate = try container.decodeIfPresent(Bool.self, forKey: .autoRotate) ?? true
+        self.deskew = try container.decodeIfPresent(Bool.self, forKey: .deskew) ?? true
+        self.denoise = try container.decodeIfPresent(Bool.self, forKey: .denoise) ?? false
+        self.contrastEnhance = try container.decodeIfPresent(Bool.self, forKey: .contrastEnhance) ?? false
+        self.binarizationMethod = try container.decodeIfPresent(String.self, forKey: .binarizationMethod) ?? "otsu"
+        self.invertColors = try container.decodeIfPresent(Bool.self, forKey: .invertColors) ?? false
+    }
 }
 
 // MARK: - Internal FFI conversions for ImagePreprocessingConfig
@@ -2445,6 +2684,30 @@ public struct TesseractConfig: Codable, Sendable, Hashable {
         case tesseditUsePrimaryParamsModel = "tessedit_use_primary_params_model"
         case textordSpaceSizeIsVariable = "textord_space_size_is_variable"
         case thresholdingMethod = "thresholding_method"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.language = try container.decodeIfPresent(String.self, forKey: .language) ?? "eng"
+        self.psm = try container.decodeIfPresent(Int32.self, forKey: .psm) ?? 3
+        self.outputFormat = try container.decodeIfPresent(String.self, forKey: .outputFormat) ?? "markdown"
+        self.oem = try container.decodeIfPresent(Int32.self, forKey: .oem) ?? 3
+        self.minConfidence = try container.decodeIfPresent(Double.self, forKey: .minConfidence) ?? 0.0
+        self.preprocessing = try container.decodeIfPresent(ImagePreprocessingConfig.self, forKey: .preprocessing) ?? nil
+        self.enableTableDetection = try container.decodeIfPresent(Bool.self, forKey: .enableTableDetection) ?? true
+        self.tableMinConfidence = try container.decodeIfPresent(Double.self, forKey: .tableMinConfidence) ?? 0.0
+        self.tableColumnThreshold = try container.decodeIfPresent(Int32.self, forKey: .tableColumnThreshold) ?? 50
+        self.tableRowThresholdRatio = try container.decodeIfPresent(Double.self, forKey: .tableRowThresholdRatio) ?? 0.5
+        self.useCache = try container.decodeIfPresent(Bool.self, forKey: .useCache) ?? true
+        self.classifyUsePreAdaptedTemplates = try container.decodeIfPresent(Bool.self, forKey: .classifyUsePreAdaptedTemplates) ?? true
+        self.languageModelNgramOn = try container.decodeIfPresent(Bool.self, forKey: .languageModelNgramOn) ?? false
+        self.tesseditDontBlkrejGoodWds = try container.decodeIfPresent(Bool.self, forKey: .tesseditDontBlkrejGoodWds) ?? true
+        self.tesseditDontRowrejGoodWds = try container.decodeIfPresent(Bool.self, forKey: .tesseditDontRowrejGoodWds) ?? true
+        self.tesseditEnableDictCorrection = try container.decodeIfPresent(Bool.self, forKey: .tesseditEnableDictCorrection) ?? true
+        self.tesseditCharWhitelist = try container.decodeIfPresent(String.self, forKey: .tesseditCharWhitelist) ?? ""
+        self.tesseditCharBlacklist = try container.decodeIfPresent(String.self, forKey: .tesseditCharBlacklist) ?? ""
+        self.tesseditUsePrimaryParamsModel = try container.decodeIfPresent(Bool.self, forKey: .tesseditUsePrimaryParamsModel) ?? true
+        self.textordSpaceSizeIsVariable = try container.decodeIfPresent(Bool.self, forKey: .textordSpaceSizeIsVariable) ?? true
+        self.thresholdingMethod = try container.decodeIfPresent(Bool.self, forKey: .thresholdingMethod) ?? false
     }
 }
 
@@ -2585,6 +2848,11 @@ public struct ExcelMetadata: Codable, Sendable, Hashable {
         case sheetCount = "sheet_count"
         case sheetNames = "sheet_names"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.sheetCount = try container.decodeIfPresent(UInt32.self, forKey: .sheetCount) ?? nil
+        self.sheetNames = try container.decodeIfPresent([String].self, forKey: .sheetNames) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for ExcelMetadata
@@ -2635,6 +2903,16 @@ public struct EmailMetadata: Codable, Sendable, Hashable {
         case bccEmails = "bcc_emails"
         case messageId = "message_id"
         case attachments = "attachments"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.fromEmail = try container.decodeIfPresent(String.self, forKey: .fromEmail) ?? nil
+        self.fromName = try container.decodeIfPresent(String.self, forKey: .fromName) ?? nil
+        self.toEmails = try container.decodeIfPresent([String].self, forKey: .toEmails) ?? []
+        self.ccEmails = try container.decodeIfPresent([String].self, forKey: .ccEmails) ?? []
+        self.bccEmails = try container.decodeIfPresent([String].self, forKey: .bccEmails) ?? []
+        self.messageId = try container.decodeIfPresent(String.self, forKey: .messageId) ?? nil
+        self.attachments = try container.decodeIfPresent([String].self, forKey: .attachments) ?? []
     }
 }
 
@@ -2690,6 +2968,14 @@ public struct ArchiveMetadata: Codable, Sendable, Hashable {
         case totalSize = "total_size"
         case compressedSize = "compressed_size"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.format = try container.decodeIfPresent(String.self, forKey: .format) ?? ""
+        self.fileCount = try container.decodeIfPresent(UInt32.self, forKey: .fileCount) ?? 0
+        self.fileList = try container.decodeIfPresent([String].self, forKey: .fileList) ?? []
+        self.totalSize = try container.decodeIfPresent(UInt64.self, forKey: .totalSize) ?? 0
+        self.compressedSize = try container.decodeIfPresent(UInt64.self, forKey: .compressedSize) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for ArchiveMetadata
@@ -2728,6 +3014,11 @@ public struct XmlMetadata: Codable, Sendable, Hashable {
     private enum CodingKeys: String, CodingKey {
         case elementCount = "element_count"
         case uniqueElements = "unique_elements"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.elementCount = try container.decodeIfPresent(UInt32.self, forKey: .elementCount) ?? 0
+        self.uniqueElements = try container.decodeIfPresent([String].self, forKey: .uniqueElements) ?? []
     }
 }
 
@@ -2776,6 +3067,15 @@ public struct TextMetadata: Codable, Sendable, Hashable {
         case headers = "headers"
         case links = "links"
         case codeBlocks = "code_blocks"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.lineCount = try container.decodeIfPresent(UInt32.self, forKey: .lineCount) ?? 0
+        self.wordCount = try container.decodeIfPresent(UInt32.self, forKey: .wordCount) ?? 0
+        self.characterCount = try container.decodeIfPresent(UInt32.self, forKey: .characterCount) ?? 0
+        self.headers = try container.decodeIfPresent([String].self, forKey: .headers) ?? nil
+        self.links = try container.decodeIfPresent([String].self, forKey: .links) ?? nil
+        self.codeBlocks = try container.decodeIfPresent([String].self, forKey: .codeBlocks) ?? nil
     }
 }
 
@@ -3008,6 +3308,15 @@ public struct OcrMetadata: Codable, Sendable, Hashable {
         case tableRows = "table_rows"
         case tableCols = "table_cols"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.language = try container.decodeIfPresent(String.self, forKey: .language) ?? ""
+        self.psm = try container.decodeIfPresent(Int32.self, forKey: .psm) ?? 0
+        self.outputFormat = try container.decodeIfPresent(String.self, forKey: .outputFormat) ?? ""
+        self.tableCount = try container.decodeIfPresent(UInt32.self, forKey: .tableCount) ?? 0
+        self.tableRows = try container.decodeIfPresent(UInt32.self, forKey: .tableRows) ?? nil
+        self.tableCols = try container.decodeIfPresent(UInt32.self, forKey: .tableCols) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for OcrMetadata
@@ -3076,6 +3385,13 @@ public struct PptxMetadata: Codable, Sendable, Hashable {
         case imageCount = "image_count"
         case tableCount = "table_count"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.slideCount = try container.decodeIfPresent(UInt32.self, forKey: .slideCount) ?? 0
+        self.slideNames = try container.decodeIfPresent([String].self, forKey: .slideNames) ?? []
+        self.imageCount = try container.decodeIfPresent(UInt32.self, forKey: .imageCount) ?? nil
+        self.tableCount = try container.decodeIfPresent(UInt32.self, forKey: .tableCount) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for PptxMetadata
@@ -3119,6 +3435,14 @@ public struct CsvMetadata: Codable, Sendable, Hashable {
         case delimiter = "delimiter"
         case hasHeader = "has_header"
         case columnTypes = "column_types"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.rowCount = try container.decodeIfPresent(UInt32.self, forKey: .rowCount) ?? 0
+        self.columnCount = try container.decodeIfPresent(UInt32.self, forKey: .columnCount) ?? 0
+        self.delimiter = try container.decodeIfPresent(String.self, forKey: .delimiter) ?? nil
+        self.hasHeader = try container.decodeIfPresent(Bool.self, forKey: .hasHeader) ?? false
+        self.columnTypes = try container.decodeIfPresent([String].self, forKey: .columnTypes) ?? nil
     }
 }
 
@@ -3164,6 +3488,15 @@ public struct CitationMetadata: Codable, Sendable, Hashable {
         case yearRange = "year_range"
         case dois = "dois"
         case keywords = "keywords"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.citationCount = try container.decodeIfPresent(UInt.self, forKey: .citationCount) ?? 0
+        self.format = try container.decodeIfPresent(String.self, forKey: .format) ?? nil
+        self.authors = try container.decodeIfPresent([String].self, forKey: .authors) ?? []
+        self.yearRange = try container.decodeIfPresent(YearRange.self, forKey: .yearRange) ?? nil
+        self.dois = try container.decodeIfPresent([String].self, forKey: .dois) ?? []
+        self.keywords = try container.decodeIfPresent([String].self, forKey: .keywords) ?? []
     }
 }
 
@@ -3220,6 +3553,17 @@ public struct FictionBookMetadata: Codable, Sendable, Hashable {
         self.sequences = sequences
         self.annotation = annotation
     }
+    private enum CodingKeys: String, CodingKey {
+        case genres = "genres"
+        case sequences = "sequences"
+        case annotation = "annotation"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.genres = try container.decodeIfPresent([String].self, forKey: .genres) ?? []
+        self.sequences = try container.decodeIfPresent([String].self, forKey: .sequences) ?? []
+        self.annotation = try container.decodeIfPresent(String.self, forKey: .annotation) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for FictionBookMetadata
@@ -3252,6 +3596,12 @@ public struct DbfMetadata: Codable, Sendable, Hashable {
         case recordCount = "record_count"
         case fieldCount = "field_count"
         case fields = "fields"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.recordCount = try container.decodeIfPresent(UInt.self, forKey: .recordCount) ?? 0
+        self.fieldCount = try container.decodeIfPresent(UInt.self, forKey: .fieldCount) ?? 0
+        self.fields = try container.decodeIfPresent([DbfFieldInfo].self, forKey: .fields) ?? []
     }
 }
 
@@ -3346,6 +3696,15 @@ public struct EpubMetadata: Codable, Sendable, Hashable {
         case dcType = "dc_type"
         case coverImage = "cover_image"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.coverage = try container.decodeIfPresent(String.self, forKey: .coverage) ?? nil
+        self.dcFormat = try container.decodeIfPresent(String.self, forKey: .dcFormat) ?? nil
+        self.relation = try container.decodeIfPresent(String.self, forKey: .relation) ?? nil
+        self.source = try container.decodeIfPresent(String.self, forKey: .source) ?? nil
+        self.dcType = try container.decodeIfPresent(String.self, forKey: .dcType) ?? nil
+        self.coverImage = try container.decodeIfPresent(String.self, forKey: .coverImage) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for EpubMetadata
@@ -3371,6 +3730,10 @@ public struct PstMetadata: Codable, Sendable, Hashable {
     }
     private enum CodingKeys: String, CodingKey {
         case messageCount = "message_count"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.messageCount = try container.decodeIfPresent(UInt.self, forKey: .messageCount) ?? 0
     }
 }
 
@@ -3401,6 +3764,15 @@ public struct OcrConfidence: Codable, Sendable, Hashable {
     public init(detection: Double? = nil, recognition: Double) {
         self.detection = detection
         self.recognition = recognition
+    }
+    private enum CodingKeys: String, CodingKey {
+        case detection = "detection"
+        case recognition = "recognition"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.detection = try container.decodeIfPresent(Double.self, forKey: .detection) ?? nil
+        self.recognition = try container.decodeIfPresent(Double.self, forKey: .recognition) ?? 0
     }
 }
 
@@ -3480,6 +3852,13 @@ public struct OcrElementConfig: Codable, Sendable, Hashable {
         case minLevel = "min_level"
         case minConfidence = "min_confidence"
         case buildHierarchy = "build_hierarchy"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.includeElements = try container.decodeIfPresent(Bool.self, forKey: .includeElements) ?? false
+        self.minLevel = try container.decode(OcrElementLevel.self, forKey: .minLevel)
+        self.minConfidence = try container.decodeIfPresent(Double.self, forKey: .minConfidence) ?? 0
+        self.buildHierarchy = try container.decodeIfPresent(Bool.self, forKey: .buildHierarchy) ?? false
     }
 }
 
@@ -3760,6 +4139,13 @@ public struct LayoutRegion: Codable, Sendable, Hashable {
         case boundingBox = "bounding_box"
         case areaFraction = "area_fraction"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.className = try container.decodeIfPresent(String.self, forKey: .className) ?? ""
+        self.confidence = try container.decodeIfPresent(Double.self, forKey: .confidence) ?? 0
+        self.boundingBox = try container.decodeIfPresent(String.self, forKey: .boundingBox) ?? ""
+        self.areaFraction = try container.decodeIfPresent(Double.self, forKey: .areaFraction) ?? 0
+    }
 }
 
 // MARK: - Internal FFI conversions for LayoutRegion
@@ -3886,6 +4272,13 @@ public struct Table: Codable, Sendable, Hashable {
         case pageNumber = "page_number"
         case boundingBox = "bounding_box"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.cells = try container.decodeIfPresent([[String]].self, forKey: .cells) ?? []
+        self.markdown = try container.decodeIfPresent(String.self, forKey: .markdown) ?? ""
+        self.pageNumber = try container.decodeIfPresent(UInt32.self, forKey: .pageNumber) ?? 0
+        self.boundingBox = try container.decodeIfPresent(String.self, forKey: .boundingBox) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for Table
@@ -3926,6 +4319,13 @@ public struct TableCell: Codable, Sendable, Hashable {
         case rowSpan = "row_span"
         case colSpan = "col_span"
         case isHeader = "is_header"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.content = try container.decodeIfPresent(String.self, forKey: .content) ?? ""
+        self.rowSpan = try container.decodeIfPresent(UInt32.self, forKey: .rowSpan) ?? 0
+        self.colSpan = try container.decodeIfPresent(UInt32.self, forKey: .colSpan) ?? 0
+        self.isHeader = try container.decodeIfPresent(Bool.self, forKey: .isHeader) ?? false
     }
 }
 
@@ -4080,6 +4480,10 @@ public struct YakeParams: Codable, Sendable, Hashable {
     private enum CodingKeys: String, CodingKey {
         case windowSize = "window_size"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.windowSize = try container.decodeIfPresent(UInt.self, forKey: .windowSize) ?? 2
+    }
 }
 
 // MARK: - Internal FFI conversions for YakeParams
@@ -4105,6 +4509,11 @@ public struct RakeParams: Codable, Sendable, Hashable {
     private enum CodingKeys: String, CodingKey {
         case minWordLength = "min_word_length"
         case maxWordsPerPhrase = "max_words_per_phrase"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.minWordLength = try container.decodeIfPresent(UInt.self, forKey: .minWordLength) ?? 1
+        self.maxWordsPerPhrase = try container.decodeIfPresent(UInt.self, forKey: .maxWordsPerPhrase) ?? 3
     }
 }
 
@@ -4161,6 +4570,16 @@ public struct KeywordConfig: Codable, Sendable, Hashable {
         case language = "language"
         case yakeParams = "yake_params"
         case rakeParams = "rake_params"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.algorithm = try container.decode(KeywordAlgorithm.self, forKey: .algorithm)
+        self.maxKeywords = try container.decodeIfPresent(UInt.self, forKey: .maxKeywords) ?? 10
+        self.minScore = try container.decodeIfPresent(Float.self, forKey: .minScore) ?? 0.0
+        self.ngramRange = try container.decodeIfPresent([UInt].self, forKey: .ngramRange) ?? []
+        self.language = try container.decodeIfPresent(String.self, forKey: .language) ?? nil
+        self.yakeParams = try container.decodeIfPresent(YakeParams.self, forKey: .yakeParams) ?? nil
+        self.rakeParams = try container.decodeIfPresent(RakeParams.self, forKey: .rakeParams) ?? nil
     }
 }
 
@@ -4431,6 +4850,15 @@ public struct PdfMetadata: Codable, Sendable, Hashable {
         case height = "height"
         case pageCount = "page_count"
     }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.pdfVersion = try container.decodeIfPresent(String.self, forKey: .pdfVersion) ?? nil
+        self.producer = try container.decodeIfPresent(String.self, forKey: .producer) ?? nil
+        self.isEncrypted = try container.decodeIfPresent(Bool.self, forKey: .isEncrypted) ?? nil
+        self.width = try container.decodeIfPresent(Int64.self, forKey: .width) ?? nil
+        self.height = try container.decodeIfPresent(Int64.self, forKey: .height) ?? nil
+        self.pageCount = try container.decodeIfPresent(UInt32.self, forKey: .pageCount) ?? nil
+    }
 }
 
 // MARK: - Internal FFI conversions for PdfMetadata
@@ -4668,19 +5096,6 @@ extension CodeContentMode {
 
 /// Type of list detection.
 public typealias ListType = RustBridge.ListType
-
-/// Whether the drawing is inline or anchored.
-public enum DrawingType: Codable, Sendable, Hashable {
-    case inline
-    case anchored(field0: String)
-}
-extension DrawingType {
-    func intoRust() throws -> RustBridge.DrawingType {
-        let data = try JSONEncoder().encode(self)
-        let json = String(data: data, encoding: .utf8) ?? "null"
-        return try RustBridge.drawingTypeFromJson(json)
-    }
-}
 
 public typealias FracType = RustBridge.FracType
 
@@ -6264,11 +6679,6 @@ public func embeddingModelTypeFromJson(_ json: String) throws -> EmbeddingModelT
 public func codeContentModeFromJson(_ json: String) throws -> CodeContentMode {
     let data = json.data(using: .utf8) ?? Data()
     return try JSONDecoder().decode(CodeContentMode.self, from: data)
-}
-
-public func drawingTypeFromJson(_ json: String) throws -> DrawingType {
-    let data = json.data(using: .utf8) ?? Data()
-    return try JSONDecoder().decode(DrawingType.self, from: data)
 }
 
 public func ocrBackendTypeFromJson(_ json: String) throws -> OcrBackendType {

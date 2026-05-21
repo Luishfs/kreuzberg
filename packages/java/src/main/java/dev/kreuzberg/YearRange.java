@@ -5,12 +5,63 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Year range for bibliographic metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = YearRange.Builder.class)
 public record YearRange(@Nullable Integer min, @Nullable Integer max, List<Integer> years) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("min")
+        private Optional<Integer> min = Optional.empty();
+        @JsonProperty("max")
+        private Optional<Integer> max = Optional.empty();
+        @JsonProperty("years")
+        private List<Integer> years = List.of();
+
+        /** Sets the min field. */
+        @JsonProperty("min")
+        public Builder withMin(final @Nullable Integer value) {
+            this.min = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the max field. */
+        @JsonProperty("max")
+        public Builder withMax(final @Nullable Integer value) {
+            this.max = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the years field. */
+        @JsonProperty("years")
+        public Builder withYears(final List<Integer> value) {
+            this.years = value;
+            return this;
+        }
+
+        /** Builds the YearRange instance. */
+        public YearRange build() {
+            return new YearRange(
+                min.orElse(null),
+                max.orElse(null),
+                years
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -6,8 +6,11 @@ package dev.kreuzberg;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -17,6 +20,7 @@ import org.jspecify.annotations.Nullable;
  * for tree structure, and metadata like page number, bounding box, and content layer.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DocumentNode.Builder.class)
 public record DocumentNode(
     /**
      * Deterministic identifier (hash of content + position).
@@ -64,4 +68,120 @@ public record DocumentNode(
      */
     @Nullable Map<String, String> attributes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("id")
+        private String id = "";
+        @JsonProperty("content")
+        private NodeContent content = null;
+        @JsonProperty("parent")
+        private Optional<Integer> parent = Optional.empty();
+        @JsonProperty("children")
+        private List<Integer> children = List.of();
+        @JsonProperty("content_layer")
+        private ContentLayer contentLayer = null;
+        @JsonProperty("page")
+        private Optional<Integer> page = Optional.empty();
+        @JsonProperty("page_end")
+        private Optional<Integer> pageEnd = Optional.empty();
+        @JsonProperty("bbox")
+        private Optional<String> bbox = Optional.empty();
+        @JsonProperty("annotations")
+        private List<TextAnnotation> annotations = List.of();
+        @JsonProperty("attributes")
+        private Optional<Map<String, String>> attributes = Optional.empty();
+
+        /** Sets the id field. */
+        @JsonProperty("id")
+        public Builder withId(final String value) {
+            this.id = value;
+            return this;
+        }
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final NodeContent value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the parent field. */
+        @JsonProperty("parent")
+        public Builder withParent(final @Nullable Integer value) {
+            this.parent = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the children field. */
+        @JsonProperty("children")
+        public Builder withChildren(final List<Integer> value) {
+            this.children = value;
+            return this;
+        }
+
+        /** Sets the contentLayer field. */
+        @JsonProperty("content_layer")
+        public Builder withContentLayer(final ContentLayer value) {
+            this.contentLayer = value;
+            return this;
+        }
+
+        /** Sets the page field. */
+        @JsonProperty("page")
+        public Builder withPage(final @Nullable Integer value) {
+            this.page = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the pageEnd field. */
+        @JsonProperty("page_end")
+        public Builder withPageEnd(final @Nullable Integer value) {
+            this.pageEnd = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the bbox field. */
+        @JsonProperty("bbox")
+        public Builder withBbox(final @Nullable String value) {
+            this.bbox = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the annotations field. */
+        @JsonProperty("annotations")
+        public Builder withAnnotations(final List<TextAnnotation> value) {
+            this.annotations = value;
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final @Nullable Map<String, String> value) {
+            this.attributes = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the DocumentNode instance. */
+        public DocumentNode build() {
+            return new DocumentNode(
+                id,
+                content,
+                parent.orElse(null),
+                children,
+                contentLayer,
+                page.orElse(null),
+                pageEnd.orElse(null),
+                bbox.orElse(null),
+                annotations,
+                attributes.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

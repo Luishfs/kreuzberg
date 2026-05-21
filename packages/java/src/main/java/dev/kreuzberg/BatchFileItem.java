@@ -4,7 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -14,5 +18,42 @@ import org.jspecify.annotations.Nullable;
  * to represent a single file in a batch extraction job.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = BatchFileItem.Builder.class)
 public record BatchFileItem(java.nio.file.Path path, @Nullable FileExtractionConfig config) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("path")
+        private java.nio.file.Path path = "";
+        @JsonProperty("config")
+        private Optional<FileExtractionConfig> config = Optional.empty();
+
+        /** Sets the path field. */
+        @JsonProperty("path")
+        public Builder withPath(final java.nio.file.Path value) {
+            this.path = value;
+            return this;
+        }
+
+        /** Sets the config field. */
+        @JsonProperty("config")
+        public Builder withConfig(final @Nullable FileExtractionConfig value) {
+            this.config = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the BatchFileItem instance. */
+        public BatchFileItem build() {
+            return new BatchFileItem(
+                path,
+                config.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

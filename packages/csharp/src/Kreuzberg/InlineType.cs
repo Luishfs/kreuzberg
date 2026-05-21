@@ -9,24 +9,21 @@ namespace Kreuzberg;
 /// <summary>
 /// Types of inline elements in Djot.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum InlineType
-{
-    [JsonPropertyName("text")]
-    Text, [JsonPropertyName("strong")]
-    Strong, [JsonPropertyName("emphasis")]
-    Emphasis, [JsonPropertyName("highlight")]
-    Highlight, [JsonPropertyName("subscript")]
-    Subscript, [JsonPropertyName("superscript")]
-    Superscript, [JsonPropertyName("insert")]
-    Insert, [JsonPropertyName("delete")]
-    Delete, [JsonPropertyName("code")]
-    Code, [JsonPropertyName("link")]
-    Link, [JsonPropertyName("image")]
-    Image, [JsonPropertyName("span")]
-    Span, [JsonPropertyName("math")]
-    Math, [JsonPropertyName("raw_inline")]
-    RawInline, [JsonPropertyName("footnote_ref")]
-    FootnoteRef, [JsonPropertyName("symbol")]
-    Symbol,
-}
+{    [JsonPropertyName("text")]
+    Text,    [JsonPropertyName("strong")]
+    Strong,    [JsonPropertyName("emphasis")]
+    Emphasis,    [JsonPropertyName("highlight")]
+    Highlight,    [JsonPropertyName("subscript")]
+    Subscript,    [JsonPropertyName("superscript")]
+    Superscript,    [JsonPropertyName("insert")]
+    Insert,    [JsonPropertyName("delete")]
+    Delete,    [JsonPropertyName("code")]
+    Code,    [JsonPropertyName("link")]
+    Link,    [JsonPropertyName("image")]
+    Image,    [JsonPropertyName("span")]
+    Span,    [JsonPropertyName("math")]
+    Math,    [JsonPropertyName("raw_inline")]
+    RawInline,    [JsonPropertyName("footnote_ref")]
+    FootnoteRef,    [JsonPropertyName("symbol")]
+    Symbol,}

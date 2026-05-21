@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Individual table cell with content and optional styling.
@@ -13,6 +15,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Future extension point for rich table support with cell-level metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = TableCell.Builder.class)
 public record TableCell(
     /**
      * Cell content as text
@@ -31,4 +34,60 @@ public record TableCell(
      */
     @JsonProperty("is_header") boolean isHeader
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("content")
+        private String content = "";
+        @JsonProperty("row_span")
+        private int rowSpan = 0;
+        @JsonProperty("col_span")
+        private int colSpan = 0;
+        @JsonProperty("is_header")
+        private boolean isHeader = false;
+
+        /** Sets the content field. */
+        @JsonProperty("content")
+        public Builder withContent(final String value) {
+            this.content = value;
+            return this;
+        }
+
+        /** Sets the rowSpan field. */
+        @JsonProperty("row_span")
+        public Builder withRowSpan(final int value) {
+            this.rowSpan = value;
+            return this;
+        }
+
+        /** Sets the colSpan field. */
+        @JsonProperty("col_span")
+        public Builder withColSpan(final int value) {
+            this.colSpan = value;
+            return this;
+        }
+
+        /** Sets the isHeader field. */
+        @JsonProperty("is_header")
+        public Builder withIsHeader(final boolean value) {
+            this.isHeader = value;
+            return this;
+        }
+
+        /** Builds the TableCell instance. */
+        public TableCell build() {
+            return new TableCell(
+                content,
+                rowSpan,
+                colSpan,
+                isHeader
+            );
+        }
+    }
+    // CPD-ON
 }

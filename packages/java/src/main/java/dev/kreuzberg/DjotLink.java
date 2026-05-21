@@ -4,13 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Link element in Djot.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DjotLink.Builder.class)
 public record DjotLink(
     /**
      * Link URL
@@ -29,4 +34,60 @@ public record DjotLink(
      */
     @Nullable String attributes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("url")
+        private String url = "";
+        @JsonProperty("text")
+        private String text = "";
+        @JsonProperty("title")
+        private Optional<String> title = Optional.empty();
+        @JsonProperty("attributes")
+        private Optional<String> attributes = Optional.empty();
+
+        /** Sets the url field. */
+        @JsonProperty("url")
+        public Builder withUrl(final String value) {
+            this.url = value;
+            return this;
+        }
+
+        /** Sets the text field. */
+        @JsonProperty("text")
+        public Builder withText(final String value) {
+            this.text = value;
+            return this;
+        }
+
+        /** Sets the title field. */
+        @JsonProperty("title")
+        public Builder withTitle(final @Nullable String value) {
+            this.title = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final @Nullable String value) {
+            this.attributes = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the DjotLink instance. */
+        public DjotLink build() {
+            return new DjotLink(
+                url,
+                text,
+                title.orElse(null),
+                attributes.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -6,7 +6,10 @@ package dev.kreuzberg;
 
 import java.util.List;
 import java.util.Map;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Excel workbook representation.
@@ -15,5 +18,42 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * extracted content and metadata.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ExcelWorkbook.Builder.class)
 public record ExcelWorkbook(List<ExcelSheet> sheets, Map<String, String> metadata) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("sheets")
+        private List<ExcelSheet> sheets = List.of();
+        @JsonProperty("metadata")
+        private Map<String, String> metadata = Map.of();
+
+        /** Sets the sheets field. */
+        @JsonProperty("sheets")
+        public Builder withSheets(final List<ExcelSheet> value) {
+            this.sheets = value;
+            return this;
+        }
+
+        /** Sets the metadata field. */
+        @JsonProperty("metadata")
+        public Builder withMetadata(final Map<String, String> value) {
+            this.metadata = value;
+            return this;
+        }
+
+        /** Builds the ExcelWorkbook instance. */
+        public ExcelWorkbook build() {
+            return new ExcelWorkbook(
+                sheets,
+                metadata
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -5,7 +5,10 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Heading context for a chunk within a Markdown document.
@@ -13,5 +16,32 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * Contains the heading hierarchy from document root to this chunk's section.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = HeadingContext.Builder.class)
 public record HeadingContext(List<HeadingLevel> headings) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("headings")
+        private List<HeadingLevel> headings = List.of();
+
+        /** Sets the headings field. */
+        @JsonProperty("headings")
+        public Builder withHeadings(final List<HeadingLevel> value) {
+            this.headings = value;
+            return this;
+        }
+
+        /** Builds the HeadingContext instance. */
+        public HeadingContext build() {
+            return new HeadingContext(
+                headings
+            );
+        }
+    }
+    // CPD-ON
 }

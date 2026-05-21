@@ -4,15 +4,19 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Embedded file descriptor extracted from the PDF name tree.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = EmbeddedFile.Builder.class)
 public record EmbeddedFile(
     /**
      * The filename as stored in the PDF name tree.
@@ -27,4 +31,50 @@ public record EmbeddedFile(
      */
     @Nullable @JsonProperty("mime_type") String mimeType
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("name")
+        private String name = "";
+        @JsonProperty("data")
+        private byte[] data = new byte[0];
+        @JsonProperty("mime_type")
+        private Optional<String> mimeType = Optional.empty();
+
+        /** Sets the name field. */
+        @JsonProperty("name")
+        public Builder withName(final String value) {
+            this.name = value;
+            return this;
+        }
+
+        /** Sets the data field. */
+        @JsonProperty("data")
+        public Builder withData(final byte[] value) {
+            this.data = value;
+            return this;
+        }
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final @Nullable String value) {
+            this.mimeType = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the EmbeddedFile instance. */
+        public EmbeddedFile build() {
+            return new EmbeddedFile(
+                name,
+                data,
+                mimeType.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

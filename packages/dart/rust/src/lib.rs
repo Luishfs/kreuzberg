@@ -3391,13 +3391,6 @@ pub enum ListType {
     Indented,
 }
 
-/// Whether the drawing is inline or anchored.
-#[frb(mirror(DrawingType))]
-pub enum DrawingType {
-    Inline,
-    Anchored { field0: String },
-}
-
 #[frb(mirror(FracType))]
 pub enum FracType {
     Bar,
@@ -5926,17 +5919,6 @@ impl From<kreuzberg::extraction::transform::ListType> for ListType {
             kreuzberg::extraction::transform::ListType::Numbered => ListType::Numbered,
             kreuzberg::extraction::transform::ListType::Lettered => ListType::Lettered,
             kreuzberg::extraction::transform::ListType::Indented => ListType::Indented,
-        }
-    }
-}
-
-impl From<kreuzberg::extraction::docx::drawing::DrawingType> for DrawingType {
-    fn from(v: kreuzberg::extraction::docx::drawing::DrawingType) -> Self {
-        match v {
-            kreuzberg::extraction::docx::drawing::DrawingType::Inline => DrawingType::Inline,
-            kreuzberg::extraction::docx::drawing::DrawingType::Anchored(f0) => DrawingType::Anchored {
-                field0: serde_json::to_string(&f0).unwrap_or_default(),
-            },
         }
     }
 }

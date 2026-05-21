@@ -12,19 +12,17 @@ namespace Kreuzberg;
 /// Controls how extracted code content is represented in the `content` field
 /// of `ExtractionResult`.
 /// </summary>
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum CodeContentMode
 {    /// <summary>
-     /// Use TSLP semantic chunks as content (default).
-     /// </summary>
+    /// Use TSLP semantic chunks as content (default).
+    /// </summary>
     [JsonPropertyName("chunks")]
     Chunks,    /// <summary>
-               /// Use raw source code as content.
-               /// </summary>
+    /// Use raw source code as content.
+    /// </summary>
     [JsonPropertyName("raw")]
     Raw,    /// <summary>
-            /// Emit function/class headings + docstrings (no code bodies).
-            /// </summary>
+    /// Emit function/class headings + docstrings (no code bodies).
+    /// </summary>
     [JsonPropertyName("structure")]
-    Structure,
-}
+    Structure,}

@@ -7,6 +7,8 @@ package dev.kreuzberg;
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Pre-computed table markdown for a table detection region.
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * the type in their own code.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = RecognizedTable.Builder.class)
 public record RecognizedTable(
     /**
      * Detection bbox that this table corresponds to (for matching).
@@ -31,4 +34,50 @@ public record RecognizedTable(
      */
     String markdown
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("detection_bbox")
+        private BBox detectionBbox = null;
+        @JsonProperty("cells")
+        private List<List<String>> cells = List.of();
+        @JsonProperty("markdown")
+        private String markdown = "";
+
+        /** Sets the detectionBbox field. */
+        @JsonProperty("detection_bbox")
+        public Builder withDetectionBbox(final BBox value) {
+            this.detectionBbox = value;
+            return this;
+        }
+
+        /** Sets the cells field. */
+        @JsonProperty("cells")
+        public Builder withCells(final List<List<String>> value) {
+            this.cells = value;
+            return this;
+        }
+
+        /** Sets the markdown field. */
+        @JsonProperty("markdown")
+        public Builder withMarkdown(final String value) {
+            this.markdown = value;
+            return this;
+        }
+
+        /** Builds the RecognizedTable instance. */
+        public RecognizedTable build() {
+            return new RecognizedTable(
+                detectionBbox,
+                cells,
+                markdown
+            );
+        }
+    }
+    // CPD-ON
 }

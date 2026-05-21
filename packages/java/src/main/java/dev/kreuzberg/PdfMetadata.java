@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * are at the {@code Metadata} level.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = PdfMetadata.Builder.class)
 public record PdfMetadata(
     /**
      * PDF version (e.g., "1.7", "2.0")
@@ -42,4 +46,80 @@ public record PdfMetadata(
      */
     @Nullable @JsonProperty("page_count") Integer pageCount
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("pdf_version")
+        private Optional<String> pdfVersion = Optional.empty();
+        @JsonProperty("producer")
+        private Optional<String> producer = Optional.empty();
+        @JsonProperty("is_encrypted")
+        private Optional<Boolean> isEncrypted = Optional.empty();
+        @JsonProperty("width")
+        private Optional<Long> width = Optional.empty();
+        @JsonProperty("height")
+        private Optional<Long> height = Optional.empty();
+        @JsonProperty("page_count")
+        private Optional<Integer> pageCount = Optional.empty();
+
+        /** Sets the pdfVersion field. */
+        @JsonProperty("pdf_version")
+        public Builder withPdfVersion(final @Nullable String value) {
+            this.pdfVersion = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the producer field. */
+        @JsonProperty("producer")
+        public Builder withProducer(final @Nullable String value) {
+            this.producer = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the isEncrypted field. */
+        @JsonProperty("is_encrypted")
+        public Builder withIsEncrypted(final @Nullable Boolean value) {
+            this.isEncrypted = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the width field. */
+        @JsonProperty("width")
+        public Builder withWidth(final @Nullable Long value) {
+            this.width = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the height field. */
+        @JsonProperty("height")
+        public Builder withHeight(final @Nullable Long value) {
+            this.height = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the pageCount field. */
+        @JsonProperty("page_count")
+        public Builder withPageCount(final @Nullable Integer value) {
+            this.pageCount = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the PdfMetadata instance. */
+        public PdfMetadata build() {
+            return new PdfMetadata(
+                pdfVersion.orElse(null),
+                producer.orElse(null),
+                isEncrypted.orElse(null),
+                width.orElse(null),
+                height.orElse(null),
+                pageCount.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

@@ -4772,18 +4772,6 @@ Type of list detection.
 
 ---
 
-#### KreuzbergDrawingType
-
-Whether the drawing is inline or anchored.
-
-| Value | Description |
-|-------|-------------|
-| `KREUZBERG_INLINE` | Inline |
-| `KREUZBERG_ANCHORED` | Anchored — Fields: `0`: `const char*` |
-
-
----
-
 #### KreuzbergFracType
 
 | Value | Description |

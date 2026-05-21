@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * MIME type detection response.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DetectResponse.Builder.class)
 public record DetectResponse(
     /**
      * Detected MIME type
@@ -22,4 +26,40 @@ public record DetectResponse(
      */
     @Nullable String filename
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("mime_type")
+        private String mimeType = "";
+        @JsonProperty("filename")
+        private Optional<String> filename = Optional.empty();
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final String value) {
+            this.mimeType = value;
+            return this;
+        }
+
+        /** Sets the filename field. */
+        @JsonProperty("filename")
+        public Builder withFilename(final @Nullable String value) {
+            this.filename = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the DetectResponse instance. */
+        public DetectResponse build() {
+            return new DetectResponse(
+                mimeType,
+                filename.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

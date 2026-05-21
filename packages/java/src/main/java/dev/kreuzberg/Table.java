@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * Tables are converted to both structured cell data and Markdown format.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = Table.Builder.class)
 public record Table(
     /**
      * Table cells as a 2D vector (rows × columns)
@@ -35,4 +39,60 @@ public record Table(
      */
     @Nullable @JsonProperty("bounding_box") String boundingBox
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("cells")
+        private List<List<String>> cells = List.of();
+        @JsonProperty("markdown")
+        private String markdown = "";
+        @JsonProperty("page_number")
+        private int pageNumber = 0;
+        @JsonProperty("bounding_box")
+        private Optional<String> boundingBox = Optional.empty();
+
+        /** Sets the cells field. */
+        @JsonProperty("cells")
+        public Builder withCells(final List<List<String>> value) {
+            this.cells = value;
+            return this;
+        }
+
+        /** Sets the markdown field. */
+        @JsonProperty("markdown")
+        public Builder withMarkdown(final String value) {
+            this.markdown = value;
+            return this;
+        }
+
+        /** Sets the pageNumber field. */
+        @JsonProperty("page_number")
+        public Builder withPageNumber(final int value) {
+            this.pageNumber = value;
+            return this;
+        }
+
+        /** Sets the boundingBox field. */
+        @JsonProperty("bounding_box")
+        public Builder withBoundingBox(final @Nullable String value) {
+            this.boundingBox = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the Table instance. */
+        public Table build() {
+            return new Table(
+                cells,
+                markdown,
+                pageNumber,
+                boundingBox.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

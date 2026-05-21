@@ -4,13 +4,43 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Configuration for email extraction.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = EmailConfig.Builder.class)
 public record EmailConfig(@Nullable @JsonProperty("msg_fallback_codepage") Integer msgFallbackCodepage) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("msg_fallback_codepage")
+        private Optional<Integer> msgFallbackCodepage = Optional.empty();
+
+        /** Sets the msgFallbackCodepage field. */
+        @JsonProperty("msg_fallback_codepage")
+        public Builder withMsgFallbackCodepage(final @Nullable Integer value) {
+            this.msgFallbackCodepage = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the EmailConfig instance. */
+        public EmailConfig build() {
+            return new EmailConfig(
+                msgFallbackCodepage.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

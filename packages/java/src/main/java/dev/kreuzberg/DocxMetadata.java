@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.Map;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * Integrates with {@code office_metadata} module for core/app/custom properties.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DocxMetadata.Builder.class)
 public record DocxMetadata(
     /**
      * Core properties from docProps/core.xml (Dublin Core metadata)
@@ -39,4 +43,50 @@ public record DocxMetadata(
      */
     @Nullable @JsonProperty("custom_properties") Map<String, Object> customProperties
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("core_properties")
+        private Optional<CoreProperties> coreProperties = Optional.empty();
+        @JsonProperty("app_properties")
+        private Optional<DocxAppProperties> appProperties = Optional.empty();
+        @JsonProperty("custom_properties")
+        private Optional<Map<String, Object>> customProperties = Optional.empty();
+
+        /** Sets the coreProperties field. */
+        @JsonProperty("core_properties")
+        public Builder withCoreProperties(final @Nullable CoreProperties value) {
+            this.coreProperties = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the appProperties field. */
+        @JsonProperty("app_properties")
+        public Builder withAppProperties(final @Nullable DocxAppProperties value) {
+            this.appProperties = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the customProperties field. */
+        @JsonProperty("custom_properties")
+        public Builder withCustomProperties(final @Nullable Map<String, Object> value) {
+            this.customProperties = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the DocxMetadata instance. */
+        public DocxMetadata build() {
+            return new DocxMetadata(
+                coreProperties.orElse(null),
+                appProperties.orElse(null),
+                customProperties.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

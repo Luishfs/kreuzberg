@@ -4,11 +4,71 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * Bounding box for an OCR-detected table in pixel coordinates.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrTableBoundingBox.Builder.class)
 public record OcrTableBoundingBox(int left, int top, int right, int bottom) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("left")
+        private int left = 0;
+        @JsonProperty("top")
+        private int top = 0;
+        @JsonProperty("right")
+        private int right = 0;
+        @JsonProperty("bottom")
+        private int bottom = 0;
+
+        /** Sets the left field. */
+        @JsonProperty("left")
+        public Builder withLeft(final int value) {
+            this.left = value;
+            return this;
+        }
+
+        /** Sets the top field. */
+        @JsonProperty("top")
+        public Builder withTop(final int value) {
+            this.top = value;
+            return this;
+        }
+
+        /** Sets the right field. */
+        @JsonProperty("right")
+        public Builder withRight(final int value) {
+            this.right = value;
+            return this;
+        }
+
+        /** Sets the bottom field. */
+        @JsonProperty("bottom")
+        public Builder withBottom(final int value) {
+            this.bottom = value;
+            return this;
+        }
+
+        /** Builds the OcrTableBoundingBox instance. */
+        public OcrTableBoundingBox build() {
+            return new OcrTableBoundingBox(
+                left,
+                top,
+                right,
+                bottom
+            );
+        }
+    }
+    // CPD-ON
 }

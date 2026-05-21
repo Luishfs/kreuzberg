@@ -4,11 +4,51 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A single heading in the hierarchy.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = HeadingLevel.Builder.class)
 public record HeadingLevel(byte level, String text) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("level")
+        private byte level = 0;
+        @JsonProperty("text")
+        private String text = "";
+
+        /** Sets the level field. */
+        @JsonProperty("level")
+        public Builder withLevel(final byte value) {
+            this.level = value;
+            return this;
+        }
+
+        /** Sets the text field. */
+        @JsonProperty("text")
+        public Builder withText(final String value) {
+            this.text = value;
+            return this;
+        }
+
+        /** Builds the HeadingLevel instance. */
+        public HeadingLevel build() {
+            return new HeadingLevel(
+                level,
+                text
+            );
+        }
+    }
+    // CPD-ON
 }

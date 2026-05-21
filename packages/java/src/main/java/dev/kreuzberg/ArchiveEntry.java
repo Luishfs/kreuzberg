@@ -6,6 +6,8 @@ package dev.kreuzberg;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 
 /**
  * A single file extracted from an archive.
@@ -14,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * enabled, each processable file produces its own full {@code ExtractionResult}.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = ArchiveEntry.Builder.class)
 public record ArchiveEntry(
     /**
      * Archive-relative file path (e.g. "folder/document.pdf").
@@ -28,4 +31,50 @@ public record ArchiveEntry(
      */
     ExtractionResult result
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("path")
+        private String path = "";
+        @JsonProperty("mime_type")
+        private String mimeType = "";
+        @JsonProperty("result")
+        private ExtractionResult result = null;
+
+        /** Sets the path field. */
+        @JsonProperty("path")
+        public Builder withPath(final String value) {
+            this.path = value;
+            return this;
+        }
+
+        /** Sets the mimeType field. */
+        @JsonProperty("mime_type")
+        public Builder withMimeType(final String value) {
+            this.mimeType = value;
+            return this;
+        }
+
+        /** Sets the result field. */
+        @JsonProperty("result")
+        public Builder withResult(final ExtractionResult value) {
+            this.result = value;
+            return this;
+        }
+
+        /** Builds the ArchiveEntry instance. */
+        public ArchiveEntry build() {
+            return new ArchiveEntry(
+                path,
+                mimeType,
+                result
+            );
+        }
+    }
+    // CPD-ON
 }

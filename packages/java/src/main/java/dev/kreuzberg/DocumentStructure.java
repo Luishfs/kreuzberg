@@ -5,8 +5,11 @@
 package dev.kreuzberg;
 
 import java.util.List;
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -22,6 +25,7 @@ import org.jspecify.annotations.Nullable;
  * and parent-child relationships are bidirectionally consistent.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DocumentStructure.Builder.class)
 public record DocumentStructure(
     /**
      * All nodes in document/reading order.
@@ -53,6 +57,62 @@ public record DocumentStructure(
      */
     @JsonProperty("node_types") List<String> nodeTypes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("nodes")
+        private List<DocumentNode> nodes = List.of();
+        @JsonProperty("source_format")
+        private Optional<String> sourceFormat = Optional.empty();
+        @JsonProperty("relationships")
+        private List<DocumentRelationship> relationships = List.of();
+        @JsonProperty("node_types")
+        private List<String> nodeTypes = List.of();
+
+        /** Sets the nodes field. */
+        @JsonProperty("nodes")
+        public Builder withNodes(final List<DocumentNode> value) {
+            this.nodes = value;
+            return this;
+        }
+
+        /** Sets the sourceFormat field. */
+        @JsonProperty("source_format")
+        public Builder withSourceFormat(final @Nullable String value) {
+            this.sourceFormat = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the relationships field. */
+        @JsonProperty("relationships")
+        public Builder withRelationships(final List<DocumentRelationship> value) {
+            this.relationships = value;
+            return this;
+        }
+
+        /** Sets the nodeTypes field. */
+        @JsonProperty("node_types")
+        public Builder withNodeTypes(final List<String> value) {
+            this.nodeTypes = value;
+            return this;
+        }
+
+        /** Builds the DocumentStructure instance. */
+        public DocumentStructure build() {
+            return new DocumentStructure(
+                nodes,
+                sourceFormat.orElse(null),
+                relationships,
+                nodeTypes
+            );
+        }
+    }
+    // CPD-ON
     public static DocumentStructure defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

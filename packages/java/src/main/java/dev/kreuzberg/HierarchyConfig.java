@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -16,6 +19,7 @@ import org.jspecify.annotations.Nullable;
  * included in page content.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = HierarchyConfig.Builder.class)
 public record HierarchyConfig(
     /**
      * Enable hierarchy extraction
@@ -41,9 +45,65 @@ public record HierarchyConfig(
      */
     @Nullable @JsonProperty("ocr_coverage_threshold") Float ocrCoverageThreshold
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
     public HierarchyConfig{
         if (kClusters == 0) kClusters = 3;
     }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("enabled")
+        private boolean enabled = true;
+        @JsonProperty("k_clusters")
+        private long kClusters = 0;
+        @JsonProperty("include_bbox")
+        private boolean includeBbox = true;
+        @JsonProperty("ocr_coverage_threshold")
+        private Optional<Float> ocrCoverageThreshold = Optional.empty();
+
+        /** Sets the enabled field. */
+        @JsonProperty("enabled")
+        public Builder withEnabled(final boolean value) {
+            this.enabled = value;
+            return this;
+        }
+
+        /** Sets the kClusters field. */
+        @JsonProperty("k_clusters")
+        public Builder withKClusters(final long value) {
+            this.kClusters = value;
+            return this;
+        }
+
+        /** Sets the includeBbox field. */
+        @JsonProperty("include_bbox")
+        public Builder withIncludeBbox(final boolean value) {
+            this.includeBbox = value;
+            return this;
+        }
+
+        /** Sets the ocrCoverageThreshold field. */
+        @JsonProperty("ocr_coverage_threshold")
+        public Builder withOcrCoverageThreshold(final @Nullable Float value) {
+            this.ocrCoverageThreshold = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the HierarchyConfig instance. */
+        public HierarchyConfig build() {
+            return new HierarchyConfig(
+                enabled,
+                kClusters,
+                includeBbox,
+                ocrCoverageThreshold.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
     public static HierarchyConfig defaultInstance() {
         throw new UnsupportedOperationException("defaultInstance is not yet bridged via JNI; use the Builder instead.");
     }

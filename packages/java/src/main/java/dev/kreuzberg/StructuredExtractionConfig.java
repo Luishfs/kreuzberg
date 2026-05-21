@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -15,6 +18,7 @@ import org.jspecify.annotations.Nullable;
  * returning structured data that conforms to the schema.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = StructuredExtractionConfig.Builder.class)
 public record StructuredExtractionConfig(
     /**
      * JSON Schema defining the desired output structure.
@@ -47,4 +51,80 @@ public record StructuredExtractionConfig(
      */
     LlmConfig llm
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("schema")
+        private Object schema = null;
+        @JsonProperty("schema_name")
+        private String schemaName = "";
+        @JsonProperty("schema_description")
+        private Optional<String> schemaDescription = Optional.empty();
+        @JsonProperty("strict")
+        private boolean strict = false;
+        @JsonProperty("prompt")
+        private Optional<String> prompt = Optional.empty();
+        @JsonProperty("llm")
+        private LlmConfig llm = null;
+
+        /** Sets the schema field. */
+        @JsonProperty("schema")
+        public Builder withSchema(final Object value) {
+            this.schema = value;
+            return this;
+        }
+
+        /** Sets the schemaName field. */
+        @JsonProperty("schema_name")
+        public Builder withSchemaName(final String value) {
+            this.schemaName = value;
+            return this;
+        }
+
+        /** Sets the schemaDescription field. */
+        @JsonProperty("schema_description")
+        public Builder withSchemaDescription(final @Nullable String value) {
+            this.schemaDescription = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the strict field. */
+        @JsonProperty("strict")
+        public Builder withStrict(final boolean value) {
+            this.strict = value;
+            return this;
+        }
+
+        /** Sets the prompt field. */
+        @JsonProperty("prompt")
+        public Builder withPrompt(final @Nullable String value) {
+            this.prompt = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the llm field. */
+        @JsonProperty("llm")
+        public Builder withLlm(final LlmConfig value) {
+            this.llm = value;
+            return this;
+        }
+
+        /** Builds the StructuredExtractionConfig instance. */
+        public StructuredExtractionConfig build() {
+            return new StructuredExtractionConfig(
+                schema,
+                schemaName,
+                schemaDescription.orElse(null),
+                strict,
+                prompt.orElse(null),
+                llm
+            );
+        }
+    }
+    // CPD-ON
 }

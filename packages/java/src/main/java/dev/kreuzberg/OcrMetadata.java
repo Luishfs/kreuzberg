@@ -4,8 +4,11 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
@@ -14,6 +17,7 @@ import org.jspecify.annotations.Nullable;
  * Captures information about OCR processing configuration and results.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = OcrMetadata.Builder.class)
 public record OcrMetadata(
     /**
      * OCR language code(s) used
@@ -34,4 +38,80 @@ public record OcrMetadata(
     @Nullable @JsonProperty("table_rows") Integer tableRows,
     @Nullable @JsonProperty("table_cols") Integer tableCols
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("language")
+        private String language = "";
+        @JsonProperty("psm")
+        private int psm = 0;
+        @JsonProperty("output_format")
+        private String outputFormat = "";
+        @JsonProperty("table_count")
+        private int tableCount = 0;
+        @JsonProperty("table_rows")
+        private Optional<Integer> tableRows = Optional.empty();
+        @JsonProperty("table_cols")
+        private Optional<Integer> tableCols = Optional.empty();
+
+        /** Sets the language field. */
+        @JsonProperty("language")
+        public Builder withLanguage(final String value) {
+            this.language = value;
+            return this;
+        }
+
+        /** Sets the psm field. */
+        @JsonProperty("psm")
+        public Builder withPsm(final int value) {
+            this.psm = value;
+            return this;
+        }
+
+        /** Sets the outputFormat field. */
+        @JsonProperty("output_format")
+        public Builder withOutputFormat(final String value) {
+            this.outputFormat = value;
+            return this;
+        }
+
+        /** Sets the tableCount field. */
+        @JsonProperty("table_count")
+        public Builder withTableCount(final int value) {
+            this.tableCount = value;
+            return this;
+        }
+
+        /** Sets the tableRows field. */
+        @JsonProperty("table_rows")
+        public Builder withTableRows(final @Nullable Integer value) {
+            this.tableRows = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the tableCols field. */
+        @JsonProperty("table_cols")
+        public Builder withTableCols(final @Nullable Integer value) {
+            this.tableCols = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the OcrMetadata instance. */
+        public OcrMetadata build() {
+            return new OcrMetadata(
+                language,
+                psm,
+                outputFormat,
+                tableCount,
+                tableRows.orElse(null),
+                tableCols.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

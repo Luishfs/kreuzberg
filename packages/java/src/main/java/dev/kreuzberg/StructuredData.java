@@ -4,14 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Structured data (Schema.org, microdata, RDFa) block.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = StructuredData.Builder.class)
 public record StructuredData(
     /**
      * Type of structured data
@@ -26,4 +30,50 @@ public record StructuredData(
      */
     @Nullable @JsonProperty("schema_type") String schemaType
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("data_type")
+        private StructuredDataType dataType = null;
+        @JsonProperty("raw_json")
+        private String rawJson = "";
+        @JsonProperty("schema_type")
+        private Optional<String> schemaType = Optional.empty();
+
+        /** Sets the dataType field. */
+        @JsonProperty("data_type")
+        public Builder withDataType(final StructuredDataType value) {
+            this.dataType = value;
+            return this;
+        }
+
+        /** Sets the rawJson field. */
+        @JsonProperty("raw_json")
+        public Builder withRawJson(final String value) {
+            this.rawJson = value;
+            return this;
+        }
+
+        /** Sets the schemaType field. */
+        @JsonProperty("schema_type")
+        public Builder withSchemaType(final @Nullable String value) {
+            this.schemaType = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the StructuredData instance. */
+        public StructuredData build() {
+            return new StructuredData(
+                dataType,
+                rawJson,
+                schemaType.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

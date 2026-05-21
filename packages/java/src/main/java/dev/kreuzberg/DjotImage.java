@@ -4,13 +4,18 @@
 // Issues & docs: https://github.com/kreuzberg-dev/alef
 package dev.kreuzberg;
 
+import java.util.Optional;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import org.jspecify.annotations.Nullable;
 
 /**
  * Image element in Djot.
  */
 @JsonInclude(JsonInclude.Include.NON_ABSENT)
+@JsonDeserialize(builder = DjotImage.Builder.class)
 public record DjotImage(
     /**
      * Image source URL or path
@@ -29,4 +34,60 @@ public record DjotImage(
      */
     @Nullable String attributes
 ) {
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    // CPD-OFF
+    @JsonPOJOBuilder(withPrefix = "with")
+    public static final class Builder {
+
+        @JsonProperty("src")
+        private String src = "";
+        @JsonProperty("alt")
+        private String alt = "";
+        @JsonProperty("title")
+        private Optional<String> title = Optional.empty();
+        @JsonProperty("attributes")
+        private Optional<String> attributes = Optional.empty();
+
+        /** Sets the src field. */
+        @JsonProperty("src")
+        public Builder withSrc(final String value) {
+            this.src = value;
+            return this;
+        }
+
+        /** Sets the alt field. */
+        @JsonProperty("alt")
+        public Builder withAlt(final String value) {
+            this.alt = value;
+            return this;
+        }
+
+        /** Sets the title field. */
+        @JsonProperty("title")
+        public Builder withTitle(final @Nullable String value) {
+            this.title = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Sets the attributes field. */
+        @JsonProperty("attributes")
+        public Builder withAttributes(final @Nullable String value) {
+            this.attributes = Optional.ofNullable(value);
+            return this;
+        }
+
+        /** Builds the DjotImage instance. */
+        public DjotImage build() {
+            return new DjotImage(
+                src,
+                alt,
+                title.orElse(null),
+                attributes.orElse(null)
+            );
+        }
+    }
+    // CPD-ON
 }

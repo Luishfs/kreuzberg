@@ -6,14 +6,10 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Kreuzberg;
-
-[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ReductionLevel
-{
-    [JsonPropertyName("off")]
-    Off, [JsonPropertyName("light")]
-    Light, [JsonPropertyName("moderate")]
-    Moderate, [JsonPropertyName("aggressive")]
-    Aggressive, [JsonPropertyName("maximum")]
-    Maximum,
-}
+{    [JsonPropertyName("off")]
+    Off,    [JsonPropertyName("light")]
+    Light,    [JsonPropertyName("moderate")]
+    Moderate,    [JsonPropertyName("aggressive")]
+    Aggressive,    [JsonPropertyName("maximum")]
+    Maximum,}
