@@ -219,7 +219,7 @@ pub struct ExtractionResult {
     #[cfg(feature = "tree-sitter")]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     #[cfg_attr(feature = "api", schema(value_type = Option<serde_json::Value>))]
-    pub code_intelligence: Option<tree_sitter_language_pack::ProcessResult>,
+    pub code_intelligence: Option<crate::ProcessResult>,
 
     /// LLM token usage and cost data for all LLM calls made during this extraction.
     ///

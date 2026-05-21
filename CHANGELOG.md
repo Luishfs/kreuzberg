@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (Go bindings: re-exported ProcessResult path)
+
+- **core**: Switched `ExtractionResult.code_intelligence` from `Option<tree_sitter_language_pack::ProcessResult>` to `Option<crate::ProcessResult>` so alef's type visitor resolves the re-exported name and emits the correct `*ProcessResult` Go binding type. Previously alef fell back to `*string`, producing `cannot unmarshal object into string` errors at runtime.
+
 ### Fixed (DrawingType alef-skip, zig binding ffi_path)
 
 - **core**: Annotate `DrawingType` enum in `crates/kreuzberg/src/extraction/docx/drawing.rs`
