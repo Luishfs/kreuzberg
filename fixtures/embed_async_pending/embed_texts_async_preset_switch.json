@@ -10,7 +10,7 @@
     "config": {
       "model": {
         "type": "preset",
-        "name": "default"
+        "name": "balanced"
       }
     }
   },
