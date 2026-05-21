@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed (e2e/php: hermetic ini)
+
+- **scripts/setup-php-ext-ini.sh + alef.toml**: PHP e2e runs were failing system-wide because a sibling project (tree-sitter-language-pack) had left a stale `/opt/homebrew/etc/php/8.4/conf.d/ext-kreuzberg.ini` pointing at a non-existent `ts_pack_core_php.so`. The local `php -c php.ini` flag only overrides the main `php.ini` path, not the scan-dir, so the stale entry kept being loaded. Hardened the e2e launcher to set `PHP_INI_SCAN_DIR=` (disabling conf.d scanning entirely) and made the generated `e2e/php/php.ini` set `extension_dir` explicitly so the hermetic config still finds the built extension. PHP e2e is now reproducible without depending on the host's conf.d state.
+
 ### Fixed (R e2e: 159/160, only env tesseract failure remains)
 
 - **e2e/r**: Regenerated against alef with four R codegen fixes (no-arg-wrapper input leakage, empty `Vec<String>` → `character(0)`, R-side `extra_args` support, FormatMetadata tagged-enum collapse helper + `result_is_bytes`-aware length assertions). Added an R override on `render_pdf_page_to_png` with `extra_args = ["NULL", "NULL"]` to fill in the extendr-required `dpi`/`password` positionals when the fixture omits them. Combined, kreuzberg R e2e moves from 153/158 to 159/160 — the remaining failure (`test_smoke.R:9:3` PNG-with-OCR) is the pre-existing `tesseract not registered` env condition. (`alef.toml`, `e2e/r/`)
