@@ -6,7 +6,13 @@ requires = ["maturin>=1.0,<2.0"]
 name = "kreuzberg"
 version = "5.0.0rc1"
 description = "High-performance document intelligence library"
-keywords = ["document", "extraction", "ocr", "pdf", "text"]
+keywords = [
+  "document",
+  "extraction",
+  "ocr",
+  "pdf",
+  "text",
+]
 license = "Elastic-2.0"
 license-files = ["LICENSE"]
 authors = [{ name = "Na'aman Hirschfeld <naaman@kreuzberg.dev>" }]
@@ -22,7 +28,10 @@ classifiers = [
 urls.repository = "https://github.com/kreuzberg-dev/kreuzberg"
 homepage = "https://kreuzberg.dev"
 [dependency-groups]
-dev = ["mypy>=1.19.0", "ruff>=0.14.8"]
+dev = [
+  "mypy>=1.19.0",
+  "ruff>=0.14.8",
+]
 
 [tool.maturin]
 module-name = "kreuzberg._kreuzberg"
@@ -39,10 +48,29 @@ format.docstring-code-format = true
 format.docstring-code-line-length = 120
 lint.select = ["ALL"]
 lint.ignore = [
-  "ANN401", "ASYNC109", "ASYNC110", "BLE001", "COM812",
-  "D100", "D104", "D107", "D205", "E501", "EM",
-  "FBT", "FIX", "ISC001", "PD011", "PGH003", "PLR2004",
-  "PLW0603", "S104", "S110", "S603", "TD", "TRY",
+  "ANN401",
+  "ASYNC109",
+  "ASYNC110",
+  "BLE001",
+  "COM812",
+  "D100",
+  "D104",
+  "D107",
+  "D205",
+  "E501",
+  "EM",
+  "FBT",
+  "FIX",
+  "ISC001",
+  "PD011",
+  "PGH003",
+  "PLR2004",
+  "PLW0603",
+  "S104",
+  "S110",
+  "S603",
+  "TD",
+  "TRY",
 ]
 lint.mccabe.max-complexity = 15
 lint.per-file-ignores."tests/**" = ["ANN", "D103", "PLR2004", "S101"]

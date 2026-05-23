@@ -107,7 +107,6 @@ Install via Composer:
 composer require kreuzberg/kreuzberg
 ```
 
-
 ### System Requirements
 - **PHP 8.2+** required
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
@@ -299,11 +298,9 @@ if ($avgCharsPerPage < 100) {
 ```
 ```
 
-
 #### Table Extraction
 
 See [Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/) for table extraction options.
-
 
 #### Processing Multiple Files
 
@@ -464,14 +461,12 @@ echo "\n\nCompleted! Processed $totalProcessed files.\n";
 ```
 ```
 
-
 ### Next Steps
 
 - **[Installation Guide](https://docs.kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
 - **[API Documentation](https://docs.kreuzberg.dev/reference/api-python/)** - Complete API reference
 - **[Examples & Guides](https://docs.kreuzberg.dev/)** - Full code examples and usage guides
 - **[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 ## Features
 
@@ -562,11 +557,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 | **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
 | **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
-
 ## OCR Support
 
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
-
 
 - **Tesseract**
 
@@ -704,20 +697,17 @@ if ($avgCharsPerPage < 100) {
 ```
 ```
 
-
 ## Plugin System
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
 
-
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
-
 
 ## Batch Processing
 
@@ -879,7 +869,6 @@ foreach ($batches as $index => $batch) {
 echo "\n\nCompleted! Processed $totalProcessed files.\n";
 ```
 ```
-
 
 ## Configuration
 

@@ -118,7 +118,6 @@ Then add the product to the relevant target:
 ),
 ```
 
-
 ### System Requirements
 - **Swift 6.0+** (`swift-tools-version: 6.0`) on macOS 13+ or iOS 16+
 - Native runtime delivered through the C FFI surface from `kreuzberg-ffi`; published artifacts ship as a binary target
@@ -172,11 +171,9 @@ let result = try extractFileSync("scanned.pdf", nil, config)
 print(result.content().toString())
 ```
 
-
 #### Table Extraction
 
 See [Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/) for table extraction options.
-
 
 #### Processing Multiple Files
 
@@ -200,7 +197,6 @@ for (index, result) in results.enumerated() {
     print("File \(index): \(result.content().toString().count) chars")
 }
 ```
-
 
 #### Async Processing
 
@@ -227,14 +223,12 @@ struct App {
 }
 ```
 
-
 ### Next Steps
 
 - **[Installation Guide](https://docs.kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
 - **[API Documentation](https://docs.kreuzberg.dev/reference/api-python/)** - Complete API reference
 - **[Examples & Guides](https://docs.kreuzberg.dev/)** - Full code examples and usage guides
 - **[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 ## Features
 
@@ -326,11 +320,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 | **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
 | **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
-
 ## OCR Support
 
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
-
 
 - **Tesseract**
 
@@ -358,7 +350,6 @@ let result = try extractFileSync("scanned.pdf", nil, config)
 print(result.content().toString())
 ```
 
-
 ## Async Support
 
 This binding provides full async/await support for non-blocking document processing:
@@ -384,20 +375,17 @@ struct App {
 }
 ```
 
-
 ## Plugin System
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
 
-
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
-
 
 ## Batch Processing
 
@@ -423,7 +411,6 @@ for (index, result) in results.enumerated() {
     print("File \(index): \(result.content().toString().count) chars")
 }
 ```
-
 
 ## Configuration
 

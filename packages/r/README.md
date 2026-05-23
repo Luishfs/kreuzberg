@@ -108,7 +108,6 @@ install.packages("kreuzberg",
   repos = c("https://kreuzberg-dev.r-universe.dev", getOption("repos")))
 ```
 
-
 ### System Requirements
 - **R 4.1+** required (extendr bindings)
 - Optional: [ONNX Runtime](https://github.com/microsoft/onnxruntime/releases) version 1.22.x for embeddings support
@@ -154,11 +153,9 @@ cat("Content preview:\n")
 cat(substr(result$content, 1, 200))
 ```
 
-
 #### Table Extraction
 
 See [Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/) for table extraction options.
-
 
 #### Processing Multiple Files
 
@@ -182,7 +179,6 @@ cat("Extracted text from image:\n")
 cat(result$content)
 ```
 
-
 #### Async Processing
 
 For non-blocking document processing:
@@ -202,14 +198,12 @@ cat(sprintf("Page count: %d\n", page_count(result)))
 cat(sprintf("Detected language: %s\n", detected_language(result)))
 ```
 
-
 ### Next Steps
 
 - **[Installation Guide](https://docs.kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
 - **[API Documentation](https://docs.kreuzberg.dev/reference/api-python/)** - Complete API reference
 - **[Examples & Guides](https://docs.kreuzberg.dev/)** - Full code examples and usage guides
 - **[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 ## Features
 
@@ -300,11 +294,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 | **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
 | **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
-
 ## OCR Support
 
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
-
 
 - **Tesseract**
 
@@ -330,20 +322,17 @@ cat("Content preview:\n")
 cat(substr(result$content, 1, 200))
 ```
 
-
 ## Plugin System
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
 
-
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
-
 
 ## Batch Processing
 
@@ -368,7 +357,6 @@ result <- jsonlite::fromJSON(json, simplifyVector = FALSE)
 cat("Extracted text from image:\n")
 cat(result$content)
 ```
-
 
 ## Configuration
 

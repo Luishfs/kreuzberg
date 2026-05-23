@@ -113,7 +113,6 @@ For Flutter projects:
 flutter pub add kreuzberg
 ```
 
-
 ### System Requirements
 - **Dart SDK 3.0+** for pure-Dart consumers
 - Flutter projects supported on macOS, iOS, Android, Linux, and Windows; Flutter Web is not supported
@@ -175,11 +174,9 @@ Future<void> main() async {
 }
 ```
 
-
 #### Table Extraction
 
 See [Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/) for table extraction options.
-
 
 #### Processing Multiple Files
 
@@ -205,7 +202,6 @@ Future<void> main() async {
 }
 ```
 
-
 #### Async Processing
 
 For non-blocking document processing:
@@ -222,14 +218,12 @@ Future<void> main() async {
 }
 ```
 
-
 ### Next Steps
 
 - **[Installation Guide](https://docs.kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
 - **[API Documentation](https://docs.kreuzberg.dev/reference/api-python/)** - Complete API reference
 - **[Examples & Guides](https://docs.kreuzberg.dev/)** - Full code examples and usage guides
 - **[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 ## Features
 
@@ -321,11 +315,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 | **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
 | **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
-
 ## OCR Support
 
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
-
 
 - **Tesseract**
 
@@ -360,7 +352,6 @@ Future<void> main() async {
 }
 ```
 
-
 ## Async Support
 
 This binding provides full async/await support for non-blocking document processing:
@@ -377,20 +368,17 @@ Future<void> main() async {
 }
 ```
 
-
 ## Plugin System
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
 
-
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
-
 
 ## Batch Processing
 
@@ -417,7 +405,6 @@ Future<void> main() async {
   }
 }
 ```
-
 
 ## Configuration
 

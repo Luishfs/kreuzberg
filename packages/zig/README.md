@@ -117,7 +117,6 @@ const kreuzberg_dep = b.dependency("kreuzberg", .{
 exe.root_module.addImport("kreuzberg", kreuzberg_dep.module("kreuzberg"));
 ```
 
-
 ### System Requirements
 - **Zig 0.16.0+** required (`minimum_zig_version` declared in `build.zig.zon`)
 - Links the C FFI surface from `kreuzberg-ffi`; the build resolves the library via `linkSystemLibrary` against the consumer-provided search path
@@ -188,11 +187,9 @@ pub fn main() !void {
 }
 ```
 
-
 #### Table Extraction
 
 See [Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/) for table extraction options.
-
 
 #### Processing Multiple Files
 
@@ -219,7 +216,6 @@ pub fn main() !void {
 }
 ```
 
-
 #### Async Processing
 
 For non-blocking document processing:
@@ -241,14 +237,12 @@ pub fn main() !void {
 }
 ```
 
-
 ### Next Steps
 
 - **[Installation Guide](https://docs.kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
 - **[API Documentation](https://docs.kreuzberg.dev/reference/api-python/)** - Complete API reference
 - **[Examples & Guides](https://docs.kreuzberg.dev/)** - Full code examples and usage guides
 - **[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 ## Features
 
@@ -339,11 +333,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 | **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
 | **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
-
 ## OCR Support
 
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
-
 
 - **Tesseract**
 
@@ -380,20 +372,17 @@ pub fn main() !void {
 }
 ```
 
-
 ## Plugin System
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
 
-
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
-
 
 ## Batch Processing
 
@@ -421,7 +410,6 @@ pub fn main() !void {
     try stdout.print("{s}\n", .{results_json});
 }
 ```
-
 
 ## Configuration
 

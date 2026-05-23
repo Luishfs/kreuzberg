@@ -123,7 +123,6 @@ Groovy DSL (`build.gradle`):
 implementation 'dev.kreuzberg:kreuzberg:5.0.0-rc.1'
 ```
 
-
 ### System Requirements
 - **Java 25+** required (Foreign Function & Memory API; build run with `--enable-preview` and `--enable-native-access=ALL-UNNAMED`)
 - Native libraries bundled in the JAR for macOS (arm64, x64), Linux (x64, arm64), and Windows (x64)
@@ -197,11 +196,9 @@ public class Main {
 }
 ```
 
-
 #### Table Extraction
 
 See [Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/) for table extraction options.
-
 
 #### Processing Multiple Files
 
@@ -228,7 +225,6 @@ for (ExtractionResult result : results) {
 }
 ```
 
-
 #### Async Processing
 
 For non-blocking document processing:
@@ -246,14 +242,12 @@ System.out.println(result.content());
 System.out.println(result.mimeType());
 ```
 
-
 ### Next Steps
 
 - **[Installation Guide](https://docs.kreuzberg.dev/getting-started/installation/)** - Platform-specific setup
 - **[API Documentation](https://docs.kreuzberg.dev/reference/api-python/)** - Complete API reference
 - **[Examples & Guides](https://docs.kreuzberg.dev/)** - Full code examples and usage guides
 - **[Configuration Guide](https://docs.kreuzberg.dev/guides/configuration/)** - Advanced configuration options
-
 
 ## Features
 
@@ -345,11 +339,9 @@ Powered by [tree-sitter-language-pack](https://github.com/kreuzberg-dev/tree-sit
 | **Archives** | 5-50 MB/s | ~200MB per doc | ZIP, TAR, etc. |
 | **Web formats** | 50-200 MB/s | Streaming | HTML, XML, JSON |
 
-
 ## OCR Support
 
 Kreuzberg supports multiple OCR backends for extracting text from scanned documents and images:
-
 
 - **Tesseract**
 
@@ -384,7 +376,6 @@ public class Main {
 }
 ```
 
-
 ## Async Support
 
 This binding provides full async/await support for non-blocking document processing:
@@ -402,20 +393,17 @@ System.out.println(result.content());
 System.out.println(result.mimeType());
 ```
 
-
 ## Plugin System
 
 Kreuzberg supports extensible post-processing plugins for custom text transformation and filtering.
 
 For detailed plugin documentation, visit [Plugin System Guide](https://docs.kreuzberg.dev/guides/plugins/).
 
-
 ## Embeddings Support
 
 Generate vector embeddings for extracted text using the built-in ONNX Runtime support. Requires ONNX Runtime installation.
 
 **[Embeddings Guide](https://docs.kreuzberg.dev/features/#embeddings)**
-
 
 ## Batch Processing
 
@@ -443,7 +431,6 @@ for (ExtractionResult result : results) {
     System.out.println("Content length: " + result.content().length());
 }
 ```
-
 
 ## Configuration
 
