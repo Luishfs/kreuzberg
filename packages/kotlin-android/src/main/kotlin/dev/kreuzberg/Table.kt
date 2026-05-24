@@ -39,5 +39,5 @@ data class Table(
      * Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
      * Only populated for PDF-extracted tables when position data is available.
      */
-    val boundingBox: String? = null
+    val boundingBox: BoundingBox? = null
 )

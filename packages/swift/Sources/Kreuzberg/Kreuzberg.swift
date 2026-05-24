@@ -1693,8 +1693,8 @@ public struct PdfAnnotation: Codable, Sendable, Hashable {
     /// Page number where the annotation appears (1-indexed).
     public let pageNumber: UInt32
     /// Bounding box of the annotation on the page.
-    public let boundingBox: String?
-    public init(annotationType: PdfAnnotationType, content: String? = nil, pageNumber: UInt32, boundingBox: String? = nil) {
+    public let boundingBox: BoundingBox?
+    public init(annotationType: PdfAnnotationType, content: String? = nil, pageNumber: UInt32, boundingBox: BoundingBox? = nil) {
         self.annotationType = annotationType
         self.content = content
         self.pageNumber = pageNumber
@@ -1714,7 +1714,7 @@ internal extension PdfAnnotation {
         self.annotationType = PdfAnnotationType(rawValue: rb.annotationType().toString()) ?? { fatalError("Unknown PdfAnnotationType: \(rb.annotationType().toString())") }()
         self.content = rb.content()?.toString()
         self.pageNumber = rb.pageNumber()
-        self.boundingBox = rb.boundingBox()?.toString()
+        self.boundingBox = try rb.boundingBox().map { try BoundingBox($0) }
     }
     func intoRust() throws -> RustBridge.PdfAnnotation {
         let data = try JSONEncoder().encode(self)
@@ -1919,8 +1919,8 @@ public struct GridCell: Codable, Sendable, Hashable {
     /// Whether this is a header cell.
     public let isHeader: Bool
     /// Bounding box for this cell (if available).
-    public let bbox: String?
-    public init(content: String, row: UInt32, col: UInt32, rowSpan: UInt32, colSpan: UInt32, isHeader: Bool, bbox: String? = nil) {
+    public let bbox: BoundingBox?
+    public init(content: String, row: UInt32, col: UInt32, rowSpan: UInt32, colSpan: UInt32, isHeader: Bool, bbox: BoundingBox? = nil) {
         self.content = content
         self.row = row
         self.col = col
@@ -1949,7 +1949,7 @@ internal extension GridCell {
         self.rowSpan = rb.rowSpan()
         self.colSpan = rb.colSpan()
         self.isHeader = rb.isHeader()
-        self.bbox = rb.bbox()?.toString()
+        self.bbox = try rb.bbox().map { try BoundingBox($0) }
     }
     func intoRust() throws -> RustBridge.GridCell {
         let data = try JSONEncoder().encode(self)
@@ -2253,6 +2253,50 @@ internal extension ChunkMetadata {
 /// PIL.Image (Python), Sharp (Node.js), or other formats as needed.
 public typealias ExtractedImage = RustBridge.ExtractedImage
 
+/// Bounding box coordinates for element positioning.
+public struct BoundingBox: Codable, Sendable, Hashable {
+    /// Left x-coordinate
+    public let x0: Double
+    /// Bottom y-coordinate
+    public let y0: Double
+    /// Right x-coordinate
+    public let x1: Double
+    /// Top y-coordinate
+    public let y1: Double
+    public init(x0: Double, y0: Double, x1: Double, y1: Double) {
+        self.x0 = x0
+        self.y0 = y0
+        self.x1 = x1
+        self.y1 = y1
+    }
+    private enum CodingKeys: String, CodingKey {
+        case x0 = "x0"
+        case y0 = "y0"
+        case x1 = "x1"
+        case y1 = "y1"
+    }
+    public init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.x0 = try container.decodeIfPresent(Double.self, forKey: .x0) ?? 0
+        self.y0 = try container.decodeIfPresent(Double.self, forKey: .y0) ?? 0
+        self.x1 = try container.decodeIfPresent(Double.self, forKey: .x1) ?? 0
+        self.y1 = try container.decodeIfPresent(Double.self, forKey: .y1) ?? 0
+    }
+}
+
+// MARK: - Internal FFI conversions for BoundingBox
+internal extension BoundingBox {
+    init(_ rb: RustBridge.BoundingBoxRef) throws {
+        self.x0 = rb.x0()
+        self.y0 = rb.y0()
+        self.x1 = rb.x1()
+        self.y1 = rb.y1()
+    }
+    func intoRust() throws -> RustBridge.BoundingBox {
+        return RustBridge.BoundingBox(self.x0, self.y0, self.x1, self.y1)
+    }
+}
+
 /// Metadata for a semantic element.
 public typealias ElementMetadata = RustBridge.ElementMetadata
 
@@ -2375,10 +2419,10 @@ public struct TextExtractionResult: Codable, Sendable, Hashable {
     /// Markdown headers (text only, Markdown files only)
     public let headers: [String]?
     /// Markdown links as (text, URL) tuples (Markdown files only)
-    public let links: [String]?
+    public let links: [[String]]?
     /// Code blocks as (language, code) tuples (Markdown files only)
-    public let codeBlocks: [String]?
-    public init(content: String, lineCount: UInt, wordCount: UInt, characterCount: UInt, headers: [String]? = nil, links: [String]? = nil, codeBlocks: [String]? = nil) {
+    public let codeBlocks: [[String]]?
+    public init(content: String, lineCount: UInt, wordCount: UInt, characterCount: UInt, headers: [String]? = nil, links: [[String]]? = nil, codeBlocks: [[String]]? = nil) {
         self.content = content
         self.lineCount = lineCount
         self.wordCount = wordCount
@@ -3049,10 +3093,10 @@ public struct TextMetadata: Codable, Sendable, Hashable {
     /// Markdown headers (headings text only, for Markdown files)
     public let headers: [String]?
     /// Markdown links as (text, url) tuples (for Markdown files)
-    public let links: [String]?
+    public let links: [[String]]?
     /// Code blocks as (language, code) tuples (for Markdown files)
-    public let codeBlocks: [String]?
-    public init(lineCount: UInt32, wordCount: UInt32, characterCount: UInt32, headers: [String]? = nil, links: [String]? = nil, codeBlocks: [String]? = nil) {
+    public let codeBlocks: [[String]]?
+    public init(lineCount: UInt32, wordCount: UInt32, characterCount: UInt32, headers: [String]? = nil, links: [[String]]? = nil, codeBlocks: [[String]]? = nil) {
         self.lineCount = lineCount
         self.wordCount = wordCount
         self.characterCount = characterCount
@@ -3074,8 +3118,8 @@ public struct TextMetadata: Codable, Sendable, Hashable {
         self.wordCount = try container.decodeIfPresent(UInt32.self, forKey: .wordCount) ?? 0
         self.characterCount = try container.decodeIfPresent(UInt32.self, forKey: .characterCount) ?? 0
         self.headers = try container.decodeIfPresent([String].self, forKey: .headers) ?? nil
-        self.links = try container.decodeIfPresent([String].self, forKey: .links) ?? nil
-        self.codeBlocks = try container.decodeIfPresent([String].self, forKey: .codeBlocks) ?? nil
+        self.links = try container.decodeIfPresent([[String]].self, forKey: .links) ?? nil
+        self.codeBlocks = try container.decodeIfPresent([[String]].self, forKey: .codeBlocks) ?? nil
     }
 }
 
@@ -3153,8 +3197,8 @@ public struct LinkMetadata: Codable, Sendable, Hashable {
     /// Rel attribute values
     public let rel: [String]
     /// Additional attributes as key-value pairs
-    public let attributes: [String]
-    public init(href: String, text: String, title: String? = nil, linkType: LinkType, rel: [String], attributes: [String]) {
+    public let attributes: [[String]]
+    public init(href: String, text: String, title: String? = nil, linkType: LinkType, rel: [String], attributes: [[String]]) {
         self.href = href
         self.text = text
         self.title = title
@@ -3180,7 +3224,7 @@ internal extension LinkMetadata {
         self.title = rb.title()?.toString()
         self.linkType = LinkType(rawValue: rb.linkType().toString()) ?? { fatalError("Unknown LinkType: \(rb.linkType().toString())") }()
         self.rel = rb.rel().map { $0.as_str().toString() }
-        self.attributes = try JSONDecoder().decode([String].self, from: Data("null".utf8))
+        self.attributes = try JSONDecoder().decode([[String]].self, from: Data("null".utf8))
     }
     func intoRust() throws -> RustBridge.LinkMetadata {
         let data = try JSONEncoder().encode(self)
@@ -3202,8 +3246,8 @@ public struct ImageMetadataType: Codable, Sendable, Hashable {
     /// Image type classification
     public let imageType: ImageType
     /// Additional attributes as key-value pairs
-    public let attributes: [String]
-    public init(src: String, alt: String? = nil, title: String? = nil, dimensions: [UInt32]? = nil, imageType: ImageType, attributes: [String]) {
+    public let attributes: [[String]]
+    public init(src: String, alt: String? = nil, title: String? = nil, dimensions: [UInt32]? = nil, imageType: ImageType, attributes: [[String]]) {
         self.src = src
         self.alt = alt
         self.title = title
@@ -3229,7 +3273,7 @@ internal extension ImageMetadataType {
         self.title = rb.title()?.toString()
         self.dimensions = rb.dimensions().map { Array($0) }
         self.imageType = ImageType(rawValue: rb.imageType().toString()) ?? { fatalError("Unknown ImageType: \(rb.imageType().toString())") }()
-        self.attributes = try JSONDecoder().decode([String].self, from: Data("null".utf8))
+        self.attributes = try JSONDecoder().decode([[String]].self, from: Data("null".utf8))
     }
     func intoRust() throws -> RustBridge.ImageMetadataType {
         let data = try JSONEncoder().encode(self)
@@ -4124,10 +4168,10 @@ public struct LayoutRegion: Codable, Sendable, Hashable {
     /// Confidence score from the layout detection model (0.0 to 1.0).
     public let confidence: Double
     /// Bounding box in document coordinate space.
-    public let boundingBox: String
+    public let boundingBox: BoundingBox
     /// Fraction of the page area covered by this region (0.0 to 1.0).
     public let areaFraction: Double
-    public init(className: String, confidence: Double, boundingBox: String, areaFraction: Double) {
+    public init(className: String, confidence: Double, boundingBox: BoundingBox, areaFraction: Double) {
         self.className = className
         self.confidence = confidence
         self.boundingBox = boundingBox
@@ -4143,7 +4187,7 @@ public struct LayoutRegion: Codable, Sendable, Hashable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.className = try container.decodeIfPresent(String.self, forKey: .className) ?? ""
         self.confidence = try container.decodeIfPresent(Double.self, forKey: .confidence) ?? 0
-        self.boundingBox = try container.decodeIfPresent(String.self, forKey: .boundingBox) ?? ""
+        self.boundingBox = try container.decode(BoundingBox.self, forKey: .boundingBox)
         self.areaFraction = try container.decodeIfPresent(Double.self, forKey: .areaFraction) ?? 0
     }
 }
@@ -4153,11 +4197,11 @@ internal extension LayoutRegion {
     init(_ rb: RustBridge.LayoutRegionRef) throws {
         self.className = rb.className().toString()
         self.confidence = rb.confidence()
-        self.boundingBox = rb.boundingBox().toString()
+        self.boundingBox = try BoundingBox(rb.boundingBox())
         self.areaFraction = rb.areaFraction()
     }
     func intoRust() throws -> RustBridge.LayoutRegion {
-        return RustBridge.LayoutRegion(RustString(self.className), self.confidence, RustString(self.boundingBox), self.areaFraction)
+        return RustBridge.LayoutRegion(RustString(self.className), self.confidence, try self.boundingBox.intoRust(), self.areaFraction)
     }
 }
 
@@ -4259,8 +4303,8 @@ public struct Table: Codable, Sendable, Hashable {
     public let pageNumber: UInt32
     /// Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
     /// Only populated for PDF-extracted tables when position data is available.
-    public let boundingBox: String?
-    public init(cells: [[String]], markdown: String, pageNumber: UInt32, boundingBox: String? = nil) {
+    public let boundingBox: BoundingBox?
+    public init(cells: [[String]], markdown: String, pageNumber: UInt32, boundingBox: BoundingBox? = nil) {
         self.cells = cells
         self.markdown = markdown
         self.pageNumber = pageNumber
@@ -4277,7 +4321,7 @@ public struct Table: Codable, Sendable, Hashable {
         self.cells = try container.decodeIfPresent([[String]].self, forKey: .cells) ?? []
         self.markdown = try container.decodeIfPresent(String.self, forKey: .markdown) ?? ""
         self.pageNumber = try container.decodeIfPresent(UInt32.self, forKey: .pageNumber) ?? 0
-        self.boundingBox = try container.decodeIfPresent(String.self, forKey: .boundingBox) ?? nil
+        self.boundingBox = try container.decodeIfPresent(BoundingBox.self, forKey: .boundingBox) ?? nil
     }
 }
 
@@ -4287,7 +4331,7 @@ internal extension Table {
         self.cells = try JSONDecoder().decode([[String]].self, from: (rb.cells().toString().data(using: .utf8) ?? Data("null".utf8)))
         self.markdown = rb.markdown().toString()
         self.pageNumber = rb.pageNumber()
-        self.boundingBox = rb.boundingBox()?.toString()
+        self.boundingBox = try rb.boundingBox().map { try BoundingBox($0) }
     }
     func intoRust() throws -> RustBridge.Table {
         let data = try JSONEncoder().encode(self)
@@ -5348,7 +5392,7 @@ public enum NodeContent: Codable, Sendable, Hashable {
     /// (e.g. JSX in MDX, raw LaTeX in markdown, embedded HTML).
     case rawBlock(format: String, content: String)
     /// Structured metadata block (email headers, YAML frontmatter, etc.).
-    case metadataBlock(entries: [String])
+    case metadataBlock(entries: [[String]])
 }
 extension NodeContent {
     func intoRust() throws -> RustBridge.NodeContent {
@@ -6340,6 +6384,11 @@ public func chunkMetadataFromJson(_ json: String) throws -> ChunkMetadata {
 
 public func extractedImageFromJson(_ json: String) throws -> ExtractedImage {
     return try RustBridge.extractedImageFromJson(json)
+}
+
+public func boundingBoxFromJson(_ json: String) throws -> BoundingBox {
+    let data = json.data(using: .utf8) ?? Data()
+    return try JSONDecoder().decode(BoundingBox.self, from: data)
 }
 
 public func elementMetadataFromJson(_ json: String) throws -> ElementMetadata {

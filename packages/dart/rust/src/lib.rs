@@ -1313,7 +1313,7 @@ pub struct PdfAnnotation {
     /// Page number where the annotation appears (1-indexed).
     pub page_number: i64,
     /// Bounding box of the annotation on the page.
-    pub bounding_box: Option<String>,
+    pub bounding_box: Option<BoundingBox>,
 }
 
 /// Comprehensive Djot document structure with semantic preservation.
@@ -1485,7 +1485,7 @@ pub struct DocumentNode {
     /// Page number where this node ends (for multi-page tables/sections).
     pub page_end: Option<i64>,
     /// Bounding box in document coordinates.
-    pub bbox: Option<String>,
+    pub bbox: Option<BoundingBox>,
     /// Inline annotations (formatting, links) on this node's text content.
     ///
     /// Only meaningful for text-carrying nodes; empty for containers.
@@ -1526,7 +1526,7 @@ pub struct GridCell {
     /// Whether this is a header cell.
     pub is_header: bool,
     /// Bounding box for this cell (if available).
-    pub bbox: Option<String>,
+    pub bbox: Option<BoundingBox>,
 }
 
 /// Inline text annotation — byte-range based formatting and links.
@@ -1860,7 +1860,7 @@ pub struct ExtractedImage {
     pub ocr_result: Option<ExtractionResult>,
     /// Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
     /// Only populated for PDF-extracted images when position data is available from the PDF extractor.
-    pub bounding_box: Option<String>,
+    pub bounding_box: Option<BoundingBox>,
     /// Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
     /// Used for rendering image references when the binary data is not extracted.
     pub source_path: Option<String>,
@@ -1874,6 +1874,19 @@ pub struct ExtractedImage {
     pub cluster_id: Option<i64>,
 }
 
+/// Bounding box coordinates for element positioning.
+#[frb(mirror(BoundingBox))]
+pub struct BoundingBox {
+    /// Left x-coordinate
+    pub x0: f64,
+    /// Bottom y-coordinate
+    pub y0: f64,
+    /// Right x-coordinate
+    pub x1: f64,
+    /// Top y-coordinate
+    pub y1: f64,
+}
+
 /// Metadata for a semantic element.
 #[frb(mirror(ElementMetadata))]
 pub struct ElementMetadata {
@@ -1882,7 +1895,7 @@ pub struct ElementMetadata {
     /// Source filename or document name
     pub filename: Option<String>,
     /// Bounding box coordinates if available
-    pub coordinates: Option<String>,
+    pub coordinates: Option<BoundingBox>,
     /// Position index in the element sequence
     pub element_index: Option<i64>,
     /// Additional custom metadata
@@ -1970,9 +1983,9 @@ pub struct TextExtractionResult {
     /// Markdown headers (text only, Markdown files only)
     pub headers: Option<Vec<String>>,
     /// Markdown links as (text, URL) tuples (Markdown files only)
-    pub links: Option<Vec<String>>,
+    pub links: Option<Vec<Vec<String>>>,
     /// Code blocks as (language, code) tuples (Markdown files only)
-    pub code_blocks: Option<Vec<String>>,
+    pub code_blocks: Option<Vec<Vec<String>>>,
 }
 
 /// PowerPoint (PPTX) extraction result.
@@ -2390,9 +2403,9 @@ pub struct TextMetadata {
     /// Markdown headers (headings text only, for Markdown files)
     pub headers: Option<Vec<String>>,
     /// Markdown links as (text, url) tuples (for Markdown files)
-    pub links: Option<Vec<String>>,
+    pub links: Option<Vec<Vec<String>>>,
     /// Code blocks as (language, code) tuples (for Markdown files)
-    pub code_blocks: Option<Vec<String>>,
+    pub code_blocks: Option<Vec<Vec<String>>>,
 }
 
 /// Header/heading element metadata.
@@ -2424,7 +2437,7 @@ pub struct LinkMetadata {
     /// Rel attribute values
     pub rel: Vec<String>,
     /// Additional attributes as key-value pairs
-    pub attributes: Vec<String>,
+    pub attributes: Vec<Vec<String>>,
 }
 
 /// Image element metadata.
@@ -2441,7 +2454,7 @@ pub struct ImageMetadataType {
     /// Image type classification
     pub image_type: ImageType,
     /// Additional attributes as key-value pairs
-    pub attributes: Vec<String>,
+    pub attributes: Vec<Vec<String>>,
 }
 
 /// Structured data (Schema.org, microdata, RDFa) block.
@@ -2860,7 +2873,7 @@ pub struct LayoutRegion {
     /// Confidence score from the layout detection model (0.0 to 1.0).
     pub confidence: f64,
     /// Bounding box in document coordinate space.
-    pub bounding_box: String,
+    pub bounding_box: BoundingBox,
     /// Fraction of the page area covered by this region (0.0 to 1.0).
     pub area_fraction: f64,
 }
@@ -2918,7 +2931,7 @@ pub struct Table {
     pub page_number: i64,
     /// Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
     /// Only populated for PDF-extracted tables when position data is available.
-    pub bounding_box: Option<String>,
+    pub bounding_box: Option<BoundingBox>,
 }
 
 /// Individual table cell with content and optional styling.
@@ -3626,7 +3639,7 @@ pub enum NodeContent {
         content: String,
     },
     /// Structured metadata block (email headers, YAML frontmatter, etc.).
-    MetadataBlock { entries: Vec<String> },
+    MetadataBlock { entries: Vec<Vec<String>> },
 }
 
 /// Types of inline text annotations.
@@ -4615,7 +4628,7 @@ impl From<kreuzberg::PdfAnnotation> for PdfAnnotation {
             annotation_type: PdfAnnotationType::from(v.annotation_type),
             content: v.content.map(|s| s.into()),
             page_number: v.page_number as _,
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.map(BoundingBox::from),
         }
     }
 }
@@ -4724,7 +4737,7 @@ impl From<kreuzberg::DocumentNode> for DocumentNode {
             content_layer: ContentLayer::from(v.content_layer),
             page: v.page.map(|x| x as _),
             page_end: v.page_end.map(|x| x as _),
-            bbox: Default::default(),
+            bbox: v.bbox.map(BoundingBox::from),
             annotations: v.annotations.into_iter().map(TextAnnotation::from).collect(),
             attributes: v
                 .attributes
@@ -4752,7 +4765,7 @@ impl From<kreuzberg::GridCell> for GridCell {
             row_span: v.row_span as _,
             col_span: v.col_span as _,
             is_header: v.is_header as _,
-            bbox: Default::default(),
+            bbox: v.bbox.map(BoundingBox::from),
         }
     }
 }
@@ -4901,11 +4914,22 @@ impl From<kreuzberg::ExtractedImage> for ExtractedImage {
             is_mask: v.is_mask as _,
             description: v.description.map(|s| s.into()),
             ocr_result: v.ocr_result.map(|b| ExtractionResult::from(*b)),
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.map(BoundingBox::from),
             source_path: v.source_path.map(|s| s.into()),
             image_kind: v.image_kind.map(ImageKind::from),
             kind_confidence: v.kind_confidence.map(|x| x as _),
             cluster_id: v.cluster_id.map(|x| x as _),
+        }
+    }
+}
+
+impl From<kreuzberg::BoundingBox> for BoundingBox {
+    fn from(v: kreuzberg::BoundingBox) -> Self {
+        BoundingBox {
+            x0: v.x0 as _,
+            y0: v.y0 as _,
+            x1: v.x1 as _,
+            y1: v.y1 as _,
         }
     }
 }
@@ -4915,7 +4939,7 @@ impl From<kreuzberg::ElementMetadata> for ElementMetadata {
         ElementMetadata {
             page_number: v.page_number.map(|x| x as _),
             filename: v.filename.map(|s| s.into()),
-            coordinates: Default::default(),
+            coordinates: v.coordinates.map(BoundingBox::from),
             element_index: v.element_index.map(|x| x as _),
             additional: v.additional.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
@@ -5581,7 +5605,7 @@ impl From<kreuzberg::LayoutRegion> for LayoutRegion {
         LayoutRegion {
             class_name: v.class_name.into(),
             confidence: v.confidence as _,
-            bounding_box: Default::default(),
+            bounding_box: BoundingBox::from(v.bounding_box),
             area_fraction: v.area_fraction as _,
         }
     }
@@ -5613,7 +5637,7 @@ impl From<kreuzberg::Table> for Table {
             cells: v.cells,
             markdown: v.markdown.into(),
             page_number: v.page_number as _,
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.map(BoundingBox::from),
         }
     }
 }
@@ -6927,7 +6951,7 @@ impl From<PdfAnnotation> for kreuzberg::PdfAnnotation {
             annotation_type: v.annotation_type.into(),
             content: v.content.map(Into::into),
             page_number: v.page_number as _,
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.map(Into::into),
         }
     }
 }
@@ -7036,7 +7060,7 @@ impl From<DocumentNode> for kreuzberg::DocumentNode {
             content_layer: v.content_layer.into(),
             page: v.page.map(|x| x as _),
             page_end: v.page_end.map(|x| x as _),
-            bbox: Default::default(),
+            bbox: v.bbox.map(Into::into),
             annotations: v.annotations.into_iter().map(Into::into).collect(),
             attributes: v
                 .attributes
@@ -7064,7 +7088,7 @@ impl From<GridCell> for kreuzberg::GridCell {
             row_span: v.row_span as _,
             col_span: v.col_span as _,
             is_header: v.is_header as _,
-            bbox: Default::default(),
+            bbox: v.bbox.map(Into::into),
         }
     }
 }
@@ -7213,11 +7237,22 @@ impl From<ExtractedImage> for kreuzberg::ExtractedImage {
             is_mask: v.is_mask as _,
             description: v.description.map(Into::into),
             ocr_result: v.ocr_result.map(|x| Box::new(x.into())),
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.map(Into::into),
             source_path: v.source_path.map(Into::into),
             image_kind: v.image_kind.map(Into::into),
             kind_confidence: v.kind_confidence.map(|x| x as _),
             cluster_id: v.cluster_id.map(|x| x as _),
+        }
+    }
+}
+
+impl From<BoundingBox> for kreuzberg::BoundingBox {
+    fn from(v: BoundingBox) -> Self {
+        kreuzberg::BoundingBox {
+            x0: v.x0 as _,
+            y0: v.y0 as _,
+            x1: v.x1 as _,
+            y1: v.y1 as _,
         }
     }
 }
@@ -7227,7 +7262,7 @@ impl From<ElementMetadata> for kreuzberg::ElementMetadata {
         kreuzberg::ElementMetadata {
             page_number: v.page_number.map(|x| x as _),
             filename: v.filename.map(Into::into),
-            coordinates: Default::default(),
+            coordinates: v.coordinates.map(Into::into),
             element_index: v.element_index.map(|x| x as _),
             additional: v.additional.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
@@ -7740,7 +7775,7 @@ impl From<LayoutRegion> for kreuzberg::LayoutRegion {
         kreuzberg::LayoutRegion {
             class_name: v.class_name.into(),
             confidence: v.confidence as _,
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.into(),
             area_fraction: v.area_fraction as _,
         }
     }
@@ -7776,7 +7811,7 @@ impl From<Table> for kreuzberg::Table {
                 .collect(),
             markdown: v.markdown.into(),
             page_number: v.page_number as _,
-            bounding_box: Default::default(),
+            bounding_box: v.bounding_box.map(Into::into),
         }
     }
 }
@@ -9155,6 +9190,13 @@ pub fn create_chunk_metadata_from_json(json: String) -> Result<ChunkMetadata, St
 pub fn create_extracted_image_from_json(json: String) -> Result<ExtractedImage, String> {
     serde_json::from_str::<kreuzberg::ExtractedImage>(&json)
         .map(ExtractedImage::from)
+        .map_err(|e| e.to_string())
+}
+
+#[frb]
+pub fn create_bounding_box_from_json(json: String) -> Result<BoundingBox, String> {
+    serde_json::from_str::<kreuzberg::BoundingBox>(&json)
+        .map(BoundingBox::from)
         .map_err(|e| e.to_string())
 }
 

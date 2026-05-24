@@ -1235,7 +1235,7 @@ pub const PdfAnnotation = struct {
     /// Page number where the annotation appears (1-indexed).
     page_number: u32,
     /// Bounding box of the annotation on the page.
-    bounding_box: ?[]const u8,
+    bounding_box: ?BoundingBox,
 };
 
 /// Comprehensive Djot document structure with semantic preservation.
@@ -1398,7 +1398,7 @@ pub const DocumentNode = struct {
     /// Page number where this node ends (for multi-page tables/sections).
     page_end: ?u32,
     /// Bounding box in document coordinates.
-    bbox: ?[]const u8,
+    bbox: ?BoundingBox,
     /// Inline annotations (formatting, links) on this node's text content.
     ///
     /// Only meaningful for text-carrying nodes; empty for containers.
@@ -1437,7 +1437,7 @@ pub const GridCell = struct {
     /// Whether this is a header cell.
     is_header: bool,
     /// Bounding box for this cell (if available).
-    bbox: ?[]const u8,
+    bbox: ?BoundingBox,
 };
 
 /// Inline text annotation — byte-range based formatting and links.
@@ -1761,7 +1761,7 @@ pub const ExtractedImage = struct {
     ocr_result: ?ExtractionResult,
     /// Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
     /// Only populated for PDF-extracted images when position data is available from the PDF extractor.
-    bounding_box: ?[]const u8,
+    bounding_box: ?BoundingBox,
     /// Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
     /// Used for rendering image references when the binary data is not extracted.
     source_path: ?[]const u8,
@@ -1775,6 +1775,18 @@ pub const ExtractedImage = struct {
     cluster_id: ?u32,
 };
 
+/// Bounding box coordinates for element positioning.
+pub const BoundingBox = struct {
+    /// Left x-coordinate
+    x0: f64,
+    /// Bottom y-coordinate
+    y0: f64,
+    /// Right x-coordinate
+    x1: f64,
+    /// Top y-coordinate
+    y1: f64,
+};
+
 /// Metadata for a semantic element.
 pub const ElementMetadata = struct {
     /// Page number (1-indexed)
@@ -1782,7 +1794,7 @@ pub const ElementMetadata = struct {
     /// Source filename or document name
     filename: ?[]const u8,
     /// Bounding box coordinates if available
-    coordinates: ?[]const u8,
+    coordinates: ?BoundingBox,
     /// Position index in the element sequence
     element_index: ?u64,
     /// Additional custom metadata
@@ -1865,9 +1877,9 @@ pub const TextExtractionResult = struct {
     /// Markdown headers (text only, Markdown files only)
     headers: ?[]const []const u8,
     /// Markdown links as (text, URL) tuples (Markdown files only)
-    links: ?[]const []const u8,
+    links: ?[]const []const []const u8,
     /// Code blocks as (language, code) tuples (Markdown files only)
-    code_blocks: ?[]const []const u8,
+    code_blocks: ?[]const []const []const u8,
 };
 
 /// PowerPoint (PPTX) extraction result.
@@ -2269,9 +2281,9 @@ pub const TextMetadata = struct {
     /// Markdown headers (headings text only, for Markdown files)
     headers: ?[]const []const u8,
     /// Markdown links as (text, url) tuples (for Markdown files)
-    links: ?[]const []const u8,
+    links: ?[]const []const []const u8,
     /// Code blocks as (language, code) tuples (for Markdown files)
-    code_blocks: ?[]const []const u8,
+    code_blocks: ?[]const []const []const u8,
 };
 
 /// Header/heading element metadata.
@@ -2301,7 +2313,7 @@ pub const LinkMetadata = struct {
     /// Rel attribute values
     rel: []const []const u8,
     /// Additional attributes as key-value pairs
-    attributes: []const []const u8,
+    attributes: []const []const []const u8,
 };
 
 /// Image element metadata.
@@ -2317,7 +2329,7 @@ pub const ImageMetadataType = struct {
     /// Image type classification
     image_type: ImageType,
     /// Additional attributes as key-value pairs
-    attributes: []const []const u8,
+    attributes: []const []const []const u8,
 };
 
 /// Structured data (Schema.org, microdata, RDFa) block.
@@ -2710,7 +2722,7 @@ pub const LayoutRegion = struct {
     /// Confidence score from the layout detection model (0.0 to 1.0).
     confidence: f64,
     /// Bounding box in document coordinate space.
-    bounding_box: []const u8,
+    bounding_box: BoundingBox,
     /// Fraction of the page area covered by this region (0.0 to 1.0).
     area_fraction: f64,
 };
@@ -2765,7 +2777,7 @@ pub const Table = struct {
     page_number: u32,
     /// Bounding box of the table on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
     /// Only populated for PDF-extracted tables when position data is available.
-    bounding_box: ?[]const u8,
+    bounding_box: ?BoundingBox,
 };
 
 /// Individual table cell with content and optional styling.
@@ -3421,7 +3433,7 @@ pub const NodeContent = union(enum) {
         content: []const u8,
     },
     /// Structured metadata block (email headers, YAML frontmatter, etc.).
-    metadata_block: []const []const u8,
+    metadata_block: []const []const []const u8,
 };
 
 /// Types of inline text annotations.

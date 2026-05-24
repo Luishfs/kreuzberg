@@ -40,7 +40,7 @@ data class TextExtractionResult(
     /** Markdown headers (text only, Markdown files only) */
     val headers: List<String>? = null,
     /** Markdown links as (text, URL) tuples (Markdown files only) */
-    val links: List<String>? = null,
+    val links: List<List<String>>? = null,
     /** Code blocks as (language, code) tuples (Markdown files only) */
-    val codeBlocks: List<String>? = null
+    val codeBlocks: List<List<String>>? = null
 )

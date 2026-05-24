@@ -162,7 +162,7 @@ sealed class NodeContent {
     @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.fasterxml.jackson.databind.JsonDeserializer.None::class)
     @com.fasterxml.jackson.databind.annotation.JsonSerialize(using = com.fasterxml.jackson.databind.JsonSerializer.None::class)
     data class MetadataBlock(
-        val entries: kotlin.collections.List<String>
+        val entries: kotlin.collections.List<kotlin.collections.List<String>>
     ) : NodeContent()
 }
 

@@ -73,6 +73,10 @@ typedef struct KREUZBERGBibtexMetadata KREUZBERGBibtexMetadata;
  */
 typedef struct KREUZBERGBlockType KREUZBERGBlockType;
 /**
+ * Bounding box coordinates for element positioning.
+ */
+typedef struct KREUZBERGBoundingBox KREUZBERGBoundingBox;
+/**
  * A text chunk with optional embedding and metadata.
  *
  * Chunks are created when chunking is enabled in `ExtractionConfig`. Each chunk
@@ -5365,6 +5369,13 @@ char *kreuzberg_pdf_annotation_content(const KREUZBERGPdfAnnotation *ptr);
 uint32_t kreuzberg_pdf_annotation_page_number(const KREUZBERGPdfAnnotation *ptr);
 
 /**
+ * Get the `bounding_box` field from a `PdfAnnotation`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_pdf_annotation_bounding_box(const KREUZBERGPdfAnnotation *ptr);
+
+/**
  * Create a `DjotContent` from a JSON string. Returns null on failure.
  * # Safety
  * JSON string must be valid UTF-8 and null-terminated.
@@ -5877,6 +5888,13 @@ uint32_t kreuzberg_document_node_page(const KREUZBERGDocumentNode *ptr);
 uint32_t kreuzberg_document_node_page_end(const KREUZBERGDocumentNode *ptr);
 
 /**
+ * Get the `bbox` field from a `DocumentNode`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_document_node_bbox(const KREUZBERGDocumentNode *ptr);
+
+/**
  * Get the `annotations` field from a `DocumentNode`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -5998,6 +6016,13 @@ uint32_t kreuzberg_grid_cell_col_span(const KREUZBERGGridCell *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 int32_t kreuzberg_grid_cell_is_header(const KREUZBERGGridCell *ptr);
+
+/**
+ * Get the `bbox` field from a `GridCell`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_grid_cell_bbox(const KREUZBERGGridCell *ptr);
 
 /**
  * Create a `TextAnnotation` from a JSON string. Returns null on failure.
@@ -6693,6 +6718,13 @@ char *kreuzberg_extracted_image_description(const KREUZBERGExtractedImage *ptr);
 KREUZBERGExtractionResult *kreuzberg_extracted_image_ocr_result(const KREUZBERGExtractedImage *ptr);
 
 /**
+ * Get the `bounding_box` field from a `ExtractedImage`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_extracted_image_bounding_box(const KREUZBERGExtractedImage *ptr);
+
+/**
  * Get the `source_path` field from a `ExtractedImage`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -6719,6 +6751,57 @@ float kreuzberg_extracted_image_kind_confidence(const KREUZBERGExtractedImage *p
  * Pointer must be a valid handle returned by this library.
  */
 uint32_t kreuzberg_extracted_image_cluster_id(const KREUZBERGExtractedImage *ptr);
+
+/**
+ * Create a `BoundingBox` from a JSON string. Returns null on failure.
+ * # Safety
+ * JSON string must be valid UTF-8 and null-terminated.
+ * Returned handle must be freed with `kreuzberg_bounding_box_free`.
+ */
+KREUZBERGBoundingBox *kreuzberg_bounding_box_from_json(const char *json);
+
+/**
+ * Serialize a `BoundingBox` to a JSON string. Returns null on failure.
+ * # Safety
+ * `ptr` must be a valid, non-null pointer returned by a `kreuzberg` function.
+ * The returned string must be freed with `kreuzberg_free_string`.
+ */
+char *kreuzberg_bounding_box_to_json(const KREUZBERGBoundingBox *ptr);
+
+/**
+ * Free a `BoundingBox` handle.
+ * # Safety
+ * Pointer must have been returned by this library, or be null.
+ */
+void kreuzberg_bounding_box_free(KREUZBERGBoundingBox *ptr);
+
+/**
+ * Get the `x0` field from a `BoundingBox`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+double kreuzberg_bounding_box_x0(const KREUZBERGBoundingBox *ptr);
+
+/**
+ * Get the `y0` field from a `BoundingBox`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+double kreuzberg_bounding_box_y0(const KREUZBERGBoundingBox *ptr);
+
+/**
+ * Get the `x1` field from a `BoundingBox`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+double kreuzberg_bounding_box_x1(const KREUZBERGBoundingBox *ptr);
+
+/**
+ * Get the `y1` field from a `BoundingBox`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+double kreuzberg_bounding_box_y1(const KREUZBERGBoundingBox *ptr);
 
 /**
  * Create a `ElementMetadata` from a JSON string. Returns null on failure.
@@ -6756,6 +6839,13 @@ uint32_t kreuzberg_element_metadata_page_number(const KREUZBERGElementMetadata *
  * Pointer must be a valid handle returned by this library.
  */
 char *kreuzberg_element_metadata_filename(const KREUZBERGElementMetadata *ptr);
+
+/**
+ * Get the `coordinates` field from a `ElementMetadata`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_element_metadata_coordinates(const KREUZBERGElementMetadata *ptr);
 
 /**
  * Get the `element_index` field from a `ElementMetadata`.
@@ -9825,6 +9915,13 @@ char *kreuzberg_layout_region_class_name(const KREUZBERGLayoutRegion *ptr);
 double kreuzberg_layout_region_confidence(const KREUZBERGLayoutRegion *ptr);
 
 /**
+ * Get the `bounding_box` field from a `LayoutRegion`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_layout_region_bounding_box(const KREUZBERGLayoutRegion *ptr);
+
+/**
  * Get the `area_fraction` field from a `LayoutRegion`.
  * # Safety
  * Pointer must be a valid handle returned by this library.
@@ -9955,6 +10052,13 @@ char *kreuzberg_table_markdown(const KREUZBERGTable *ptr);
  * Pointer must be a valid handle returned by this library.
  */
 uint32_t kreuzberg_table_page_number(const KREUZBERGTable *ptr);
+
+/**
+ * Get the `bounding_box` field from a `Table`.
+ * # Safety
+ * Pointer must be a valid handle returned by this library.
+ */
+KREUZBERGBoundingBox *kreuzberg_table_bounding_box(const KREUZBERGTable *ptr);
 
 /**
  * Create a `TableCell` from a JSON string. Returns null on failure.

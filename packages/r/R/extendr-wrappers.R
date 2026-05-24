@@ -1560,6 +1560,24 @@ ExtractedImage <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.ExtractedImage` <- `$.ExtractedImage`
+#' Bounding box coordinates for element positioning
+#' @field x0 Left x-coordinate
+#' @field y0 Bottom y-coordinate
+#' @field x1 Right x-coordinate
+#' @field y1 Top y-coordinate
+#' @export
+BoundingBox <- new.env(parent = emptyenv())
+BoundingBox$from_json <- function(json) {
+  .Call("wrap__BoundingBox__from_json", json, PACKAGE = "kreuzberg")
+}
+#' @export
+`$.BoundingBox` <- function(self, name) {
+  func <- BoundingBox[[name]]
+  environment(func) <- environment()
+  func
+}
+#' @export
+`[[.BoundingBox` <- `$.BoundingBox`
 #' Metadata for a semantic element
 #' @field page_number Page number (1-indexed)
 #' @field filename Source filename or document name
@@ -1611,27 +1629,6 @@ XmlExtractionResult <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.XmlExtractionResult` <- `$.XmlExtractionResult`
-#' Plain text and Markdown extraction result
-#'
-#' Contains the extracted text along with statistics and,
-#' for Markdown files, structural elements like headers and links.
-#' @field content Extracted text content
-#' @field line_count Number of lines
-#' @field word_count Number of words
-#' @field character_count Number of characters
-#' @field headers Markdown headers (text only, Markdown files only)
-#' @field links Markdown links as (text, URL) tuples (Markdown files only)
-#' @field code_blocks Code blocks as (language, code) tuples (Markdown files only)
-#' @export
-TextExtractionResult <- new.env(parent = emptyenv())
-#' @export
-`$.TextExtractionResult` <- function(self, name) {
-  func <- TextExtractionResult[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.TextExtractionResult` <- `$.TextExtractionResult`
 #' Email attachment representation
 #'
 #' Contains metadata and optionally the content of an email attachment.
@@ -1901,29 +1898,6 @@ XmlMetadata$from_json <- function(json) {
 }
 #' @export
 `[[.XmlMetadata` <- `$.XmlMetadata`
-#' Text/Markdown metadata
-#'
-#' Extracted from plain text and Markdown files. Includes word counts and,
-#' for Markdown, structural elements like headers and links.
-#' @field line_count Number of lines in the document
-#' @field word_count Number of words
-#' @field character_count Number of characters
-#' @field headers Markdown headers (headings text only, for Markdown files)
-#' @field links Markdown links as (text, url) tuples (for Markdown files)
-#' @field code_blocks Code blocks as (language, code) tuples (for Markdown files)
-#' @export
-TextMetadata <- new.env(parent = emptyenv())
-TextMetadata$from_json <- function(json) {
-  .Call("wrap__TextMetadata__from_json", json, PACKAGE = "kreuzberg")
-}
-#' @export
-`$.TextMetadata` <- function(self, name) {
-  func <- TextMetadata[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.TextMetadata` <- `$.TextMetadata`
 #' Header/heading element metadata
 #' @field level Header level: 1 (h1) through 6 (h6)
 #' @field text Normalized text content of the header
@@ -1940,40 +1914,6 @@ HeaderMetadata <- new.env(parent = emptyenv())
 }
 #' @export
 `[[.HeaderMetadata` <- `$.HeaderMetadata`
-#' Link element metadata
-#' @field href The href URL value
-#' @field text Link text content (normalized)
-#' @field title Optional title attribute
-#' @field link_type Link type classification
-#' @field rel Rel attribute values
-#' @field attributes Additional attributes as key-value pairs
-#' @export
-LinkMetadata <- new.env(parent = emptyenv())
-#' @export
-`$.LinkMetadata` <- function(self, name) {
-  func <- LinkMetadata[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.LinkMetadata` <- `$.LinkMetadata`
-#' Image element metadata
-#' @field src Image source (URL, data URI, or SVG content)
-#' @field alt Alternative text from alt attribute
-#' @field title Title attribute
-#' @field dimensions Image dimensions as (width, height) if available
-#' @field image_type Image type classification
-#' @field attributes Additional attributes as key-value pairs
-#' @export
-ImageMetadataType <- new.env(parent = emptyenv())
-#' @export
-`$.ImageMetadataType` <- function(self, name) {
-  func <- ImageMetadataType[[name]]
-  environment(func) <- environment()
-  func
-}
-#' @export
-`[[.ImageMetadataType` <- `$.ImageMetadataType`
 #' Structured data (Schema.org, microdata, RDFa) block
 #' @field data_type Type of structured data
 #' @field raw_json Raw JSON string representation

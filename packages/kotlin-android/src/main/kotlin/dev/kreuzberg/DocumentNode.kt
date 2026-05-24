@@ -45,7 +45,7 @@ data class DocumentNode(
     /** Page number where this node ends (for multi-page tables/sections). */
     val pageEnd: Int? = null,
     /** Bounding box in document coordinates. */
-    val bbox: String? = null,
+    val bbox: BoundingBox? = null,
     /**
      * Inline annotations (formatting, links) on this node's text content.
      *

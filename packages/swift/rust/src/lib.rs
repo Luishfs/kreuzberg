@@ -979,7 +979,7 @@ mod ffi {
         #[swift_bridge(swift_name = "pageNumber")]
         fn page_number(&self) -> u32;
         #[swift_bridge(swift_name = "boundingBox")]
-        fn bounding_box(&self) -> Option<String>;
+        fn bounding_box(&self) -> Option<BoundingBox>;
     }
 
     extern "Rust" {
@@ -1073,7 +1073,7 @@ mod ffi {
         fn page(&self) -> Option<u32>;
         #[swift_bridge(swift_name = "pageEnd")]
         fn page_end(&self) -> Option<u32>;
-        fn bbox(&self) -> Option<String>;
+        fn bbox(&self) -> Option<BoundingBox>;
         fn annotations(&self) -> Vec<TextAnnotation>;
         fn attributes(&self) -> String;
     }
@@ -1098,7 +1098,7 @@ mod ffi {
         fn col_span(&self) -> u32;
         #[swift_bridge(swift_name = "isHeader")]
         fn is_header(&self) -> bool;
-        fn bbox(&self) -> Option<String>;
+        fn bbox(&self) -> Option<BoundingBox>;
     }
 
     extern "Rust" {
@@ -1274,7 +1274,7 @@ mod ffi {
         #[swift_bridge(swift_name = "ocrResult")]
         fn ocr_result(&self) -> Option<ExtractionResult>;
         #[swift_bridge(swift_name = "boundingBox")]
-        fn bounding_box(&self) -> Option<String>;
+        fn bounding_box(&self) -> Option<BoundingBox>;
         #[swift_bridge(swift_name = "sourcePath")]
         fn source_path(&self) -> Option<String>;
         #[swift_bridge(swift_name = "imageKind")]
@@ -1286,11 +1286,21 @@ mod ffi {
     }
 
     extern "Rust" {
+        type BoundingBox;
+        #[swift_bridge(init)]
+        fn new(x0: f64, y0: f64, x1: f64, y1: f64) -> BoundingBox;
+        fn x0(&self) -> f64;
+        fn y0(&self) -> f64;
+        fn x1(&self) -> f64;
+        fn y1(&self) -> f64;
+    }
+
+    extern "Rust" {
         type ElementMetadata;
         #[swift_bridge(swift_name = "pageNumber")]
         fn page_number(&self) -> Option<u32>;
         fn filename(&self) -> Option<String>;
-        fn coordinates(&self) -> Option<String>;
+        fn coordinates(&self) -> Option<BoundingBox>;
         #[swift_bridge(swift_name = "elementIndex")]
         fn element_index(&self) -> Option<usize>;
         fn additional(&self) -> String;
@@ -1701,8 +1711,8 @@ mod ffi {
             word_count: u32,
             character_count: u32,
             headers: Option<Vec<String>>,
-            links: Option<Vec<String>>,
-            code_blocks: Option<Vec<String>>,
+            links: String,
+            code_blocks: String,
         ) -> TextMetadata;
         #[swift_bridge(swift_name = "lineCount")]
         fn line_count(&self) -> u32;
@@ -2130,12 +2140,12 @@ mod ffi {
     extern "Rust" {
         type LayoutRegion;
         #[swift_bridge(init)]
-        fn new(class_name: String, confidence: f64, bounding_box: String, area_fraction: f64) -> LayoutRegion;
+        fn new(class_name: String, confidence: f64, bounding_box: BoundingBox, area_fraction: f64) -> LayoutRegion;
         #[swift_bridge(swift_name = "className")]
         fn class_name(&self) -> String;
         fn confidence(&self) -> f64;
         #[swift_bridge(swift_name = "boundingBox")]
-        fn bounding_box(&self) -> String;
+        fn bounding_box(&self) -> BoundingBox;
         #[swift_bridge(swift_name = "areaFraction")]
         fn area_fraction(&self) -> f64;
     }
@@ -2159,13 +2169,13 @@ mod ffi {
     extern "Rust" {
         type Table;
         #[swift_bridge(init)]
-        fn new(cells: String, markdown: String, page_number: u32, bounding_box: Option<String>) -> Table;
+        fn new(cells: String, markdown: String, page_number: u32, bounding_box: Option<BoundingBox>) -> Table;
         fn cells(&self) -> String;
         fn markdown(&self) -> String;
         #[swift_bridge(swift_name = "pageNumber")]
         fn page_number(&self) -> u32;
         #[swift_bridge(swift_name = "boundingBox")]
-        fn bounding_box(&self) -> Option<String>;
+        fn bounding_box(&self) -> Option<BoundingBox>;
     }
 
     extern "Rust" {
@@ -2970,6 +2980,8 @@ mod ffi {
         fn chunk_metadata_from_json(json: String) -> Result<ChunkMetadata, String>;
         #[swift_bridge(swift_name = "extractedImageFromJson")]
         fn extracted_image_from_json(json: String) -> Result<ExtractedImage, String>;
+        #[swift_bridge(swift_name = "boundingBoxFromJson")]
+        fn bounding_box_from_json(json: String) -> Result<BoundingBox, String>;
         #[swift_bridge(swift_name = "elementMetadataFromJson")]
         fn element_metadata_from_json(json: String) -> Result<ElementMetadata, String>;
         #[swift_bridge(swift_name = "elementFromJson")]
@@ -5964,8 +5976,8 @@ impl PdfAnnotation {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn bounding_box(&self) -> Option<String> {
-        self.0.bounding_box.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    pub fn bounding_box(&self) -> Option<BoundingBox> {
+        self.0.bounding_box.clone().map(BoundingBox)
     }
 }
 
@@ -6196,8 +6208,8 @@ impl DocumentNode {
                 .and_then(|j| ::serde_json::from_value(j).ok())
         })
     }
-    pub fn bbox(&self) -> Option<String> {
-        self.0.bbox.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    pub fn bbox(&self) -> Option<BoundingBox> {
+        self.0.bbox.clone().map(BoundingBox)
     }
     pub fn annotations(&self) -> Vec<TextAnnotation> {
         self.0
@@ -6272,8 +6284,8 @@ impl GridCell {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn bbox(&self) -> Option<String> {
-        self.0.bbox.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    pub fn bbox(&self) -> Option<BoundingBox> {
+        self.0.bbox.clone().map(BoundingBox)
     }
 }
 
@@ -6815,8 +6827,8 @@ impl ExtractedImage {
     pub fn ocr_result(&self) -> Option<ExtractionResult> {
         self.0.ocr_result.clone().map(|w| ExtractionResult(*w))
     }
-    pub fn bounding_box(&self) -> Option<String> {
-        self.0.bounding_box.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    pub fn bounding_box(&self) -> Option<BoundingBox> {
+        self.0.bounding_box.clone().map(BoundingBox)
     }
     pub fn source_path(&self) -> Option<String> {
         self.0.source_path.clone()
@@ -6840,6 +6852,37 @@ impl ExtractedImage {
     }
 }
 
+pub struct BoundingBox(pub kreuzberg::BoundingBox);
+impl BoundingBox {
+    pub fn new(x0: f64, y0: f64, x1: f64, y1: f64) -> BoundingBox {
+        BoundingBox(kreuzberg::BoundingBox { x0, y0, x1, y1 })
+    }
+    pub fn x0(&self) -> f64 {
+        ::serde_json::to_value(&self.0.x0)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn y0(&self) -> f64 {
+        ::serde_json::to_value(&self.0.y0)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn x1(&self) -> f64 {
+        ::serde_json::to_value(&self.0.x1)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+    pub fn y1(&self) -> f64 {
+        ::serde_json::to_value(&self.0.y1)
+            .ok()
+            .and_then(|j| ::serde_json::from_value(j).ok())
+            .unwrap_or_default()
+    }
+}
+
 pub struct ElementMetadata(pub kreuzberg::ElementMetadata);
 impl ElementMetadata {
     pub fn page_number(&self) -> Option<u32> {
@@ -6852,8 +6895,8 @@ impl ElementMetadata {
     pub fn filename(&self) -> Option<String> {
         self.0.filename.clone()
     }
-    pub fn coordinates(&self) -> Option<String> {
-        self.0.coordinates.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    pub fn coordinates(&self) -> Option<BoundingBox> {
+        self.0.coordinates.clone().map(BoundingBox)
     }
     pub fn element_index(&self) -> Option<usize> {
         self.0.element_index.as_ref().and_then(|v| {
@@ -8065,8 +8108,8 @@ impl TextMetadata {
         word_count: u32,
         character_count: u32,
         headers: Option<Vec<String>>,
-        links: Option<Vec<String>>,
-        code_blocks: Option<Vec<String>>,
+        links: String,
+        code_blocks: String,
     ) -> TextMetadata {
         let mut __target: kreuzberg::TextMetadata = ::std::default::Default::default();
         __target.line_count = line_count;
@@ -8077,8 +8120,16 @@ impl TextMetadata {
                 __target.headers = t;
             }
         }
-        // alef: links — Vec field type may differ from IR in non-serde struct, left at default
-        // alef: code_blocks — Vec field type may differ from IR in non-serde struct, left at default
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&links) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.links = t;
+            }
+        }
+        if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&code_blocks) {
+            if let Ok(t) = ::serde_json::from_value(v) {
+                __target.code_blocks = t;
+            }
+        }
         TextMetadata(__target)
     }
     pub fn line_count(&self) -> u32 {
@@ -9299,7 +9350,7 @@ impl PageContent {
 
 pub struct LayoutRegion(pub kreuzberg::LayoutRegion);
 impl LayoutRegion {
-    pub fn new(class_name: String, confidence: f64, bounding_box: String, area_fraction: f64) -> LayoutRegion {
+    pub fn new(class_name: String, confidence: f64, bounding_box: BoundingBox, area_fraction: f64) -> LayoutRegion {
         let mut __target: kreuzberg::LayoutRegion = ::std::default::Default::default();
         {
             // Try JSON parse first (handles enum/object values); on parse failure
@@ -9313,17 +9364,7 @@ impl LayoutRegion {
             }
         }
         __target.confidence = confidence;
-        {
-            // Try JSON parse first (handles enum/object values); on parse failure
-            // treat the raw input as a JSON string scalar so plain `String` /
-            // string-like enum fields don't end up empty for inputs that aren't
-            // valid JSON tokens (e.g. `tts-1`).
-            let __v = ::serde_json::from_str::<::serde_json::Value>(&bounding_box)
-                .unwrap_or(::serde_json::Value::String(bounding_box.clone()));
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.bounding_box = t;
-            }
-        }
+        __target.bounding_box = bounding_box.0;
         __target.area_fraction = area_fraction;
         LayoutRegion(__target)
     }
@@ -9336,8 +9377,8 @@ impl LayoutRegion {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn bounding_box(&self) -> String {
-        serde_json::to_string(&self.0.bounding_box).unwrap_or_default()
+    pub fn bounding_box(&self) -> BoundingBox {
+        BoundingBox(self.0.bounding_box.clone())
     }
     pub fn area_fraction(&self) -> f64 {
         ::serde_json::to_value(&self.0.area_fraction)
@@ -9389,7 +9430,7 @@ impl HierarchicalBlock {
 
 pub struct Table(pub kreuzberg::Table);
 impl Table {
-    pub fn new(cells: String, markdown: String, page_number: u32, bounding_box: Option<String>) -> Table {
+    pub fn new(cells: String, markdown: String, page_number: u32, bounding_box: Option<BoundingBox>) -> Table {
         let mut __target: kreuzberg::Table = ::std::default::Default::default();
         if let Ok(v) = ::serde_json::from_str::<::serde_json::Value>(&cells) {
             if let Ok(t) = ::serde_json::from_value(v) {
@@ -9408,15 +9449,8 @@ impl Table {
             }
         }
         __target.page_number = page_number;
-        if let Some(s) = bounding_box {
-            // Try JSON parse first (handles enum/object values); on parse failure
-            // treat the raw input as a JSON string scalar so plain `String` /
-            // string-like enum fields don't end up empty for inputs that aren't
-            // valid JSON tokens (e.g. `tts-1`).
-            let __v = ::serde_json::from_str::<::serde_json::Value>(&s).unwrap_or(::serde_json::Value::String(s));
-            if let Ok(t) = ::serde_json::from_value(__v) {
-                __target.bounding_box = Some(t);
-            }
+        if let Some(w) = bounding_box {
+            __target.bounding_box = Some(w.0);
         }
         Table(__target)
     }
@@ -9432,8 +9466,8 @@ impl Table {
             .and_then(|j| ::serde_json::from_value(j).ok())
             .unwrap_or_default()
     }
-    pub fn bounding_box(&self) -> Option<String> {
-        self.0.bounding_box.as_ref().and_then(|v| serde_json::to_string(v).ok())
+    pub fn bounding_box(&self) -> Option<BoundingBox> {
+        self.0.bounding_box.clone().map(BoundingBox)
     }
 }
 
@@ -12512,6 +12546,11 @@ pub fn chunk_metadata_from_json(json: String) -> Result<ChunkMetadata, String> {
 pub fn extracted_image_from_json(json: String) -> Result<ExtractedImage, String> {
     serde_json::from_str::<kreuzberg::ExtractedImage>(&json)
         .map(ExtractedImage)
+        .map_err(|e| e.to_string())
+}
+pub fn bounding_box_from_json(json: String) -> Result<BoundingBox, String> {
+    serde_json::from_str::<kreuzberg::BoundingBox>(&json)
+        .map(BoundingBox)
         .map_err(|e| e.to_string())
 }
 pub fn element_metadata_from_json(json: String) -> Result<ElementMetadata, String> {

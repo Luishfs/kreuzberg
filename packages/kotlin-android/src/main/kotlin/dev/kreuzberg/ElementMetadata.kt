@@ -29,7 +29,7 @@ data class ElementMetadata(
     /** Source filename or document name */
     val filename: String? = null,
     /** Bounding box coordinates if available */
-    val coordinates: String? = null,
+    val coordinates: BoundingBox? = null,
     /** Position index in the element sequence */
     val elementIndex: Long? = null,
     /** Additional custom metadata */

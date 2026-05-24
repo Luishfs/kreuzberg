@@ -38,7 +38,7 @@ data class TextMetadata(
     /** Markdown headers (headings text only, for Markdown files) */
     val headers: List<String>? = null,
     /** Markdown links as (text, url) tuples (for Markdown files) */
-    val links: List<String>? = null,
+    val links: List<List<String>>? = null,
     /** Code blocks as (language, code) tuples (for Markdown files) */
-    val codeBlocks: List<String>? = null
+    val codeBlocks: List<List<String>>? = null
 )

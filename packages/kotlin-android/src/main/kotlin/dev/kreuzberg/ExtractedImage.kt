@@ -67,7 +67,7 @@ data class ExtractedImage(
      * Bounding box of the image on the page (PDF coordinates: x0=left, y0=bottom, x1=right, y1=top).
      * Only populated for PDF-extracted images when position data is available from the PDF extractor.
      */
-    val boundingBox: String? = null,
+    val boundingBox: BoundingBox? = null,
     /**
      * Original source path of the image within the document archive (e.g., "media/image1.png" in DOCX).
      * Used for rendering image references when the binary data is not extracted.
