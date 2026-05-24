@@ -477,5 +477,10 @@ tokio-test = "0.4"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 zip = { version = ">=7.0.0, <8.7.0", default-features = false, features = ["deflate-flate2"] }
 
+[[bench]]
+name = "text_quality"
+harness = false
+required-features = ["quality"]
+
 [lints]
 workspace = true
