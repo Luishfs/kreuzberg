@@ -1687,8 +1687,12 @@ jobs:
           language: node-platform
           artifact-path: crates/kreuzberg-node/npm
           package-name: "@kreuzberg/node"
-          required-extras: |
-            **/*.node
+          # NAPI scaffolds stub package.json dirs for every platform in
+          # crates/kreuzberg-node/package.json's `napi.triples.additional`,
+          # not just the targets we build (e.g. darwin-x64, win32-arm64-msvc
+          # are listed but not built — their npm/*.tgz contains no .node).
+          # Use strict=false so verify reports stubs without failing the job.
+          strict: "false"
 
       - name: Publish platform sub-packages
         uses: kreuzberg-dev/actions/publish-npm@v1
