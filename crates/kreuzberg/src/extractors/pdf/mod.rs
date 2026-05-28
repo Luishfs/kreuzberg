@@ -294,7 +294,7 @@ impl PdfExtractor {
                 pre_rendered_doc.is_some(),
                 total_chars,
                 alnum_ws_ratio,
-                decision.fallback,
+                &decision,
                 &thresholds,
             ) {
                 ocr::OcrGateOutcome::SkipNonText => {
@@ -330,6 +330,38 @@ impl PdfExtractor {
                             "OCR fallback failed; using native text extraction result"
                         );
                         (native_text, ExtractionMethod::Native)
+                    }
+                },
+                ocr::OcrGateOutcome::RunFallbackOnPages(pages) => {
+                    match boundaries.as_deref() {
+                        Some(bounds) if !bounds.is_empty() => {
+                            match ocr::extract_mixed_ocr_native(
+                                &native_text, bounds, &pages, content, config, path,
+                            )
+                            .await
+                            {
+                                Ok((mixed, results_map, mixed_llm_usage)) => {
+                                    ocr_llm_usage = mixed_llm_usage;
+                                    ocr_results_map = Some(results_map);
+                                    (mixed, ExtractionMethod::Mixed)
+                                }
+                                Err(e) => {
+                                    tracing::warn!(
+                                        error = %e,
+                                        failing_pages = ?pages,
+                                        "Targeted OCR fallback failed; using native text extraction result"
+                                    );
+                                    (native_text, ExtractionMethod::Native)
+                                }
+                            }
+                        }
+                        _ => {
+                            tracing::warn!(
+                                failing_pages = ?pages,
+                                "Targeted OCR requested but no page boundaries available; using native text"
+                            );
+                            (native_text, ExtractionMethod::Native)
+                        }
                     }
                 },
                 ocr::OcrGateOutcome::UseNative => (native_text, ExtractionMethod::Native),
@@ -649,6 +681,18 @@ mod tests {
     #[cfg(feature = "pdf")]
     fn extraction_method(result: &crate::types::ExtractionResult) -> Option<ExtractionMethod> {
         result.extraction_method
+    }
+
+    #[cfg(feature = "ocr")]
+    fn mk_decision(fallback: bool, whole_doc_failure: bool, failing_pages: Vec<u32>) -> ocr::OcrFallbackDecision {
+        ocr::OcrFallbackDecision {
+            stats: ocr::NativeTextStats::default(),
+            avg_non_whitespace: 0.0,
+            avg_alnum: 0.0,
+            fallback,
+            failing_pages,
+            whole_doc_failure,
+        }
     }
 
     #[cfg(all(feature = "pdf", feature = "ocr"))]
@@ -1416,7 +1460,7 @@ mod tests {
             true, // pre_rendered_doc present
             500,  // total_chars > substantive_min_chars
             0.9,  // alnum_ws_ratio > threshold (0.4)
-            true, // decision.fallback — scanned page detected
+            &mk_decision(true, true, vec![]), // decision.fallback — scanned page detected
             &thresholds,
         );
         assert_eq!(
@@ -1437,7 +1481,7 @@ mod tests {
             true,  // pre_rendered_doc present
             500,   // total_chars > substantive_min_chars
             0.9,   // alnum_ws_ratio > threshold
-            false, // decision.fallback — all pages look fine
+            &mk_decision(false, false, vec![]), // decision.fallback — all pages look fine
             &thresholds,
         );
         assert_eq!(
@@ -1567,7 +1611,7 @@ mod tests {
             true, // pre_rendered_doc present
             500,  // total_chars > non_text_min_chars
             0.1,  // alnum_ws_ratio < threshold — non-textual content
-            true, // decision.fallback — per-page quality check fired
+            &mk_decision(true, true, vec![]), // decision.fallback — per-page quality check fired
             &thresholds,
         );
         assert_eq!(
