@@ -332,36 +332,30 @@ impl PdfExtractor {
                         (native_text, ExtractionMethod::Native)
                     }
                 },
-                ocr::OcrGateOutcome::RunFallbackOnPages(pages) => {
-                    match boundaries.as_deref() {
-                        Some(bounds) if !bounds.is_empty() => {
-                            match ocr::extract_mixed_ocr_native(
-                                &native_text, bounds, &pages, content, config, path,
-                            )
-                            .await
-                            {
-                                Ok((mixed, results_map, mixed_llm_usage)) => {
-                                    ocr_llm_usage = mixed_llm_usage;
-                                    ocr_results_map = Some(results_map);
-                                    (mixed, ExtractionMethod::Mixed)
-                                }
-                                Err(e) => {
-                                    tracing::warn!(
-                                        error = %e,
-                                        failing_pages = ?pages,
-                                        "Targeted OCR fallback failed; using native text extraction result"
-                                    );
-                                    (native_text, ExtractionMethod::Native)
-                                }
+                ocr::OcrGateOutcome::RunFallbackOnPages(pages) => match boundaries.as_deref() {
+                    Some(bounds) if !bounds.is_empty() => {
+                        match ocr::extract_mixed_ocr_native(&native_text, bounds, &pages, content, config, path).await {
+                            Ok((mixed, results_map, mixed_llm_usage)) => {
+                                ocr_llm_usage = mixed_llm_usage;
+                                ocr_results_map = Some(results_map);
+                                (mixed, ExtractionMethod::Mixed)
+                            }
+                            Err(e) => {
+                                tracing::warn!(
+                                    error = %e,
+                                    failing_pages = ?pages,
+                                    "Targeted OCR fallback failed; using native text extraction result"
+                                );
+                                (native_text, ExtractionMethod::Native)
                             }
                         }
-                        _ => {
-                            tracing::warn!(
-                                failing_pages = ?pages,
-                                "Targeted OCR requested but no page boundaries available; using native text"
-                            );
-                            (native_text, ExtractionMethod::Native)
-                        }
+                    }
+                    _ => {
+                        tracing::warn!(
+                            failing_pages = ?pages,
+                            "Targeted OCR requested but no page boundaries available; using native text"
+                        );
+                        (native_text, ExtractionMethod::Native)
                     }
                 },
                 ocr::OcrGateOutcome::UseNative => (native_text, ExtractionMethod::Native),
@@ -1457,9 +1451,9 @@ mod tests {
         // above substantive_min_chars (100), good alnum_ws_ratio, but fallback=true
         // because a scanned page was detected.
         let outcome = ocr::evaluate_ocr_skip_gate(
-            true, // pre_rendered_doc present
-            500,  // total_chars > substantive_min_chars
-            0.9,  // alnum_ws_ratio > threshold (0.4)
+            true,                             // pre_rendered_doc present
+            500,                              // total_chars > substantive_min_chars
+            0.9,                              // alnum_ws_ratio > threshold (0.4)
             &mk_decision(true, true, vec![]), // decision.fallback — scanned page detected
             &thresholds,
         );
@@ -1478,9 +1472,9 @@ mod tests {
         let thresholds = OcrQualityThresholds::default();
 
         let outcome = ocr::evaluate_ocr_skip_gate(
-            true,  // pre_rendered_doc present
-            500,   // total_chars > substantive_min_chars
-            0.9,   // alnum_ws_ratio > threshold
+            true,                               // pre_rendered_doc present
+            500,                                // total_chars > substantive_min_chars
+            0.9,                                // alnum_ws_ratio > threshold
             &mk_decision(false, false, vec![]), // decision.fallback — all pages look fine
             &thresholds,
         );
@@ -1608,9 +1602,9 @@ mod tests {
         // Non-textual: high char count but alnum_ws_ratio below threshold (lots of symbols).
         // Simulate a chart-heavy page that also triggered a per-page quality check.
         let outcome = ocr::evaluate_ocr_skip_gate(
-            true, // pre_rendered_doc present
-            500,  // total_chars > non_text_min_chars
-            0.1,  // alnum_ws_ratio < threshold — non-textual content
+            true,                             // pre_rendered_doc present
+            500,                              // total_chars > non_text_min_chars
+            0.1,                              // alnum_ws_ratio < threshold — non-textual content
             &mk_decision(true, true, vec![]), // decision.fallback — per-page quality check fired
             &thresholds,
         );
@@ -1618,6 +1612,98 @@ mod tests {
             outcome,
             ocr::OcrGateOutcome::SkipNonText,
             "non-textual content with a structured doc must skip OCR even if fallback was requested"
+        );
+    }
+
+    /// Hybrid PDF: per-page check fires on specific pages while the whole-document
+    /// quality check passes. Gate must route to RunFallbackOnPages, not RunFallback.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_ocr_gate_targets_specific_pages_on_hybrid_pdf() {
+        let thresholds = OcrQualityThresholds::default();
+
+        let outcome = ocr::evaluate_ocr_skip_gate(
+            false, // no pre-rendered doc
+            500,
+            0.9,
+            &mk_decision(true, false, vec![3, 7]), // per-page failure, whole doc OK
+            &thresholds,
+        );
+        assert_eq!(
+            outcome,
+            ocr::OcrGateOutcome::RunFallbackOnPages(vec![3, 7]),
+            "hybrid PDF with specific failing pages must route to targeted OCR"
+        );
+    }
+
+    /// Whole-document failure with no per-page list → full document OCR (existing behaviour).
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_ocr_gate_full_document_when_whole_doc_failure() {
+        let thresholds = OcrQualityThresholds::default();
+        let outcome = ocr::evaluate_ocr_skip_gate(false, 500, 0.9, &mk_decision(true, true, vec![]), &thresholds);
+        assert_eq!(outcome, ocr::OcrGateOutcome::RunFallback);
+    }
+
+    /// Edge case: whole-doc failure is true AND per-page list is populated.
+    /// Whole-doc failure dominates (the document is fundamentally bad).
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_ocr_gate_whole_doc_failure_dominates_per_page_list() {
+        let thresholds = OcrQualityThresholds::default();
+        let outcome =
+            ocr::evaluate_ocr_skip_gate(false, 500, 0.9, &mk_decision(true, true, vec![1, 2, 3]), &thresholds);
+        assert_eq!(
+            outcome,
+            ocr::OcrGateOutcome::RunFallback,
+            "whole-doc failure must trigger full OCR even when per-page list is populated"
+        );
+    }
+
+    /// evaluate_per_page_ocr must collect ALL failing pages, not short-circuit on the first.
+    /// This is the core regression the original implementation had.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_evaluate_per_page_ocr_collects_all_failing_pages() {
+        use crate::types::PageBoundary;
+
+        let good = "This page has plenty of meaningful searchable text content for extraction.";
+        let bad = " . ; ";
+        // Layout: good, bad, good, bad — failing pages should be [2, 4].
+        let text = format!("{}{}{}{}", good, bad, good, bad);
+        let boundaries = vec![
+            PageBoundary {
+                byte_start: 0,
+                byte_end: good.len(),
+                page_number: 1,
+            },
+            PageBoundary {
+                byte_start: good.len(),
+                byte_end: good.len() + bad.len(),
+                page_number: 2,
+            },
+            PageBoundary {
+                byte_start: good.len() + bad.len(),
+                byte_end: 2 * good.len() + bad.len(),
+                page_number: 3,
+            },
+            PageBoundary {
+                byte_start: 2 * good.len() + bad.len(),
+                byte_end: text.len(),
+                page_number: 4,
+            },
+        ];
+
+        let decision = ocr::evaluate_per_page_ocr(&text, Some(&boundaries), Some(4), &OcrQualityThresholds::default());
+        assert!(decision.fallback);
+        assert_eq!(
+            decision.failing_pages,
+            vec![2, 4],
+            "all failing pages must be collected, not just the first"
+        );
+        assert!(
+            !decision.whole_doc_failure,
+            "whole-doc check should pass when half the document has good text"
         );
     }
 }
