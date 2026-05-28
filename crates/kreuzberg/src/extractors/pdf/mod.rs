@@ -1706,4 +1706,43 @@ mod tests {
             "whole-doc check should pass when half the document has good text"
         );
     }
+
+    /// When every page fails the per-page quality check, the gate must route to
+    /// RunFallback (ExtractionMethod::Ocr), not RunFallbackOnPages (ExtractionMethod::Mixed).
+    /// A document where every page needs OCR is not a mixed document.
+    #[cfg(feature = "ocr")]
+    #[test]
+    fn test_all_pages_failing_routes_to_run_fallback_not_mixed() {
+        use crate::types::PageBoundary;
+
+        let bad = " . ; ";
+        let text = format!("{}{}", bad, bad);
+        let boundaries = vec![
+            PageBoundary {
+                byte_start: 0,
+                byte_end: bad.len(),
+                page_number: 1,
+            },
+            PageBoundary {
+                byte_start: bad.len(),
+                byte_end: text.len(),
+                page_number: 2,
+            },
+        ];
+
+        let decision = ocr::evaluate_per_page_ocr(&text, Some(&boundaries), Some(2), &OcrQualityThresholds::default());
+        assert!(decision.fallback);
+        assert_eq!(decision.failing_pages, vec![1, 2]);
+        assert!(
+            decision.whole_doc_failure,
+            "all pages failing must set whole_doc_failure so gate routes to RunFallback"
+        );
+
+        let outcome = ocr::evaluate_ocr_skip_gate(false, text.len(), 0.1, &decision, &OcrQualityThresholds::default());
+        assert_eq!(
+            outcome,
+            ocr::OcrGateOutcome::RunFallback,
+            "all-pages-failing must produce RunFallback (Ocr), not RunFallbackOnPages (Mixed)"
+        );
+    }
 }

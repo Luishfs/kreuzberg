@@ -327,6 +327,14 @@ pub(crate) fn evaluate_per_page_ocr(
 
     if !failing_pages.is_empty() {
         document_decision.fallback = true;
+        // If every page boundary failed the per-page check, treat this as a
+        // whole-document failure so the gate routes to RunFallback
+        // (ExtractionMethod::Ocr) rather than RunFallbackOnPages
+        // (ExtractionMethod::Mixed). A document where every page needs OCR is
+        // not a "mixed" document.
+        if failing_pages.len() == boundaries.len() {
+            document_decision.whole_doc_failure = true;
+        }
     }
     document_decision.failing_pages = failing_pages;
     document_decision
